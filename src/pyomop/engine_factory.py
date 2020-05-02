@@ -1,4 +1,6 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from sqlalchemy.ext.automap import automap_base
 
 class CdmEngineFactory(object):
 
@@ -8,6 +10,8 @@ class CdmEngineFactory(object):
         self._host = host
         self._port = port
         self._schema = schema
+        self._engine = None
+        self._base = None
     
     @property
     def db(self):
@@ -29,6 +33,30 @@ class CdmEngineFactory(object):
     def schema(self):
         return self._schema
 
+    @property
+    def engine(self):
+        return self._engine
+
+    @property
+    def base(self):
+        if self._engine is not None:
+            Base = automap_base()
+            Base.prepare(self._engine, reflect=True)
+            return Base.classes
+        return None
+    
+    @property
+    def engine(self):
+        if self._db is 'sqlite':
+            self._engine = create_engine("sqlite:///"+self._name)
+        return self._engine
+
+    @property
+    def session(self):
+        if self._engine is not None:
+            return Session(self._engine)
+        return None
+
     @db.setter
     def db(self, value):
         self._db = value
@@ -49,7 +77,7 @@ class CdmEngineFactory(object):
     def schema(self, value):
         self._schema = value
 
-    def get_engine(self):
-        if self._db is 'sqlite':
-            engine = create_engine("sqlite:///"+self._name)
-        return engine
+
+
+    
+    

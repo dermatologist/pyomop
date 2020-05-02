@@ -8,6 +8,7 @@ metadata = Base.metadata
 
 t_attribute_definition = Table(
     'attribute_definition', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('attribute_definition_id', Integer, nullable=False),
     Column('attribute_name', String(255), nullable=False),
     Column('attribute_description', Text),
@@ -18,6 +19,7 @@ t_attribute_definition = Table(
 
 t_care_site = Table(
     'care_site', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('care_site_id', Integer, nullable=False),
     Column('care_site_name', String(255)),
     Column('place_of_service_concept_id', Integer),
@@ -29,6 +31,7 @@ t_care_site = Table(
 
 t_cdm_source = Table(
     'cdm_source', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('cdm_source_name', String(255), nullable=False),
     Column('cdm_source_abbreviation', String(25)),
     Column('cdm_holder', String(255)),
@@ -44,6 +47,7 @@ t_cdm_source = Table(
 
 t_cohort = Table(
     'cohort', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('cohort_definition_id', Integer, nullable=False),
     Column('subject_id', Integer, nullable=False),
     Column('cohort_start_date', Date, nullable=False),
@@ -53,6 +57,7 @@ t_cohort = Table(
 
 t_cohort_attribute = Table(
     'cohort_attribute', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('cohort_definition_id', Integer, nullable=False),
     Column('cohort_start_date', Date, nullable=False),
     Column('cohort_end_date', Date, nullable=False),
@@ -65,6 +70,7 @@ t_cohort_attribute = Table(
 
 t_cohort_definition = Table(
     'cohort_definition', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('cohort_definition_id', Integer, nullable=False),
     Column('cohort_definition_name', String(255), nullable=False),
     Column('cohort_definition_description', Text),
@@ -77,6 +83,7 @@ t_cohort_definition = Table(
 
 t_concept = Table(
     'concept', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('concept_id', Integer, nullable=False),
     Column('concept_name', String(255), nullable=False),
     Column('domain_id', String(20), nullable=False),
@@ -92,6 +99,7 @@ t_concept = Table(
 
 t_concept_ancestor = Table(
     'concept_ancestor', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('ancestor_concept_id', Integer, nullable=False),
     Column('descendant_concept_id', Integer, nullable=False),
     Column('min_levels_of_separation', Integer, nullable=False),
@@ -101,6 +109,7 @@ t_concept_ancestor = Table(
 
 t_concept_class = Table(
     'concept_class', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('concept_class_id', String(20), nullable=False),
     Column('concept_class_name', String(255), nullable=False),
     Column('concept_class_concept_id', Integer, nullable=False)
@@ -109,6 +118,7 @@ t_concept_class = Table(
 
 t_concept_relationship = Table(
     'concept_relationship', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('concept_id_1', Integer, nullable=False),
     Column('concept_id_2', Integer, nullable=False),
     Column('relationship_id', String(20), nullable=False),
@@ -120,6 +130,7 @@ t_concept_relationship = Table(
 
 t_concept_synonym = Table(
     'concept_synonym', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('concept_id', Integer, nullable=False),
     Column('concept_synonym_name', String(1000), nullable=False),
     Column('language_concept_id', Integer, nullable=False)
@@ -128,6 +139,7 @@ t_concept_synonym = Table(
 
 t_condition_era = Table(
     'condition_era', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('condition_era_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('condition_concept_id', Integer, nullable=False),
@@ -139,6 +151,7 @@ t_condition_era = Table(
 
 t_condition_occurrence = Table(
     'condition_occurrence', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('condition_occurrence_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('condition_concept_id', Integer, nullable=False),
@@ -155,6 +168,7 @@ t_condition_occurrence = Table(
 
 t_death = Table(
     'death', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('person_id', Integer, nullable=False),
     Column('death_date', Date, nullable=False),
     Column('death_type_concept_id', Integer, nullable=False),
@@ -166,6 +180,7 @@ t_death = Table(
 
 t_device_cost = Table(
     'device_cost', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('device_cost_id', Integer, nullable=False),
     Column('device_exposure_id', Integer, nullable=False),
     Column('currency_concept_id', Integer),
@@ -182,6 +197,7 @@ t_device_cost = Table(
 
 t_device_exposure = Table(
     'device_exposure', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('device_exposure_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('device_concept_id', Integer, nullable=False),
@@ -207,6 +223,7 @@ class Domain(Base):
 
 t_dose_era = Table(
     'dose_era', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('dose_era_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('drug_concept_id', Integer, nullable=False),
@@ -219,6 +236,7 @@ t_dose_era = Table(
 
 t_drug_cost = Table(
     'drug_cost', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_cost_id', Integer, nullable=False),
     Column('drug_exposure_id', Integer, nullable=False),
     Column('currency_concept_id', Integer),
@@ -238,6 +256,7 @@ t_drug_cost = Table(
 
 t_drug_era = Table(
     'drug_era', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_era_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('drug_concept_id', Integer, nullable=False),
@@ -250,6 +269,7 @@ t_drug_era = Table(
 
 t_drug_exposure = Table(
     'drug_exposure', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_exposure_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('drug_concept_id', Integer, nullable=False),
@@ -276,6 +296,7 @@ t_drug_exposure = Table(
 
 t_drug_strength = Table(
     'drug_strength', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_concept_id', Integer, nullable=False),
     Column('ingredient_concept_id', Integer, nullable=False),
     Column('amount_value', Numeric),
@@ -293,6 +314,7 @@ t_drug_strength = Table(
 
 t_fact_relationship = Table(
     'fact_relationship', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('domain_concept_id_1', Integer, nullable=False),
     Column('fact_id_1', Integer, nullable=False),
     Column('domain_concept_id_2', Integer, nullable=False),
@@ -303,6 +325,7 @@ t_fact_relationship = Table(
 
 t_location = Table(
     'location', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('location_id', Integer, nullable=False),
     Column('address_1', String(50)),
     Column('address_2', String(50)),
@@ -316,6 +339,7 @@ t_location = Table(
 
 t_measurement = Table(
     'measurement', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('measurement_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('measurement_concept_id', Integer, nullable=False),
@@ -339,6 +363,7 @@ t_measurement = Table(
 
 t_note = Table(
     'note', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('note_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('note_date', Date, nullable=False),
@@ -353,6 +378,7 @@ t_note = Table(
 
 t_observation = Table(
     'observation', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('observation_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('observation_concept_id', Integer, nullable=False),
@@ -375,6 +401,7 @@ t_observation = Table(
 
 t_observation_period = Table(
     'observation_period', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('observation_period_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('observation_period_start_date', Date, nullable=False),
@@ -385,6 +412,7 @@ t_observation_period = Table(
 
 t_payer_plan_period = Table(
     'payer_plan_period', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('payer_plan_period_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('payer_plan_period_start_date', Date, nullable=False),
@@ -397,6 +425,7 @@ t_payer_plan_period = Table(
 
 t_person = Table(
     'person', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('person_id', Integer, nullable=False),
     Column('gender_concept_id', Integer, nullable=False),
     Column('year_of_birth', Integer, nullable=False),
@@ -420,6 +449,7 @@ t_person = Table(
 
 t_procedure_cost = Table(
     'procedure_cost', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('procedure_cost_id', Integer, nullable=False),
     Column('procedure_occurrence_id', Integer, nullable=False),
     Column('currency_concept_id', Integer),
@@ -438,6 +468,7 @@ t_procedure_cost = Table(
 
 t_procedure_occurrence = Table(
     'procedure_occurrence', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('procedure_occurrence_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('procedure_concept_id', Integer, nullable=False),
@@ -455,6 +486,7 @@ t_procedure_occurrence = Table(
 
 t_provider = Table(
     'provider', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('provider_id', Integer, nullable=False),
     Column('provider_name', String(255)),
     Column('npi', String(20)),
@@ -473,6 +505,7 @@ t_provider = Table(
 
 t_relationship = Table(
     'relationship', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('relationship_id', String(20), nullable=False),
     Column('relationship_name', String(255), nullable=False),
     Column('is_hierarchical', String(1), nullable=False),
@@ -484,6 +517,7 @@ t_relationship = Table(
 
 t_source_to_concept_map = Table(
     'source_to_concept_map', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('source_code', String(50), nullable=False),
     Column('source_concept_id', Integer, nullable=False),
     Column('source_vocabulary_id', String(20), nullable=False),
@@ -498,6 +532,7 @@ t_source_to_concept_map = Table(
 
 t_specimen = Table(
     'specimen', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('specimen_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('specimen_concept_id', Integer, nullable=False),
@@ -518,6 +553,7 @@ t_specimen = Table(
 
 t_visit_cost = Table(
     'visit_cost', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('visit_cost_id', Integer, nullable=False),
     Column('visit_occurrence_id', BigInteger, nullable=False),
     Column('currency_concept_id', Integer),
@@ -534,6 +570,7 @@ t_visit_cost = Table(
 
 t_visit_occurrence = Table(
     'visit_occurrence', metadata,
+Column('_id', Integer, nullable=False, primary_key=True),
     Column('visit_occurrence_id', BigInteger, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('visit_concept_id', Integer, nullable=False),
