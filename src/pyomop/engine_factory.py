@@ -4,11 +4,16 @@ from sqlalchemy.ext.automap import automap_base
 
 class CdmEngineFactory(object):
 
-    def __init__(self, db = 'sqlite', host = 'localhost', port = 3306, name = 'cdm6.sqlite', schema = ''):
+    def __init__(self, db = 'sqlite', 
+                host = 'localhost', port = 5432, 
+                user = 'root', pw='pass',
+                name = 'cdm6.sqlite', schema = 'public'):
         self._db = db
         self._name = name
         self._host = host
         self._port = port
+        self._user = user
+        self._pass = pw
         self._schema = schema
         self._engine = None
         self._base = None
@@ -30,6 +35,14 @@ class CdmEngineFactory(object):
         return self._name
 
     @property
+    def user(self):
+        return self._user
+
+    @property
+    def pw(self):
+        return self._pw
+
+    @property
     def schema(self):
         return self._schema
 
@@ -49,6 +62,20 @@ class CdmEngineFactory(object):
     def engine(self):
         if self._db is 'sqlite':
             self._engine = create_engine("sqlite:///"+self._name)
+        if self._db is 'mysql':
+            mysql_url = 'mysql://{}:{}@{}:{}/{}'
+            mysql_url = mysql_url.format(self._user, self._pw, self._host, self._port, self._db)
+            self._engine = create_engine(mysql_url, isolation_level="READ UNCOMMITTED")
+        if self._db is 'pgsql':
+            # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
+            dbschema = '{},public'  # Searches left-to-right
+            dbschema = dbschema.format(self._schema)
+            pgsql_url = 'postgresql+psycopg2://{}:{}@{}:{}/{}'
+            pgsql_url = pgsql_url.format(self._user, self._pw,
+                                        self._host, self._port, self._db)
+            self._engine = create_engine(
+                pgsql_url,
+                connect_args={'options': '-csearch_path={}'.format(dbschema)})
         return self._engine
 
     @property
@@ -72,6 +99,14 @@ class CdmEngineFactory(object):
     @host.setter
     def host(self, value):
         self._host = value
+
+    @user.setter
+    def user(self, value):
+        self._user = value
+
+    @pw.setter
+    def pw(self, value):
+        self._pw = value
 
     @schema.setter
     def schema(self, value):
