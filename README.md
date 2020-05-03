@@ -9,7 +9,7 @@ A python library for using the OMOP Common Data Model.
 ## Installation
 
 ```
-pip install https://github.com/dermatologist/pyomop/releases/download/1.1.0/pyomop-1.1.0-py2.py3-none-any.whl
+pip install https://github.com/dermatologist/pyomop/releases/download/1.1.1/pyomop-1.1.1-py2.py3-none-any.whl
 
 ```
 

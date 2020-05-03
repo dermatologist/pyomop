@@ -31,7 +31,7 @@ def cli(verbose, create, dbtype, host, port, user, pw, name, schema):
 
 def main_routine():
     click.echo("_________________________________________")
-    click.echo("Pyomop " + + __version__ +" working:.....")
+    click.echo("Pyomop v" + __version__ + " working:.....")
     cli()  # run the main function
     click.echo("Pyomop done.")
 
