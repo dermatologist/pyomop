@@ -2,15 +2,15 @@
 
 OMOP CDM utils
 
-
 ## Description
 
-A longer description of your project goes here...
+A python library for using the OMOP Common Data Model.
 
 ## Installation
 
 ```
-pip install pyomop
+pip install https://github.com/dermatologist/pyomop/releases/download/0.1.0/pyomop-0.1.0-py2.py3-none-any.whl
+
 ```
 
 ## Usage
@@ -41,7 +41,3 @@ for row in result:
 
 ```
 
-## Note
-
-This project has been set up using PyScaffold 3.2.3. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
