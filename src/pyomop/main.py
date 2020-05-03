@@ -1,6 +1,7 @@
 import click
-from engine_factory import CdmEngineFactory
-from cdm6_tables import metadata
+from . import CdmEngineFactory
+from . import metadata
+from . import __version__
 
 
 @click.command()
@@ -30,7 +31,7 @@ def cli(verbose, create, dbtype, host, port, user, pw, name, schema):
 
 def main_routine():
     click.echo("_________________________________________")
-    click.echo("Pyomop working:.....")
+    click.echo("Pyomop " + + __version__ +" working:.....")
     cli()  # run the main function
     click.echo("Pyomop done.")
 
