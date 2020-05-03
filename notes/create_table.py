@@ -1,31 +1,17 @@
-# pyomop
-
-OMOP CDM utils
-
-
-## Description
-
-A longer description of your project goes here...
-
-## Installation
-
-```
-pip install pyomop
-```
-
-## Usage
-
-```
-from pyomop import CdmEngineFactory
-from pyomop import metadata
+from engine_factory import CdmEngineFactory
+from cdm6_tables import metadata
 from sqlalchemy.sql import select
 import datetime
 
 cdm = CdmEngineFactory()
 
 engine = cdm.engine
-# Create Tables 
 metadata.create_all(engine)
+metadata.reflect(bind=engine)
+for table in reversed(metadata.sorted_tables):
+    print(table)
+
+
 
 Cohort = cdm.base.cohort
 session =  cdm.session
@@ -38,10 +24,3 @@ s = select([Cohort])
 result = session.execute(s)
 for row in result:
     print(row)
-
-```
-
-## Note
-
-This project has been set up using PyScaffold 3.2.3. For details and usage
-information on PyScaffold see https://pyscaffold.org/.
