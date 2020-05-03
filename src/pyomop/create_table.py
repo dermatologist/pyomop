@@ -6,10 +6,10 @@ import datetime
 cdm = CdmEngineFactory()
 
 engine = cdm.engine
-# metadata.create_all(engine)
-# metadata.reflect(bind=engine)
-# for table in reversed(metadata.sorted_tables):
-#     print(table)
+metadata.create_all(engine)
+metadata.reflect(bind=engine)
+for table in reversed(metadata.sorted_tables):
+    print(table)
 
 
 
