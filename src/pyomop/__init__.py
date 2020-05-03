@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from pkg_resources import get_distribution, DistributionNotFound
 
-from engine_factory import CdmEngineFactory
-from cdm6_tables import metadata
+from .engine_factory import CdmEngineFactory
+from .cdm6_tables import metadata
 
 try:
     # Change here if project is renamed and does not equal the package name
