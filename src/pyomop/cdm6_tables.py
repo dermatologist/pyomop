@@ -215,7 +215,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
 
 class Domain(Base):
     __tablename__ = 'domain'
-
+    _id = Column(Integer, primary_key=True)
     domain_id = Column(String(20), primary_key=True)
     domain_name = Column(String(255), nullable=False)
     domain_concept_id = Column(Integer, nullable=False)
@@ -588,9 +588,9 @@ Column('_id', Integer, nullable=False, primary_key=True),
 
 class Vocabulary(Base):
     __tablename__ = 'vocabulary'
-
-    vocabulary_id = Column(String(20), primary_key=True)
+    _id = Column(Integer, primary_key=True)
+    vocabulary_id = Column(String(20), nullable=False)
     vocabulary_name = Column(String(255), nullable=False)
     vocabulary_reference = Column(String(255), nullable=False)
-    vocabulary_version = Column(String(255), nullable=False)
+    vocabulary_version = Column(String(255))
     vocabulary_concept_id = Column(Integer, nullable=False)
