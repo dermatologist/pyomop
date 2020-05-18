@@ -52,7 +52,7 @@ class CdmEngineFactory(object):
 
     @property
     def base(self):
-        if self._engine is not None:
+        if self.engine is not None:  # Not self_engine
             Base = automap_base()
             Base.prepare(self._engine, reflect=True)
             return Base.classes

@@ -1,4 +1,5 @@
 from . import CdmEngineFactory
+import pandas as pd
 class CdmVocabulary(object):
     def __init__(self, cdm):
         self._concept_id = 0
@@ -10,6 +11,7 @@ class CdmVocabulary(object):
         self._cdm = cdm
         self._Concept = cdm.base.concept  # Capitalized as it is a class
         self._Session = cdm.session
+        self._engine = cdm.engine
 
     @property
     def concept_id(self):
@@ -61,3 +63,23 @@ class CdmVocabulary(object):
         except:
             self._vocabulary_id = 0
             self._concept_id = 0
+
+    def create_vocab(self, folder):
+        df = pd.read_csv(folder + '/DRUG_STRENGTH.csv')
+        df.to_sql('drug_strength', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + '/CONCEPT.csv')
+        df.to_sql('concept', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + '/CONCEPT_RELATIONSHIP.csv')
+        df.to_sql('concept_relationship', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + '/CONCEPT_ANCESTOR.csv')
+        df.to_sql('concept_ancester', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + '/CONCEPT_SYNONYM.csv')
+        df.to_sql('concept_synonym', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + 'VOCABULARY.csv')
+        df.to_sql('vocabulary', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + 'RELATIONSHIP.csv')
+        df.to_sql('relationship', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + 'CONCEPT_CLASS.csv')
+        df.to_sql('concept_class', con=self._engine, index = False, if_exists = 'replace')
+        df = pd.read_csv(folder + 'DOMAIN.csv')
+        df.to_sql('domain', con=self._engine, index = False, if_exists = 'replace')
