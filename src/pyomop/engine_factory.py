@@ -48,7 +48,7 @@ class CdmEngineFactory(object):
 
     @property
     def engine(self):
-        return self._engine
+        return self.engine
 
     @property
     def base(self):
