@@ -11,8 +11,13 @@ def metadata_fixture():
     from src.pyomop import metadata
     return metadata
 
-def test_create_vocab(pyomop_fixture, metadata_fixture, capsys):
+def test_vocab(pyomop_fixture, metadata_fixture, capsys):
     from src.pyomop import CdmVocabulary
-    vocab = CdmVocabulary(pyomop_fixture)
-    vocab.create_vocab('')
-    print("Done")
+    # vocab = CdmVocabulary(pyomop_fixture)
+    for x in pyomop_fixture.base:
+        print(x)
+    # setters are called like this
+    # vocab.concept_id = 2 # 'C0020538' Hypertension
+    # print(vocab.concept_name)
+
+
