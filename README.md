@@ -4,7 +4,12 @@ OMOP CDM utils
 
 ## Description
 
-A python library for using the OMOP Common Data Model.
+The OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to do various operations on the CDM v6 compliant databases. This is WIP and may change considerably. Please don't use it in production yet.
+
+### Support
+* Postgres
+* MySQL
+* SqLite
 
 ## Installation
 
