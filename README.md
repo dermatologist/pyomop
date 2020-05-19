@@ -14,6 +14,11 @@ The OMOP Common Data Model allows for the systematic analysis of healthcare obse
 ## Installation
 
 ```
+pip install pyomop
+```
+
+### latest
+```
 pip install https://github.com/dermatologist/pyomop/releases/download/1.1.1/pyomop-1.1.1-py2.py3-none-any.whl
 
 ```
@@ -31,7 +36,11 @@ cdm = CdmEngineFactory()
 engine = cdm.engine
 # Create Tables 
 metadata.create_all(engine)
+# Create vocabulary
+vocab = CdmVocabulary(cdm)
+vocab.create_vocab('/path/to/csv/files')
 
+# SQLAlchemy as ORM
 Cohort = cdm.base.cohort
 session =  cdm.session
 session.add(Cohort(cohort_definition_id=2, subject_id=100, 
@@ -46,3 +55,14 @@ for row in result:
 
 ```
 
+## command-line usage
+
+```
+pyomop -help
+```
+
+## Other useful libraries
+
+* [cui-cdm](https://github.com/E-Health/cui-cdm) - CUI to Concept mapping
+* [cui-embed](https://github.com/dermatologist/cui-embed) - CUI embeddings (Word2Vec) for similarity search.
+* [Hephaestus](https://github.com/dermatologist/hephaestus) - For ETL
