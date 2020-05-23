@@ -38,8 +38,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('source_description', Text),
     Column('source_documentation_reference', String(255)),
     Column('cdm_etl_reference', String(255)),
-    Column('source_release_date', Date),
-    Column('cdm_release_date', Date),
+    Column('source_release_date', String(30)),
+    Column('cdm_release_date', String(30)),
     Column('cdm_version', String(10)),
     Column('vocabulary_version', String(20))
 )
@@ -50,8 +50,8 @@ t_cohort = Table(
 Column('_id', Integer, nullable=False, primary_key=True),
     Column('cohort_definition_id', Integer, nullable=False),
     Column('subject_id', Integer, nullable=False),
-    Column('cohort_start_date', Date, nullable=False),
-    Column('cohort_end_date', Date, nullable=False)
+    Column('cohort_start_date', String(30), nullable=False),
+    Column('cohort_end_date', String(30), nullable=False)
 )
 
 
@@ -59,8 +59,8 @@ t_cohort_attribute = Table(
     'cohort_attribute', metadata,
 Column('_id', Integer, nullable=False, primary_key=True),
     Column('cohort_definition_id', Integer, nullable=False),
-    Column('cohort_start_date', Date, nullable=False),
-    Column('cohort_end_date', Date, nullable=False),
+    Column('cohort_start_date', String(30), nullable=False),
+    Column('cohort_end_date', String(30), nullable=False),
     Column('subject_id', Integer, nullable=False),
     Column('attribute_definition_id', Integer, nullable=False),
     Column('value_as_number', Numeric),
@@ -77,7 +77,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('definition_type_concept_id', Integer, nullable=False),
     Column('cohort_definition_syntax', Text),
     Column('subject_concept_id', Integer, nullable=False),
-    Column('cohort_initiation_date', Date)
+    Column('cohort_initiation_date', String(30))
 )
 
 
@@ -91,8 +91,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('concept_class_id', String(20), nullable=False),
     Column('standard_concept', String(1)),
     Column('concept_code', String(50), nullable=False),
-    Column('valid_start_date', Date, nullable=False),
-    Column('valid_end_date', Date, nullable=False),
+    Column('valid_start_date', String(30), nullable=False),
+    Column('valid_end_date', String(30), nullable=False),
     Column('invalid_reason', String(1))
 )
 
@@ -122,8 +122,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('concept_id_1', Integer, nullable=False),
     Column('concept_id_2', Integer, nullable=False),
     Column('relationship_id', String(20), nullable=False),
-    Column('valid_start_date', Date, nullable=False),
-    Column('valid_end_date', Date, nullable=False),
+    Column('valid_start_date', String(30), nullable=False),
+    Column('valid_end_date', String(30), nullable=False),
     Column('invalid_reason', String(1))
 )
 
@@ -143,8 +143,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('condition_era_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('condition_concept_id', Integer, nullable=False),
-    Column('condition_era_start_date', Date, nullable=False),
-    Column('condition_era_end_date', Date, nullable=False),
+    Column('condition_era_start_date', String(30), nullable=False),
+    Column('condition_era_end_date', String(30), nullable=False),
     Column('condition_occurrence_count', Integer)
 )
 
@@ -155,8 +155,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('condition_occurrence_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('condition_concept_id', Integer, nullable=False),
-    Column('condition_start_date', Date, nullable=False),
-    Column('condition_end_date', Date),
+    Column('condition_start_date', String(30), nullable=False),
+    Column('condition_end_date', String(30)),
     Column('condition_type_concept_id', Integer, nullable=False),
     Column('stop_reason', String(20)),
     Column('provider_id', Integer),
@@ -170,7 +170,7 @@ t_death = Table(
     'death', metadata,
 Column('_id', Integer, nullable=False, primary_key=True),
     Column('person_id', Integer, nullable=False),
-    Column('death_date', Date, nullable=False),
+    Column('death_date', String(30), nullable=False),
     Column('death_type_concept_id', Integer, nullable=False),
     Column('cause_concept_id', Integer),
     Column('cause_source_value', String(50)),
@@ -201,8 +201,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('device_exposure_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('device_concept_id', Integer, nullable=False),
-    Column('device_exposure_start_date', Date, nullable=False),
-    Column('device_exposure_end_date', Date),
+    Column('device_exposure_start_date', String(30), nullable=False),
+    Column('device_exposure_end_date', String(30)),
     Column('device_type_concept_id', Integer, nullable=False),
     Column('unique_device_id', String(50)),
     Column('quantity', Integer),
@@ -215,7 +215,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
 
 class Domain(Base):
     __tablename__ = 'domain'
-
+    _id = Column(Integer, primary_key=True)
     domain_id = Column(String(20), primary_key=True)
     domain_name = Column(String(255), nullable=False)
     domain_concept_id = Column(Integer, nullable=False)
@@ -229,8 +229,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_concept_id', Integer, nullable=False),
     Column('unit_concept_id', Integer, nullable=False),
     Column('dose_value', Numeric, nullable=False),
-    Column('dose_era_start_date', Date, nullable=False),
-    Column('dose_era_end_date', Date, nullable=False)
+    Column('dose_era_start_date', String(30), nullable=False),
+    Column('dose_era_end_date', String(30), nullable=False)
 )
 
 
@@ -260,8 +260,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_era_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('drug_concept_id', Integer, nullable=False),
-    Column('drug_era_start_date', Date, nullable=False),
-    Column('drug_era_end_date', Date, nullable=False),
+    Column('drug_era_start_date', String(30), nullable=False),
+    Column('drug_era_end_date', String(30), nullable=False),
     Column('drug_exposure_count', Integer),
     Column('gap_days', Integer)
 )
@@ -273,8 +273,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('drug_exposure_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('drug_concept_id', Integer, nullable=False),
-    Column('drug_exposure_start_date', Date, nullable=False),
-    Column('drug_exposure_end_date', Date),
+    Column('drug_exposure_start_date', String(30), nullable=False),
+    Column('drug_exposure_end_date', String(30)),
     Column('drug_type_concept_id', Integer, nullable=False),
     Column('stop_reason', String(20)),
     Column('refills', Integer),
@@ -306,8 +306,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('denominator_value', Numeric),
     Column('denominator_unit_concept_id', Integer),
     Column('box_size', Integer),
-    Column('valid_start_date', Date, nullable=False),
-    Column('valid_end_date', Date, nullable=False),
+    Column('valid_start_date', String(30), nullable=False),
+    Column('valid_end_date', String(30), nullable=False),
     Column('invalid_reason', String(1))
 )
 
@@ -343,7 +343,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('measurement_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('measurement_concept_id', Integer, nullable=False),
-    Column('measurement_date', Date, nullable=False),
+    Column('measurement_date', String(30), nullable=False),
     Column('measurement_time', String(10)),
     Column('measurement_type_concept_id', Integer, nullable=False),
     Column('operator_concept_id', Integer),
@@ -366,7 +366,7 @@ t_note = Table(
 Column('_id', Integer, nullable=False, primary_key=True),
     Column('note_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
-    Column('note_date', Date, nullable=False),
+    Column('note_date', String(30), nullable=False),
     Column('note_time', String(10)),
     Column('note_type_concept_id', Integer, nullable=False),
     Column('note_text', Text, nullable=False),
@@ -382,7 +382,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('observation_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('observation_concept_id', Integer, nullable=False),
-    Column('observation_date', Date, nullable=False),
+    Column('observation_date', String(30), nullable=False),
     Column('observation_time', String(10)),
     Column('observation_type_concept_id', Integer, nullable=False),
     Column('value_as_number', Numeric),
@@ -404,8 +404,8 @@ t_observation_period = Table(
 Column('_id', Integer, nullable=False, primary_key=True),
     Column('observation_period_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
-    Column('observation_period_start_date', Date, nullable=False),
-    Column('observation_period_end_date', Date, nullable=False),
+    Column('observation_period_start_date', String(30), nullable=False),
+    Column('observation_period_end_date', String(30), nullable=False),
     Column('period_type_concept_id', Integer, nullable=False)
 )
 
@@ -415,8 +415,8 @@ t_payer_plan_period = Table(
 Column('_id', Integer, nullable=False, primary_key=True),
     Column('payer_plan_period_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
-    Column('payer_plan_period_start_date', Date, nullable=False),
-    Column('payer_plan_period_end_date', Date, nullable=False),
+    Column('payer_plan_period_start_date', String(30), nullable=False),
+    Column('payer_plan_period_end_date', String(30), nullable=False),
     Column('payer_source_value', String(50)),
     Column('plan_source_value', String(50)),
     Column('family_source_value', String(50))
@@ -472,7 +472,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('procedure_occurrence_id', Integer, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('procedure_concept_id', Integer, nullable=False),
-    Column('procedure_date', Date, nullable=False),
+    Column('procedure_date', String(30), nullable=False),
     Column('procedure_type_concept_id', Integer, nullable=False),
     Column('modifier_concept_id', Integer),
     Column('quantity', Integer),
@@ -524,8 +524,8 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('source_code_description', String(255)),
     Column('target_concept_id', Integer, nullable=False),
     Column('target_vocabulary_id', String(20), nullable=False),
-    Column('valid_start_date', Date, nullable=False),
-    Column('valid_end_date', Date, nullable=False),
+    Column('valid_start_date', String(30), nullable=False),
+    Column('valid_end_date', String(30), nullable=False),
     Column('invalid_reason', String(1))
 )
 
@@ -537,7 +537,7 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('person_id', Integer, nullable=False),
     Column('specimen_concept_id', Integer, nullable=False),
     Column('specimen_type_concept_id', Integer, nullable=False),
-    Column('specimen_date', Date, nullable=False),
+    Column('specimen_date', String(30), nullable=False),
     Column('specimen_time', String(10)),
     Column('quantity', Numeric),
     Column('unit_concept_id', Integer),
@@ -574,9 +574,9 @@ Column('_id', Integer, nullable=False, primary_key=True),
     Column('visit_occurrence_id', BigInteger, nullable=False),
     Column('person_id', Integer, nullable=False),
     Column('visit_concept_id', Integer, nullable=False),
-    Column('visit_start_date', Date, nullable=False),
+    Column('visit_start_date', String(30), nullable=False),
     Column('visit_start_time', String(10)),
-    Column('visit_end_date', Date, nullable=False),
+    Column('visit_end_date', String(30), nullable=False),
     Column('visit_end_time', String(10)),
     Column('visit_type_concept_id', Integer, nullable=False),
     Column('provider_id', Integer),
@@ -588,9 +588,9 @@ Column('_id', Integer, nullable=False, primary_key=True),
 
 class Vocabulary(Base):
     __tablename__ = 'vocabulary'
-
-    vocabulary_id = Column(String(20), primary_key=True)
+    _id = Column(Integer, primary_key=True)
+    vocabulary_id = Column(String(20), nullable=False)
     vocabulary_name = Column(String(255), nullable=False)
     vocabulary_reference = Column(String(255), nullable=False)
-    vocabulary_version = Column(String(255), nullable=False)
+    vocabulary_version = Column(String(255))
     vocabulary_concept_id = Column(Integer, nullable=False)

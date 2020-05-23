@@ -1,5 +1,6 @@
 import click
 from . import CdmEngineFactory
+from . import CdmVocabulary
 from . import metadata
 from . import __version__
 
@@ -21,13 +22,20 @@ from . import __version__
               help='Database name')
 @click.option('--schema', '-s', multiple=False, default='public',
               help='Database schema (for pgsql)')
-def cli(verbose, create, dbtype, host, port, user, pw, name, schema):
+@click.option('--vocab', '-i', multiple=False, default='',
+              help='Folder with vocabulary files (csv) to import')
+def cli(verbose, create, dbtype, host, port, user, pw, name, schema, vocab):
     if verbose:
         print("verbose")
     if create:
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
         engine = cdm.engine
         metadata.create_all(engine)
+    if vocab is not '':
+        cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
+        vocab = CdmVocabulary(cdm)
+        vocab.create_vocab(vocab)
+        print("Done")
 
 def main_routine():
     click.echo("_________________________________________")

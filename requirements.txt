@@ -18,3 +18,4 @@
 sqlacodegen
 sqlalchemy
 click
+pandas
