@@ -18,6 +18,12 @@ The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the system
 pip install pyomop
 
 ```
+### latest
+
+```
+pip install https://github.com/dermatologist/pyomop/releases/download/1.1.1/pyomop-1.1.1-py2.py3-none-any.whl
+
+```
 
 ## Usage
 
