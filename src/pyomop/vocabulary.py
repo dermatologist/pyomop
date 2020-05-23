@@ -104,13 +104,3 @@ class CdmVocabulary(object):
             df = pd.read_csv(folder + '/DOMAIN.csv', sep='\t', error_bad_lines=False, warn_bad_lines=True)
             df.to_sql('domain', con=self._engine, index = True, index_label='_id', if_exists = 'append')
 
-        # with self._engine.connect() as con:
-        #     con.execute('ALTER TABLE `drug_strength` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `concept` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `concept_relationship` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `concept_ancester` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `concept_synonym` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `vocabulary` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `relationship` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `concept_class` ADD PRIMARY KEY (`_id`);')
-        #     con.execute('ALTER TABLE `domain` ADD PRIMARY KEY (`_id`);')
