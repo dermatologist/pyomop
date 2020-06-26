@@ -13,7 +13,7 @@ class CdmEngineFactory(object):
         self._host = host
         self._port = port
         self._user = user
-        self._pass = pw
+        self._pw = pw
         self._schema = schema
         self._engine = None
         self._base = None
@@ -64,7 +64,7 @@ class CdmEngineFactory(object):
             self._engine = create_engine("sqlite:///"+self._name)
         if self._db is 'mysql':
             mysql_url = 'mysql://{}:{}@{}:{}/{}'
-            mysql_url = mysql_url.format(self._user, self._pw, self._host, self._port, self._db)
+            mysql_url = mysql_url.format(self._user, self._pw, self._host, self._port, self._name)
             self._engine = create_engine(mysql_url, isolation_level="READ UNCOMMITTED")
         if self._db is 'pgsql':
             # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
@@ -72,7 +72,7 @@ class CdmEngineFactory(object):
             dbschema = dbschema.format(self._schema)
             pgsql_url = 'postgresql+psycopg2://{}:{}@{}:{}/{}'
             pgsql_url = pgsql_url.format(self._user, self._pw,
-                                        self._host, self._port, self._db)
+                                        self._host, self._port, self._name)
             self._engine = create_engine(
                 pgsql_url,
                 connect_args={'options': '-csearch_path={}'.format(dbschema)})
