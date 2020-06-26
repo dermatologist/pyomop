@@ -14,7 +14,10 @@ from .cdm6_tables import CohortAttribute
 from .cdm6_tables import CohortDefinition
 from .cdm6_tables import Concept
 from .cdm6_tables import ConceptAncestor
-from .cdm6_tables import ConceptClas
+from .cdm6_tables import ConceptClass
+from .cdm6_tables import ConceptRelationship
+from .cdm6_tables import ConceptSynonym
+from .cdm6_tables import ConditionEra
 
 try:
     # Change here if project is renamed and does not equal the package name

@@ -107,7 +107,7 @@ class ConceptAncestor(Base):
     max_levels_of_separation = Column(Integer, nullable=False)
 
 
-class ConceptClas(Base):
+class ConceptClass(Base):
     __tablename__ = 'concept_class'
 
     # _id = Column(Integer, primary_key=True)
@@ -140,8 +140,8 @@ class ConceptSynonym(Base):
 class ConditionEra(Base):
     __tablename__ = 'condition_era'
 
-    _id = Column(Integer, primary_key=True)
-    condition_era_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    condition_era_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     condition_concept_id = Column(Integer, nullable=False)
     condition_era_start_date = Column(String(30), nullable=False)
