@@ -19,3 +19,4 @@ sqlacodegen
 sqlalchemy
 click
 pandas
+pytest
