@@ -198,8 +198,8 @@ class DeviceCost(Base):
 class DeviceExposure(Base):
     __tablename__ = 'device_exposure'
 
-    _id = Column(Integer, primary_key=True)
-    device_exposure_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    device_exposure_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     device_concept_id = Column(Integer, nullable=False)
     device_exposure_start_date = Column(String(30), nullable=False)
@@ -216,8 +216,8 @@ class DeviceExposure(Base):
 class Domain(Base):
     __tablename__ = 'domain'
 
-    _id = Column(Integer, primary_key=True, nullable=False)
-    domain_id = Column(String(20), primary_key=True, nullable=False)
+    # _id = Column(Integer, primary_key=True, nullable=False)
+    domain_id = Column(String(20), primary_key=True)
     domain_name = Column(String(255), nullable=False)
     domain_concept_id = Column(Integer, nullable=False)
 
@@ -225,8 +225,8 @@ class Domain(Base):
 class DoseEra(Base):
     __tablename__ = 'dose_era'
 
-    _id = Column(Integer, primary_key=True)
-    dose_era_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    dose_era_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     drug_concept_id = Column(Integer, nullable=False)
     unit_concept_id = Column(Integer, nullable=False)
@@ -238,8 +238,8 @@ class DoseEra(Base):
 class DrugCost(Base):
     __tablename__ = 'drug_cost'
 
-    _id = Column(Integer, primary_key=True)
-    drug_cost_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    drug_cost_id = Column(Integer, primary_key=True)
     drug_exposure_id = Column(Integer, nullable=False)
     currency_concept_id = Column(Integer)
     paid_copay = Column(Numeric)
@@ -258,8 +258,8 @@ class DrugCost(Base):
 class DrugEra(Base):
     __tablename__ = 'drug_era'
 
-    _id = Column(Integer, primary_key=True)
-    drug_era_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    drug_era_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     drug_concept_id = Column(Integer, nullable=False)
     drug_era_start_date = Column(String(30), nullable=False)
