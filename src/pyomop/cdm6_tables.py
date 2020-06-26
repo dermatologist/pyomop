@@ -271,8 +271,8 @@ class DrugEra(Base):
 class DrugExposure(Base):
     __tablename__ = 'drug_exposure'
 
-    _id = Column(Integer, primary_key=True)
-    drug_exposure_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    drug_exposure_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     drug_concept_id = Column(Integer, nullable=False)
     drug_exposure_start_date = Column(String(30), nullable=False)
@@ -327,8 +327,8 @@ class FactRelationship(Base):
 class Location(Base):
     __tablename__ = 'location'
 
-    _id = Column(Integer, primary_key=True)
-    location_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    location_id = Column(Integer, primary_key=True)
     address_1 = Column(String(50))
     address_2 = Column(String(50))
     city = Column(String(50))
@@ -341,8 +341,8 @@ class Location(Base):
 class Measurement(Base):
     __tablename__ = 'measurement'
 
-    _id = Column(Integer, primary_key=True)
-    measurement_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    measurement_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     measurement_concept_id = Column(Integer, nullable=False)
     measurement_date = Column(String(30), nullable=False)

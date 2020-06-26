@@ -28,6 +28,13 @@ from .cdm6_tables import DoseEra
 from .cdm6_tables import DrugCost
 from .cdm6_tables import DrugEra
 
+from .cdm6_tables import DrugExposure
+from .cdm6_tables import DrugStrength
+from .cdm6_tables import FactRelationship
+from .cdm6_tables import Location
+from .cdm6_tables import Measurement
+
+
 try:
     # Change here if project is renamed and does not equal the package name
     dist_name = __name__
