@@ -71,8 +71,8 @@ class CohortAttribute(Base):
 class CohortDefinition(Base):
     __tablename__ = 'cohort_definition'
 
-    _id = Column(Integer, primary_key=True)
-    cohort_definition_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    cohort_definition_id = Column(Integer, primary_key=True)
     cohort_definition_name = Column(String(255), nullable=False)
     cohort_definition_description = Column(Text)
     definition_type_concept_id = Column(Integer, nullable=False)
@@ -84,8 +84,8 @@ class CohortDefinition(Base):
 class Concept(Base):
     __tablename__ = 'concept'
 
-    _id = Column(Integer, primary_key=True)
-    concept_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    concept_id = Column(Integer, primary_key=True)
     concept_name = Column(String(255), nullable=False)
     domain_id = Column(String(20), nullable=False)
     vocabulary_id = Column(String(20), nullable=False)
@@ -110,8 +110,8 @@ class ConceptAncestor(Base):
 class ConceptClas(Base):
     __tablename__ = 'concept_class'
 
-    _id = Column(Integer, primary_key=True)
-    concept_class_id = Column(String(20), nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    concept_class_id = Column(String(20), primary_key=True)
     concept_class_name = Column(String(255), nullable=False)
     concept_class_concept_id = Column(Integer, nullable=False)
 

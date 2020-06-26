@@ -11,6 +11,10 @@ from .cdm6_tables import CareSite
 from .cdm6_tables import CdmSource
 from .cdm6_tables import Cohort
 from .cdm6_tables import CohortAttribute
+from .cdm6_tables import CohortDefinition
+from .cdm6_tables import Concept
+from .cdm6_tables import ConceptAncestor
+from .cdm6_tables import ConceptClas
 
 try:
     # Change here if project is renamed and does not equal the package name
