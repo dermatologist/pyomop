@@ -10,7 +10,7 @@ class AttributeDefinition(Base):
     __tablename__ = 'attribute_definition'
 
     # _id = Column(Integer, primary_key=True)
-    attribute_definition_id = Column(Integer, nullable=False, primary_key=True)
+    attribute_definition_id = Column(Integer, primary_key=True)
     attribute_name = Column(String(255), nullable=False)
     attribute_description = Column(Text)
     attribute_type_concept_id = Column(Integer, nullable=False)
@@ -21,7 +21,7 @@ class CareSite(Base):
     __tablename__ = 'care_site'
 
     # _id = Column(Integer, primary_key=True)
-    care_site_id = Column(Integer, nullable=False, primary_key=True)
+    care_site_id = Column(Integer, primary_key=True)
     care_site_name = Column(String(255))
     place_of_service_concept_id = Column(Integer)
     location_id = Column(Integer)
@@ -33,7 +33,7 @@ class CdmSource(Base):
     __tablename__ = 'cdm_source'
 
     # _id = Column(Integer, primary_key=True)
-    cdm_source_name = Column(String(255), nullable=False, primary_key=True)
+    cdm_source_name = Column(String(255), primary_key=True)
     cdm_source_abbreviation = Column(String(25))
     cdm_holder = Column(String(255))
     source_description = Column(Text)
@@ -48,8 +48,8 @@ class CdmSource(Base):
 class Cohort(Base):
     __tablename__ = 'cohort'
 
-    # _id = Column(Integer, primary_key=True)
-    cohort_definition_id = Column(Integer, nullable=False, primary_key=True)
+    _id = Column(Integer, primary_key=True)
+    cohort_definition_id = Column(Integer, nullable=False)
     subject_id = Column(Integer, nullable=False)
     cohort_start_date = Column(String(30), nullable=False)
     cohort_end_date = Column(String(30), nullable=False)
@@ -428,7 +428,7 @@ class Person(Base):
     __tablename__ = 'person'
 
     #_id = Column(Integer, primary_key=True)
-    person_id = Column(Integer, primary_key=True, nullable=False)
+    person_id = Column(Integer, primary_key=True)
     gender_concept_id = Column(Integer, nullable=False)
     year_of_birth = Column(Integer, nullable=False)
     month_of_birth = Column(Integer)

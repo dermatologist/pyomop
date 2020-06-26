@@ -10,6 +10,7 @@ from .cdm6_tables import AttributeDefinition
 from .cdm6_tables import CareSite
 from .cdm6_tables import CdmSource
 from .cdm6_tables import Cohort
+from .cdm6_tables import CohortAttribute
 
 try:
     # Change here if project is renamed and does not equal the package name
