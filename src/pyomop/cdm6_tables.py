@@ -534,8 +534,8 @@ class SourceToConceptMap(Base):
 class Speciman(Base):
     __tablename__ = 'specimen'
 
-    _id = Column(Integer, primary_key=True)
-    specimen_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    specimen_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     specimen_concept_id = Column(Integer, nullable=False)
     specimen_type_concept_id = Column(Integer, nullable=False)
@@ -555,8 +555,8 @@ class Speciman(Base):
 class VisitCost(Base):
     __tablename__ = 'visit_cost'
 
-    _id = Column(Integer, primary_key=True)
-    visit_cost_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    visit_cost_id = Column(Integer, primary_key=True)
     visit_occurrence_id = Column(BigInteger, nullable=False)
     currency_concept_id = Column(Integer)
     paid_copay = Column(Numeric)
@@ -572,8 +572,8 @@ class VisitCost(Base):
 class VisitOccurrence(Base):
     __tablename__ = 'visit_occurrence'
 
-    _id = Column(Integer, primary_key=True)
-    visit_occurrence_id = Column(BigInteger, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    visit_occurrence_id = Column(BigInteger, primary_key=True)
     person_id = Column(Integer, nullable=False)
     visit_concept_id = Column(Integer, nullable=False)
     visit_start_date = Column(String(30), nullable=False)
@@ -590,8 +590,8 @@ class VisitOccurrence(Base):
 class Vocabulary(Base):
     __tablename__ = 'vocabulary'
 
-    _id = Column(Integer, primary_key=True)
-    vocabulary_id = Column(String(20), nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    vocabulary_id = Column(String(20), primary_key=True)
     vocabulary_name = Column(String(255), nullable=False)
     vocabulary_reference = Column(String(255), nullable=False)
     vocabulary_version = Column(String(255))

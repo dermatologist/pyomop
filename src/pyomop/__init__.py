@@ -45,6 +45,11 @@ from .cdm6_tables import Provider
 from .cdm6_tables import Relationship
 from .cdm6_tables import SourceToConceptMap
 
+from .cdm6_tables import Speciman
+from .cdm6_tables import VisitCost
+from .cdm6_tables import VisitOccurrence
+from .cdm6_tables import Vocabulary
+
 try:
     # Change here if project is renamed and does not equal the package name
     dist_name = __name__
