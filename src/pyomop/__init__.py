@@ -31,13 +31,19 @@ from .cdm6_tables import DrugExposure
 from .cdm6_tables import DrugStrength
 from .cdm6_tables import FactRelationship
 from .cdm6_tables import Location
-from .cdm6_tables import Person
+from .cdm6_tables import Measurement
 
 from .cdm6_tables import Note
 from .cdm6_tables import Observation
 from .cdm6_tables import ObservationPeriod
 from .cdm6_tables import PayerPlanPeriod
-from .cdm6_tables import Measurement
+from .cdm6_tables import Person
+
+from .cdm6_tables import ProcedureCost
+from .cdm6_tables import ProcedureOccurrence
+from .cdm6_tables import Provider
+from .cdm6_tables import Relationship
+from .cdm6_tables import SourceToConceptMap
 
 try:
     # Change here if project is renamed and does not equal the package name

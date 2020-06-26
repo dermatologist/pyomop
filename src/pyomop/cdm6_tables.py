@@ -451,8 +451,8 @@ class Person(Base):
 class ProcedureCost(Base):
     __tablename__ = 'procedure_cost'
 
-    _id = Column(Integer, primary_key=True)
-    procedure_cost_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    procedure_cost_id = Column(Integer, primary_key=True)
     procedure_occurrence_id = Column(Integer, nullable=False)
     currency_concept_id = Column(Integer)
     paid_copay = Column(Numeric)
@@ -470,8 +470,8 @@ class ProcedureCost(Base):
 class ProcedureOccurrence(Base):
     __tablename__ = 'procedure_occurrence'
 
-    _id = Column(Integer, primary_key=True)
-    procedure_occurrence_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    procedure_occurrence_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     procedure_concept_id = Column(Integer, nullable=False)
     procedure_date = Column(String(30), nullable=False)
@@ -488,8 +488,8 @@ class ProcedureOccurrence(Base):
 class Provider(Base):
     __tablename__ = 'provider'
 
-    _id = Column(Integer, primary_key=True)
-    provider_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    provider_id = Column(Integer, primary_key=True)
     provider_name = Column(String(255))
     npi = Column(String(20))
     dea = Column(String(20))
@@ -507,8 +507,8 @@ class Provider(Base):
 class Relationship(Base):
     __tablename__ = 'relationship'
 
-    _id = Column(Integer, primary_key=True)
-    relationship_id = Column(String(20), nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    relationship_id = Column(String(20), primary_key=True)
     relationship_name = Column(String(255), nullable=False)
     is_hierarchical = Column(String(1), nullable=False)
     defines_ancestry = Column(String(1), nullable=False)
