@@ -365,8 +365,8 @@ class Measurement(Base):
 class Note(Base):
     __tablename__ = 'note'
 
-    _id = Column(Integer, primary_key=True)
-    note_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    note_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     note_date = Column(String(30), nullable=False)
     note_time = Column(String(10))
@@ -380,8 +380,8 @@ class Note(Base):
 class Observation(Base):
     __tablename__ = 'observation'
 
-    _id = Column(Integer, primary_key=True)
-    observation_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    observation_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     observation_concept_id = Column(Integer, nullable=False)
     observation_date = Column(String(30), nullable=False)
@@ -403,8 +403,8 @@ class Observation(Base):
 class ObservationPeriod(Base):
     __tablename__ = 'observation_period'
 
-    _id = Column(Integer, primary_key=True)
-    observation_period_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    observation_period_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     observation_period_start_date = Column(String(30), nullable=False)
     observation_period_end_date = Column(String(30), nullable=False)
@@ -414,8 +414,8 @@ class ObservationPeriod(Base):
 class PayerPlanPeriod(Base):
     __tablename__ = 'payer_plan_period'
 
-    _id = Column(Integer, primary_key=True)
-    payer_plan_period_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    payer_plan_period_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     payer_plan_period_start_date = Column(String(30), nullable=False)
     payer_plan_period_end_date = Column(String(30), nullable=False)

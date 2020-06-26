@@ -5,7 +5,6 @@ from .engine_factory import CdmEngineFactory
 from .cdm6_tables import metadata
 from .vocabulary import CdmVocabulary
 
-from .cdm6_tables import Person
 from .cdm6_tables import AttributeDefinition
 from .cdm6_tables import CareSite
 from .cdm6_tables import CdmSource
@@ -32,8 +31,13 @@ from .cdm6_tables import DrugExposure
 from .cdm6_tables import DrugStrength
 from .cdm6_tables import FactRelationship
 from .cdm6_tables import Location
-from .cdm6_tables import Measurement
+from .cdm6_tables import Person
 
+from .cdm6_tables import Note
+from .cdm6_tables import Observation
+from .cdm6_tables import ObservationPeriod
+from .cdm6_tables import PayerPlanPeriod
+from .cdm6_tables import Measurement
 
 try:
     # Change here if project is renamed and does not equal the package name
