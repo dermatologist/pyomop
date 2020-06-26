@@ -152,8 +152,8 @@ class ConditionEra(Base):
 class ConditionOccurrence(Base):
     __tablename__ = 'condition_occurrence'
 
-    _id = Column(Integer, primary_key=True)
-    condition_occurrence_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    condition_occurrence_id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
     condition_concept_id = Column(Integer, nullable=False)
     condition_start_date = Column(String(30), nullable=False)
@@ -181,8 +181,8 @@ class Death(Base):
 class DeviceCost(Base):
     __tablename__ = 'device_cost'
 
-    _id = Column(Integer, primary_key=True)
-    device_cost_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    device_cost_id = Column(Integer, primary_key=True)
     device_exposure_id = Column(Integer, nullable=False)
     currency_concept_id = Column(Integer)
     paid_copay = Column(Numeric)

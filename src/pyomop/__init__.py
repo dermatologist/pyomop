@@ -18,6 +18,9 @@ from .cdm6_tables import ConceptClass
 from .cdm6_tables import ConceptRelationship
 from .cdm6_tables import ConceptSynonym
 from .cdm6_tables import ConditionEra
+from .cdm6_tables import ConditionOccurrence
+from .cdm6_tables import Death
+from .cdm6_tables import DeviceCost
 
 try:
     # Change here if project is renamed and does not equal the package name
