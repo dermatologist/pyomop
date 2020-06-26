@@ -16,7 +16,8 @@ def test_create_db(pyomop_fixture, metadata_fixture, capsys):
     from sqlalchemy.sql import select
     engine = pyomop_fixture.engine
     metadata_fixture.create_all(engine)
-    Cohort = pyomop_fixture.base.cohort
+    from src.pyomop import Cohort
+    # Cohort = pyomop_fixture.base.cohort
     session =  pyomop_fixture.session
     session.add(Cohort(cohort_definition_id=2, subject_id=100, 
             cohort_end_date=datetime.datetime.now(), 

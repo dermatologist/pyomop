@@ -6,6 +6,10 @@ from .cdm6_tables import metadata
 from .vocabulary import CdmVocabulary
 
 from .cdm6_tables import Person
+from .cdm6_tables import AttributeDefinition
+from .cdm6_tables import CareSite
+from .cdm6_tables import CdmSource
+from .cdm6_tables import Cohort
 
 try:
     # Change here if project is renamed and does not equal the package name
