@@ -11,7 +11,7 @@ def vector_fixture():
     from src.pyomop import CdmVector
     return CdmVector()
 
-def test_create_db(pyomop_fixture, vector_fixture, capsys):
+def test_create_vector(pyomop_fixture, vector_fixture, capsys):
     import datetime
     from sqlalchemy.sql import select
     engine = pyomop_fixture.engine

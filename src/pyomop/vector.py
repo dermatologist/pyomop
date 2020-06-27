@@ -1,4 +1,5 @@
 import pandas as pd
+from sqlalchemy.inspection import inspect
 
 # https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9
 # Thank you! https://gist.github.com/garaud
