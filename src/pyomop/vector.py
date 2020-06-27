@@ -11,7 +11,7 @@ class CdmVector(object):
 
     @property
     def df(self):
-        if not self._df:
+        if self._df is None:
             self.create_df()
         return self._df
 
