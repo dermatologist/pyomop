@@ -4,7 +4,7 @@ import pandas as pd
 # Thank you! https://gist.github.com/garaud
 class CdmVector(object):
 
-    def __init__(self, result):
+    def __init__(self, result=None):
         self._result = result
         self._df = None
 
@@ -13,6 +13,10 @@ class CdmVector(object):
         if not self._df:
             self.create_df()
         return self._df
+
+    @property
+    def result(self):
+        return self._result
     
     @result.setter
     def result(self, value):
