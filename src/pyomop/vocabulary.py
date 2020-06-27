@@ -64,26 +64,26 @@ class CdmVocabulary(object):
             self._vocabulary_id = 0
             self._concept_id = 0
 
-    def create_vocab(self, folder, sample=False):
-        if sample: # nrows=100
+    def create_vocab(self, folder, sample=10):
+        if sample < 1000: # nrows=sample
             try:
-                df = pd.read_csv(folder + '/DRUG_STRENGTH.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/DRUG_STRENGTH.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/CONCEPT.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/CONCEPT.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('concept', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/CONCEPT_RELATIONSHIP.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/CONCEPT_RELATIONSHIP.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/CONCEPT_ANCESTOR.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/CONCEPT_ANCESTOR.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/CONCEPT_SYNONYM.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/CONCEPT_SYNONYM.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('concept_synonym', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/VOCABULARY.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/VOCABULARY.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('vocabulary', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/RELATIONSHIP.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/RELATIONSHIP.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('relationship', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/CONCEPT_CLASS.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/CONCEPT_CLASS.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('concept_class', con=self._engine, if_exists = 'replace')
-                df = pd.read_csv(folder + '/DOMAIN.csv', sep='\t', nrows=100,  error_bad_lines=False, warn_bad_lines=True)
+                df = pd.read_csv(folder + '/DOMAIN.csv', sep='\t', nrows=sample,  error_bad_lines=False, warn_bad_lines=True)
                 df.to_sql('domain', con=self._engine, if_exists = 'replace')
             except ValueError:
                 print("Oops!  Could not write vocabulary")
