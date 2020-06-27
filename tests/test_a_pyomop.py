@@ -28,4 +28,5 @@ def test_create_db(pyomop_fixture, metadata_fixture, capsys):
     result = session.execute(s)
     for row in result:
         print(row)
+    result.close()
     assert row['subject_id'] == 100
