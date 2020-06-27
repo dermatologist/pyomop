@@ -298,8 +298,10 @@ class DrugExposure(Base):
 class DrugStrength(Base):
     __tablename__ = 'drug_strength'
 
-    _id = Column(Integer, primary_key=True)
-    drug_concept_id = Column(Integer, nullable=False)
+    # TODO Check this
+    # _id = Column(Integer, primary_key=True)
+    # drug_concept_id = Column(Integer, nullable=False)
+    drug_concept_id = Column(Integer, primary_key=True)
     ingredient_concept_id = Column(Integer, nullable=False)
     amount_value = Column(Numeric)
     amount_unit_concept_id = Column(Integer)
