@@ -1,27 +1,3 @@
-# pyomop
-
-OMOP CDM utils
-
-## Description
-
-The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases.
-
-### Support
-* Postgres
-* MySQL
-* SqLite
-* More to follow..
-
-## Installation
-
-```
-pip install pyomop
-
-```
-
-## Usage
-
-```
 from pyomop import CdmEngineFactory, CdmVocabulary, Cohort, Vocabulary, metadata
 from sqlalchemy.sql import select
 import datetime
@@ -49,19 +25,3 @@ for row in result:
 result.close()
 for v in session.query(Vocabulary).order_by(Vocabulary.vocabulary_name):
     print(v.vocabulary_name)
-
-```
-
-## command-line usage
-
-```
-pyomop -help
-```
-
-## What to expect
-
-* Integration with machine learning libraries
-
-## Contributors
-
-* [Bell Eapen](https://nuchange.ca)

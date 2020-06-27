@@ -20,3 +20,4 @@ sqlalchemy
 click
 pandas
 pytest
+psycopg2

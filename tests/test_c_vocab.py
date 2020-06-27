@@ -6,12 +6,7 @@ def pyomop_fixture():
     cdm = CdmEngineFactory()
     return cdm
 
-@pytest.fixture
-def metadata_fixture():
-    from src.pyomop import metadata
-    return metadata
-
-def test_vocab(pyomop_fixture, metadata_fixture, capsys):
+def test_vocab(pyomop_fixture, capsys):
     from src.pyomop import CdmVocabulary
     vocab = CdmVocabulary(pyomop_fixture)
     # for x in pyomop_fixture.base:
