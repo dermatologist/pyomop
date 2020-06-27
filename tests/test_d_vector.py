@@ -23,9 +23,7 @@ def test_create_vector(pyomop_fixture, vector_fixture, capsys):
             cohort_start_date=datetime.datetime.now()))
     session.commit()
 
-    s = select([Cohort])
-    result = session.execute(s)
+    result = session.query(Cohort).all()
     vector_fixture.result = result
-    print(vector_fixture.df.head(2))
-    result.close()
-    assert row['subject_id'] == 100
+    print(vector_fixture.df.head(5))
+    assert vector_fixture.df.empty is False
