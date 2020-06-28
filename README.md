@@ -4,7 +4,7 @@ OMOP CDM utils
 
 ## Description
 
-The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases.
+The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results or an SQL query itself to a pandas dataframe (see below) for use in machine learning pipelines. See some use [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
 
 ### Support
 * Postgres
@@ -22,16 +22,17 @@ pip install pyomop
 ## Usage
 
 ```
-from pyomop import CdmEngineFactory, CdmVocabulary, Cohort, Vocabulary, metadata
+
+from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
 from sqlalchemy.sql import select
 import datetime
 
 cdm = CdmEngineFactory()  # Creates SQLite database by default
 
 engine = cdm.engine
-# Create Tables 
+## Create Tables if required
 metadata.create_all(engine)
-# Create vocabulary
+## Create vocabulary if required
 vocab = CdmVocabulary(cdm)
 # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
@@ -42,13 +43,22 @@ session.add(Cohort(cohort_definition_id=2, subject_id=100,
             cohort_start_date=datetime.datetime.now()))
 session.commit()
 
-s = select([Cohort])
-result = session.execute(s)
+result = session.query(Cohort).all()
 for row in result:
     print(row)
-result.close()
-for v in session.query(Vocabulary).order_by(Vocabulary.vocabulary_name):
-    print(v.vocabulary_name)
+
+# Convert result to a pandas dataframe
+vec = CdmVector()
+vec.result = result
+print(vec.df.dtypes)
+
+# Execute a query and convert it to dataframe
+vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
+print(vec.df.dtypes)
+# OR
+vec.sql_df(cdm, query='SELECT * from cohort')
+print(vec.df.dtypes)
+
 
 ```
 
@@ -58,9 +68,6 @@ for v in session.query(Vocabulary).order_by(Vocabulary.vocabulary_name):
 pyomop -help
 ```
 
-## What to expect
-
-* Integration with machine learning libraries
 
 ## Contributors
 
