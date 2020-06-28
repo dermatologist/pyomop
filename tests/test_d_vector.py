@@ -25,5 +25,5 @@ def test_create_vector(pyomop_fixture, vector_fixture, capsys):
 
     result = session.query(Cohort).all()
     vector_fixture.result = result
-    print(vector_fixture.df.head(5))
+    print(vector_fixture.df.dtypes)
     assert vector_fixture.df.empty is False
