@@ -30,9 +30,9 @@ import datetime
 cdm = CdmEngineFactory()  # Creates SQLite database by default
 
 engine = cdm.engine
-## Create Tables if required
+# Create Tables if required
 metadata.create_all(engine)
-## Create vocabulary if required
+# Create vocabulary if required
 vocab = CdmVocabulary(cdm)
 # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
@@ -54,10 +54,10 @@ print(vec.df.dtypes)
 
 # Execute a query and convert it to dataframe
 vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
-print(vec.df.dtypes)
+print(vec.df.dtypes) # vec.df is a pndas dataframe
 # OR
 vec.sql_df(cdm, query='SELECT * from cohort')
-print(vec.df.dtypes)
+print(vec.df.dtypes) # vec.df is a pndas dataframe
 
 
 ```
