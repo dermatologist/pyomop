@@ -4,7 +4,7 @@ OMOP CDM utils
 
 ## Description
 
-The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results or an SQL query itself to a pandas dataframe (see below) for use in machine learning pipelines. See some use [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
+The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
 
 ### Support
 * Postgres
