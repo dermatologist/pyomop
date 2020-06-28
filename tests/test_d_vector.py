@@ -27,3 +27,8 @@ def test_create_vector(pyomop_fixture, vector_fixture, capsys):
     vector_fixture.result = result
     print(vector_fixture.df.dtypes)
     assert vector_fixture.df.empty is False
+
+def test_sql(pyomop_fixture, vector_fixture, capsys):
+    vector_fixture.sql_df(pyomop_fixture, 'TEST')
+    print(vector_fixture.df.dtypes)
+    assert vector_fixture.df.empty is False

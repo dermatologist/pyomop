@@ -1,6 +1,6 @@
 import pandas as pd
 from sqlalchemy.inspection import inspect
-
+from .sqldict import CDMSQL
 # https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9
 # Thank you! https://gist.github.com/garaud
 class CdmVector(object):
@@ -39,3 +39,12 @@ class CdmVector(object):
         if(_names):
             names = _names
         self._df = pd.DataFrame.from_records(data, columns=names)
+    
+    def sql_df(self, cdm, sqldict=None, query=None, chunksize=None):
+        if sqldict:
+            query=CDMSQL[sqldict]
+        if chunksize:
+            self._df = pd.read_sql_query(query, cdm.engine)
+        else:
+            self._df = pd.read_sql_query(query, cdm.engine, chunksize)  
+  
