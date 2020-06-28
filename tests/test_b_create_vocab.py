@@ -14,5 +14,5 @@ def metadata_fixture():
 def test_create_vocab(pyomop_fixture, metadata_fixture, capsys):
     from src.pyomop import CdmVocabulary
     vocab = CdmVocabulary(pyomop_fixture)
-    vocab.create_vocab('', True)
+    vocab.create_vocab('', 10)
     print("Done")
