@@ -1,6 +1,6 @@
 # pyomop
 
-OMOP CDM utils
+OMOP CDM utils. This repo may be similar to [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop), but this is not a fork. 
 
 ## Description
 
