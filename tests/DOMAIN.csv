@@ -1,0 +1,15 @@
+domain_id	domain_name	domain_concept_id
+Cost	Cost	581456
+Condition/Device	Condition/Device	235
+Gender	Gender	2
+Race	Race	3
+Ethnicity	Ethnicity	4
+Metadata	Metadata	7
+Visit	Visit	8
+Procedure	Procedure	10
+Modifier	Modifier	12
+Drug	Drug	13
+Route	Route Of Administration	15
+Unit	Unit	16
+Device	Device	17
+Condition	Condition	19
