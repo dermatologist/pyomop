@@ -1,0 +1,15 @@
+relationship_id	relationship_name	is_hierarchical	defines_ancestry	reverse_relationship_id	relationship_concept_id
+xxx xxxxxxxx xxxx	xxx xxxxxxxx xxxxxxxxx (xxxxxx)	0	0	xxxxxxxx xxxx xx	44818775
+xxx xxxxxxxx xxxxxx	xxx xxxxxxxx xxxxxx xxxxxxxx (xxxxxx)	0	0	xxxxxxxx xxxxxxxx xx	44818776
+xxx xxxxxxxx xxxxx	xxx xxxxxxxx xxxxxx xxxxxxxxxx (xxxxxx)	0	0	xxxxxxxx xxxxx xx	44818777
+xxx xxxxxxxx xxxx	xxx xxxxxxxx xxxxxx xxxxxxxxxx (xxxxxx)	0	0	xxxxxxxx xxxx xx	44818778
+xxx xxxxxxxx xxxxx	xxx xxxxxxxx xxxxxxxxx (xxxxxx)	0	0	xxxxxxxx xxxxx xx	44818779
+xxx xxx xx	xxx xxx xx (xxxxxx)	0	0	xxx xx xx	44818780
+xxx xxxxx xxxxxxx	xxx xxxxxxx xxxxxxxxxxxx xxxxxxx (xxxxxx)	0	0	xxxxx xxxxxxx xx	44818781
+xxx xxxx xxxx	xxx xxxx xxxx (xxxxxx)	0	0	xxxx xxxx xx	44818782
+xxxxxx xxxxx	xxxxxx xxxxx (xxxxxx)	0	0	xxxxxx xxxxxx	44818783
+xxx xxxx xxxx	xxx xxxxxxxxxx xxxxxxxxx (xxxxxx)	0	0	xxxx xxxx xx	44818784
+xxx xxx xxxx xxxx	xxx xxxxxx xxxxxxxxx xxxx (xxxxxx)	0	0	xxx xxxx xxxx xx	44818785
+xxx xxxxx xxxx xxxx	xxx xxxxxxxx xxxxxxxxx xxxx (xxxxxx)	0	0	xxxxx xxxx xxxx xx	44818786
+xxx xxxx xxxxxx	xxx xxxxxxxxx xxxxxx (xxxxxx)	0	0	xxxx xxxxxx xx	44818787
+xxx xxxx xxxxx	xxx xxxxxxxxx xxxxxxxxxx (xxxxxx)	0	0	xxxx xxxxx xx	44818788

@@ -1,4 +1,5 @@
 import pytest
+import os
 
 @pytest.fixture
 def pyomop_fixture():
@@ -14,5 +15,5 @@ def metadata_fixture():
 def test_create_vocab(pyomop_fixture, metadata_fixture, capsys):
     from src.pyomop import CdmVocabulary
     vocab = CdmVocabulary(pyomop_fixture)
-    vocab.create_vocab('', 10)
+    vocab.create_vocab('tests', 10)
     print("Done")
