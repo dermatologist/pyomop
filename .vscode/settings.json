@@ -1,0 +1,10 @@
+{
+    "licenser.author": "Bell Eapen",
+    "licenser.projectName": "PyOMOP",
+    "licenser.license": "GPLv3",
+    "licenser.useSingleLineStyle": false,
+    "cSpell.words": [
+        "OMOP",
+        "pyomop"
+    ]
+}
