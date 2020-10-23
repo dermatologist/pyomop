@@ -2,9 +2,9 @@
 Changelog
 =========
 
-Version 0.1
+Version 3.0
 ===========
 
-- Feature A added
-- FIX: nasty bug #1729 fixed
-- add your changes here!
+- FIX: Person table
+- add tox test suite
+- FEAT: vector table
