@@ -1,6 +1,6 @@
 # pyomop
 
-OMOP CDM utils. This repo may be similar to [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop), but this is not a fork. 
+OMOP CDM utils. This repo may be similar to [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop), but this is not a fork.
 
 ## Description
 
@@ -29,6 +29,12 @@ import datetime
 
 cdm = CdmEngineFactory()  # Creates SQLite database by default
 
+# Postgres example (db='mysql' also supported)
+# cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
+#                       user='', pw='',
+#                       name='', schema='cdm6')
+
+
 engine = cdm.engine
 # Create Tables if required
 metadata.create_all(engine)
@@ -38,8 +44,8 @@ vocab = CdmVocabulary(cdm)
 
 # SQLAlchemy as ORM
 session =  cdm.session
-session.add(Cohort(cohort_definition_id=2, subject_id=100, 
-            cohort_end_date=datetime.datetime.now(), 
+session.add(Cohort(cohort_definition_id=2, subject_id=100,
+            cohort_end_date=datetime.datetime.now(),
             cohort_start_date=datetime.datetime.now()))
 session.commit()
 
