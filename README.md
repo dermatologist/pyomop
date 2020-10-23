@@ -1,10 +1,10 @@
 # pyomop
 
-OMOP CDM utils
+OMOP CDM utils. This repo may be similar to [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop), but this is not a fork.
 
 ## Description
 
-The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases.
+The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
 
 ### Support
 * Postgres
@@ -22,33 +22,49 @@ pip install pyomop
 ## Usage
 
 ```
-from pyomop import CdmEngineFactory, CdmVocabulary, Cohort, Vocabulary, metadata
+
+from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
 from sqlalchemy.sql import select
 import datetime
 
 cdm = CdmEngineFactory()  # Creates SQLite database by default
 
+# Postgres example (db='mysql' also supported)
+# cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
+#                       user='', pw='',
+#                       name='', schema='cdm6')
+
+
 engine = cdm.engine
-# Create Tables 
+# Create Tables if required
 metadata.create_all(engine)
-# Create vocabulary
+# Create vocabulary if required
 vocab = CdmVocabulary(cdm)
 # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
 # SQLAlchemy as ORM
 session =  cdm.session
-session.add(Cohort(cohort_definition_id=2, subject_id=100, 
-            cohort_end_date=datetime.datetime.now(), 
+session.add(Cohort(cohort_definition_id=2, subject_id=100,
+            cohort_end_date=datetime.datetime.now(),
             cohort_start_date=datetime.datetime.now()))
 session.commit()
 
-s = select([Cohort])
-result = session.execute(s)
+result = session.query(Cohort).all()
 for row in result:
     print(row)
-result.close()
-for v in session.query(Vocabulary).order_by(Vocabulary.vocabulary_name):
-    print(v.vocabulary_name)
+
+# Convert result to a pandas dataframe
+vec = CdmVector()
+vec.result = result
+print(vec.df.dtypes)
+
+# Execute a query and convert it to dataframe
+vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
+print(vec.df.dtypes) # vec.df is a pandas dataframe
+# OR
+vec.sql_df(cdm, query='SELECT * from cohort')
+print(vec.df.dtypes) # vec.df is a pandas dataframe
+
 
 ```
 
@@ -58,9 +74,6 @@ for v in session.query(Vocabulary).order_by(Vocabulary.vocabulary_name):
 pyomop -help
 ```
 
-## What to expect
-
-* Integration with machine learning libraries
 
 ## Contributors
 

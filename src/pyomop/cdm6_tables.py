@@ -1,3 +1,22 @@
+"""
+ Copyright (C) 2020 Bell Eapen
+
+ This file is part of PyOMOP.
+
+ PyOMOP is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ PyOMOP is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with PyOMOP.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
 # coding: utf-8
 from sqlalchemy import BigInteger, Column, Integer, Numeric, String, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -435,7 +454,9 @@ class Person(Base):
     year_of_birth = Column(Integer, nullable=False)
     month_of_birth = Column(Integer)
     day_of_birth = Column(Integer)
-    time_of_birth = Column(String(10))
+    #time_of_birth = Column(String(10))
+    birth_datetime = Column(String(10))
+    death_datetime = Column(String(10))
     race_concept_id = Column(Integer, nullable=False)
     ethnicity_concept_id = Column(Integer, nullable=False)
     location_id = Column(Integer)

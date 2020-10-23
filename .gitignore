@@ -48,5 +48,4 @@ MANIFEST
 
 # Per-project virtualenvs
 .venv*/
-.vscode
 cdm6.sqlite
