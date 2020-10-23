@@ -3,11 +3,7 @@ name: Python Test
 on:
   push:
     branches:
-      - develop
-  pull_request:
-    branches:
       - master
-      - develop
 
 jobs:
   build:
@@ -28,6 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Test with pytest
+        pip install tox
+    - name: Test with tox
       run: |
-        pytest
+        tox
