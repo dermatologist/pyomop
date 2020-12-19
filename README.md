@@ -4,12 +4,13 @@
 [![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
 [![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
 
-
-OMOP CDM utils. This repo may be similar to [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop), but this is not a fork.
+* *Inspired by [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop)*
 
 ## Description
 
 The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
+
+**Want to convert FHIR to pandas data frame? Try [fhiry](https://github.com/dermatologist/fhiry)**
 
 ### Support
 * Postgres
