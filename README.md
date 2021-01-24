@@ -12,6 +12,8 @@ The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the system
 
 **Want to convert FHIR to pandas data frame? Try [fhiry](https://github.com/dermatologist/fhiry)**
 
+**Use the same functions in [.NET](https://github.com/dermatologist/omopcdm-dot-net) and [Golang](https://github.com/E-Health/gocdm)!**
+
 ### Support
 * Postgres
 * MySQL
