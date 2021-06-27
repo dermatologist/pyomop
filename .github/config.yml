@@ -1,0 +1,25 @@
+# Configurations for todo: https://probot.github.io/apps/todo/
+# Automatically add issues from @todo with @body
+# /**
+#  * @todo What needs to be done
+#  * @body How to do it.
+# */
+
+# https://github.com/behaviorbot/welcome
+newIssueWelcomeComment: >
+  Thank you for raising this issue. We will try and get back to you as soon as possible.
+
+  Be sure to star ✨ the repository for a priority response!
+
+  Please make sure you have given us as much context as possible.
+
+
+newPRWelcomeComment: >
+  Thank you for submitting a pull request.
+
+  Please make sure you have followed our contributing guidelines in CONTRIBUTING.md. We will review it as soon as possible.
+
+  Be sure to star ✨ the repository.
+
+firstPRMergeComment: >
+  Congrats on merging your first pull request! 🎉🎉🎉
