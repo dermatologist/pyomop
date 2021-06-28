@@ -16,7 +16,7 @@
 # scipy==1.0
 #
 sqlacodegen
-sqlalchemy<1.4
+sqlalchemy<1.5
 click
 pandas
 pytest
