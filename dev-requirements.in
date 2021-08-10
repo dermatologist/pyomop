@@ -1,0 +1,10 @@
+# dev-requirements.in
+-c requirements.txt
+pytest-cov
+pytest
+recommonmark
+sphinx>=3.2.1
+setuptools
+setuptools_scm
+wheel
+tox
