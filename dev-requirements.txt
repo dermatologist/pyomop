@@ -74,7 +74,7 @@ recommonmark==0.7.1
     # via -r dev-requirements.in
 requests==2.26.0
     # via sphinx
-setuptools_scm==6.3.1
+setuptools-scm==6.3.1
     # via -r dev-requirements.in
 six==1.16.0
     # via
@@ -106,7 +106,7 @@ toml==0.10.2
     #   tox
 tomli==1.2.1
     # via setuptools-scm
-tox==3.24.1
+tox==3.24.3
     # via -r dev-requirements.in
 urllib3==1.26.6
     # via requests
