@@ -10,25 +10,6 @@
 
 The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
 
-## Issues
-
-* sqlalchemy > 1.4 may not work. See [issue #6](https://github.com/dermatologist/pyomop/issues/6). Please downgrade sqlalchemy untill [issue #6](https://github.com/dermatologist/pyomop/issues/6) is fixed.
-```
-pip install sqlalchemy==1.3.24
-```
-
-## Other utils
-
-**Want to convert FHIR to pandas data frame? Try [fhiry](https://github.com/dermatologist/fhiry)**
-
-**Use the same functions in [.NET](https://github.com/dermatologist/omopcdm-dot-net) and [Golang](https://github.com/E-Health/gocdm)!**
-
-### Support
-* Postgres
-* MySQL
-* SqLite
-* More to follow..
-
 ## Installation
 
 ```
@@ -91,7 +72,27 @@ print(vec.df.dtypes) # vec.df is a pandas dataframe
 pyomop -help
 ```
 
+## Troubleshoot
+
+* sqlalchemy > 1.4 may not work. See [issue #6](https://github.com/dermatologist/pyomop/issues/6). Please downgrade sqlalchemy untill [issue #6](https://github.com/dermatologist/pyomop/issues/6) is fixed.
+```
+pip install sqlalchemy==1.3.24
+```
+
+## Other utils
+
+**Want to convert FHIR to pandas data frame? Try [fhiry](https://github.com/dermatologist/fhiry)**
+
+**Use the same functions in [.NET](https://github.com/dermatologist/omopcdm-dot-net) and [Golang](https://github.com/E-Health/gocdm)!**
+
+### Support
+* Postgres
+* MySQL
+* SqLite
+* More to follow..
+
 
 ## Contributors
 
 * [Bell Eapen](https://nuchange.ca) | [![Twitter Follow](https://img.shields.io/twitter/follow/beapen?style=social)](https://twitter.com/beapen)
+* PRs welcome. See CONTRIBUTING.md

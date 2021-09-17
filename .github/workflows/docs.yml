@@ -1,4 +1,4 @@
-name: Generate and puplish gh-pages
+name: Generate and publish gh-pages
 # https://docs.github.com/en/actions/guides/building-and-testing-python
 # https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
 on:
