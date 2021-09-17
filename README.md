@@ -1,10 +1,13 @@
-# :notebook: pyomop
+# pyomop
 
+![Libraries.io SourceRank](https://img.shields.io/librariesio/sourcerank/pypi/pyomop)
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
 [![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
 
 * *Inspired by [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop)*
+
+### [Documentation](https://dermatologist.github.io/pyomop/)
 
 ## Description
 
