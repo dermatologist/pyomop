@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-click==8.0.1
+click==8.0.3
     # via pyomop (setup.py)
 inflect==5.3.0
     # via sqlacodegen
