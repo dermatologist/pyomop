@@ -106,7 +106,7 @@ toml==0.10.2
     #   tox
 tomli==1.2.1
     # via setuptools-scm
-tox==3.24.4
+tox==3.24.5
     # via -r dev-requirements.in
 urllib3==1.26.6
     # via requests
