@@ -22,7 +22,7 @@ six==1.16.0
     # via python-dateutil
 sqlacodegen==2.3.0
     # via pyomop (setup.py)
-sqlalchemy==1.3.24
+sqlalchemy==1.4.31
     # via
     #   pyomop (setup.py)
     #   sqlacodegen
