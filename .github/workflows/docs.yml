@@ -22,6 +22,7 @@ jobs:
     - name: Create docs
       run: |
         make -C docs/ html
+        cp docs/_config.yml docs/_build/html/_config.yml
     - name: Deploy Docs 🚀
       uses: JamesIves/github-pages-deploy-action@4.1.5
       with:
