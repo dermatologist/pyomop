@@ -1,20 +1,30 @@
-# :notebook: pyomop
+# pyomop
 
+![Libraries.io SourceRank](https://img.shields.io/librariesio/sourcerank/pypi/pyomop)
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
 [![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
 
 * *Inspired by [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop)*
 
+### [Documentation](https://dermatologist.github.io/pyomop/)
+
 ## Description
 
 The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
 
-## Installation
+## Installation (stable)
 
 ```
 pip install pyomop
 
+```
+
+## Installation (current)
+
+* git clone this repository and:
+```
+pip install -e .
 ```
 
 ## Usage
@@ -91,6 +101,8 @@ pip install sqlalchemy==1.3.24
 * SqLite
 * More to follow..
 
+## Give us a star ⭐️
+If you find this project useful, give us a star. It helps others discover the project.
 
 ## Contributors
 
