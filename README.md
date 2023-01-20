@@ -13,11 +13,18 @@
 
 The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
 
-## Installation
+## Installation (stable)
 
 ```
 pip install pyomop
 
+```
+
+## Installation (current)
+
+* git clone this repository and:
+```
+pip install -e .
 ```
 
 ## Usage
@@ -94,6 +101,8 @@ pip install sqlalchemy==1.3.24
 * SqLite
 * More to follow..
 
+## Give us a star ⭐️
+If you find this project useful, give us a star. It helps others discover the project.
 
 ## Contributors
 
