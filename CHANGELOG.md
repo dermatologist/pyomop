@@ -1,8 +1,8 @@
 # Changelog
 
-## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
+## [3.1.0](https://github.com/dermatologist/pyomop/tree/3.1.0) (2021-09-17)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/3.0.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/3.0.0...3.1.0)
 
 **Closed issues:**
 
