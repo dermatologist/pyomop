@@ -6,10 +6,10 @@ import pytest
 def test_create_db(pyomop_fixture, metadata_fixture, capsys):
     engine = pyomop_fixture.engine
     asyncio.run(pyomop_fixture.init_models(metadata_fixture))
-    asyncio.run(myasync(pyomop_fixture, engine))
+    asyncio.run(create_cohort(pyomop_fixture, engine))
 
 
-async def myasync(pyomop_fixture,engine):
+async def create_cohort(pyomop_fixture,engine):
     from src.pyomop import Cohort
     import datetime
     from sqlalchemy.future import select
