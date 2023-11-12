@@ -4,8 +4,8 @@ from sqlalchemy.ext.automap import automap_base
 
 class CdmEngineFactory(object):
 
-    def __init__(self, db = 'sqlite', 
-                host = 'localhost', port = 5432, 
+    def __init__(self, db = 'sqlite',
+                host = 'localhost', port = 5432,
                 user = 'root', pw='pass',
                 name = 'cdm6.sqlite', schema = 'public'):
         self._db = db
@@ -17,7 +17,7 @@ class CdmEngineFactory(object):
         self._schema = schema
         self._engine = None
         self._base = None
-    
+
     @property
     def db(self):
         return self._db
@@ -57,16 +57,16 @@ class CdmEngineFactory(object):
             Base.prepare(self.engine, reflect=True)
             return Base.classes
         return None
-    
+
     @property
     def engine(self):
-        if self._db is 'sqlite':
+        if self._db == 'sqlite':
             self._engine = create_engine("sqlite:///"+self._name)
-        if self._db is 'mysql':
+        if self._db == 'mysql':
             mysql_url = 'mysql://{}:{}@{}:{}/{}'
             mysql_url = mysql_url.format(self._user, self._pw, self._host, self._port, self._name)
             self._engine = create_engine(mysql_url, isolation_level="READ UNCOMMITTED")
-        if self._db is 'pgsql':
+        if self._db == 'pgsql':
             # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
             dbschema = '{},public'  # Searches left-to-right
             dbschema = dbschema.format(self._schema)
@@ -114,5 +114,4 @@ class CdmEngineFactory(object):
 
 
 
-    
-    
+
