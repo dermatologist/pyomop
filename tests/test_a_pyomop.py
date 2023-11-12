@@ -1,3 +1,4 @@
+import asyncio
 import pytest
 
 @pytest.fixture
@@ -11,22 +12,33 @@ def metadata_fixture():
     from src.pyomop import metadata
     return metadata
 
+@staticmethod
+@pytest.mark.asyncio
 def test_create_db(pyomop_fixture, metadata_fixture, capsys):
-    import datetime
-    from sqlalchemy.sql import select
     engine = pyomop_fixture.engine
-    metadata_fixture.create_all(engine)
-    from src.pyomop import Cohort
-    # Cohort = pyomop_fixture.base.cohort
-    session =  pyomop_fixture.session
-    session.add(Cohort(cohort_definition_id=2, subject_id=100, 
-            cohort_end_date=datetime.datetime.now(), 
-            cohort_start_date=datetime.datetime.now()))
-    session.commit()
+    asyncio.run(pyomop_fixture.init_models(metadata_fixture))
+    asyncio.run(myasync(pyomop_fixture, engine))
 
-    s = select([Cohort])
-    result = session.execute(s)
-    for row in result:
+
+async def myasync(pyomop_fixture,engine):
+    from src.pyomop import Cohort
+    import datetime
+    from sqlalchemy.future import select
+
+    async with pyomop_fixture.session() as session:
+        async with session.begin():
+            session.add(Cohort(cohort_definition_id=2, subject_id=100,
+                cohort_end_date=datetime.datetime.now(),
+                cohort_start_date=datetime.datetime.now()))
+        await session.commit()
+
+    stmt = select(Cohort).where(Cohort.subject_id == 100)
+    result = await session.execute(stmt)
+
+    for row in result.scalars():
         print(row)
-    result.close()
-    assert row['subject_id'] == 100
+        assert row.subject_id == 100
+
+    await session.commit()
+    await engine.dispose()
+

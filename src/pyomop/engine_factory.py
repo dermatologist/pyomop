@@ -1,5 +1,11 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import Session
+# from sqlalchemy import create_engine
+# from sqlalchemy.orm import Session
+# from sqlalchemy.ext.automap import automap_base
+
+import asyncio
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
 class CdmEngineFactory(object):
@@ -17,6 +23,12 @@ class CdmEngineFactory(object):
         self._schema = schema
         self._engine = None
         self._base = None
+
+    async def init_models(self, metadata):
+        async with self._engine.begin() as conn:
+            await conn.run_sync(metadata.drop_all)
+            await conn.run_sync(metadata.create_all)
+
 
     @property
     def db(self):
@@ -61,11 +73,11 @@ class CdmEngineFactory(object):
     @property
     def engine(self):
         if self._db == 'sqlite':
-            self._engine = create_engine("sqlite:///"+self._name)
+            self._engine = create_async_engine("sqlite+aiosqlite:///"+self._name)
         if self._db == 'mysql':
             mysql_url = 'mysql://{}:{}@{}:{}/{}'
             mysql_url = mysql_url.format(self._user, self._pw, self._host, self._port, self._name)
-            self._engine = create_engine(mysql_url, isolation_level="READ UNCOMMITTED")
+            self._engine = create_async_engine(mysql_url, isolation_level="READ UNCOMMITTED")
         if self._db == 'pgsql':
             # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
             dbschema = '{},public'  # Searches left-to-right
@@ -73,7 +85,7 @@ class CdmEngineFactory(object):
             pgsql_url = 'postgresql+psycopg2://{}:{}@{}:{}/{}'
             pgsql_url = pgsql_url.format(self._user, self._pw,
                                         self._host, self._port, self._name)
-            self._engine = create_engine(
+            self._engine = create_async_engine(
                 pgsql_url,
                 connect_args={'options': '-csearch_path={}'.format(dbschema)})
         return self._engine
@@ -81,7 +93,15 @@ class CdmEngineFactory(object):
     @property
     def session(self):
         if self._engine is not None:
-            return Session(self._engine)
+            async_session = sessionmaker(self._engine, expire_on_commit=False, class_=AsyncSession)
+            return async_session
+        return None
+
+    @property
+    def async_session(self):
+        if self._engine is not None:
+            async_session = sessionmaker(self._engine, expire_on_commit=False, class_=AsyncSession)
+            return async_session
         return None
 
     @db.setter
