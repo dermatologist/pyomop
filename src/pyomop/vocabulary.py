@@ -1,4 +1,3 @@
-from . import CdmEngineFactory
 import pandas as pd
 from .cdm6_tables import Concept
 import asyncio
@@ -7,7 +6,6 @@ from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
-    create_async_engine,
 )
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import insert
@@ -123,23 +121,32 @@ class CdmVocabulary(object):
         else:
             try:
                 df = pd.read_csv(folder + '/DRUG_STRENGTH.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'drug_strength', 'replace'))
+                # df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('concept', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'concept', 'replace'))
+                # df.to_sql('concept', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT_RELATIONSHIP.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'concept_relationship', 'replace'))
+                # df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT_ANCESTOR.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'concept_ancestor', 'replace'))
+                # df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT_SYNONYM.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('concept_synonym', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'concept_synonym', 'replace'))
+                # df.to_sql('concept_synonym', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/VOCABULARY.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('vocabulary', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'vocabulary', 'replace'))
+                # df.to_sql('vocabulary', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/RELATIONSHIP.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('relationship', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'relationship', 'replace'))
+                # df.to_sql('relationship', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT_CLASS.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('concept_class', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'concept_class', 'replace'))
+                # df.to_sql('concept_class', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/DOMAIN.csv', sep='\t', on_bad_lines='skip')
-                df.to_sql('domain', con=self._engine, if_exists = 'replace')
+                asyncio.run(self.write_vocab(df, 'domain', 'replace'))
+                # df.to_sql('domain', con=self._engine, if_exists = 'replace')
             except ValueError:
                 print("Oops!  Could not write vocabulary")
 
