@@ -1,6 +1,13 @@
 import asyncio
 import pytest
 
+@staticmethod
+@pytest.mark.asyncio
+def test_create_tables(pyomop_fixture, metadata_fixture, capsys):
+    engine = pyomop_fixture.engine
+    # create tables
+    asyncio.run(pyomop_fixture.init_models(metadata_fixture))
+
 def test_create_vocab(pyomop_fixture, metadata_fixture, capsys):
     engine = pyomop_fixture.engine
     create_vocab(pyomop_fixture, engine)

@@ -1,15 +1,6 @@
 concept_id	concept_name	domain_id	vocabulary_id	concept_class_id	standard_concept	concept_code	valid_start_date	valid_end_date	invalid_reason
-45956931	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3578611000001105	19700101	20991231	
-45956935	xxxx xxxxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3579011000001108	19700101	20991231	
-45956943	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3330611000001108	19700101	20991231	
-45956945	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3565611000001107	19700101	20991231	
-45956950	xxxxx	xxxxxx	xxxxxxxxx	x	3563811000001107	19700101	20991231	
-45956951	xxxxx	xxxxxx	xxxxxxxxx	x	3330811000001107	19700101	20991231	
-45956953	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3331111000001106	19700101	20991231	
-45956958	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3589811000001106	19700101	20991231	
-45956966	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3589411000001109	19700101	20991231	
-45956967	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3541311000001106	19700101	20991231	
-45956968	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3528711000001102	19700101	20991231	
-45956973	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	14676611000001104	20081106	20991231	
-45956978	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3664811000001101	19700101	20991231	
-45956984	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3732411000001107	19700101	20991231	
+45956931	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3578611000001105	19700101	20991231
+45956935	xxxx xxxxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3579011000001108	19700101	20991231
+45956943	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3330611000001108	19700101	20991231
+45956945	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3565611000001107	19700101	20991231
+

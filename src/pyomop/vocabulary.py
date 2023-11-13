@@ -2,6 +2,17 @@ from . import CdmEngineFactory
 import pandas as pd
 from .cdm6_tables import Concept
 import asyncio
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_scoped_session,
+    create_async_engine,
+)
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import insert
+import numpy as np
+from sqlalchemy.ext.automap import automap_base, AutomapBase
 class CdmVocabulary(object):
     def __init__(self, cdm):
         self._concept_id = 0
@@ -12,6 +23,8 @@ class CdmVocabulary(object):
         self._concept_code = ''
         self._cdm = cdm
         self._engine = cdm.engine
+        self._maker = sessionmaker(self._engine, class_=AsyncSession)
+        self._scope = async_scoped_session(self._maker, scopefunc=asyncio.current_task)
 
     @property
     def concept_id(self):
@@ -88,7 +101,7 @@ class CdmVocabulary(object):
                 asyncio.run(self.write_vocab(df, 'concept_relationship', 'replace'))
                 # df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT_ANCESTOR.csv', sep='\t', nrows=sample, on_bad_lines='skip')
-                asyncio.run(self.write_vocab(df, 'concept_ancester', 'replace'))
+                asyncio.run(self.write_vocab(df, 'concept_ancestor', 'replace'))
                 # df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
                 df = pd.read_csv(folder + '/CONCEPT_SYNONYM.csv', sep='\t', nrows=sample, on_bad_lines='skip')
                 asyncio.run(self.write_vocab(df, 'concept_synonym', 'replace'))
@@ -130,15 +143,20 @@ class CdmVocabulary(object):
             except ValueError:
                 print("Oops!  Could not write vocabulary")
 
+    @asynccontextmanager
+    async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+        async with self._scope() as session:
+            yield session
+
     async def write_vocab(self, df, table, if_exists='replace'):
-        # async with self._engine.begin() as conn:
-        #     await conn.run_sync(df.to_sql, table, if_exists=if_exists)
-        async with self._cdm.session() as session:
+        async with self.get_session() as session:
             conn = await session.connection()
-            await conn.run_sync(
-                lambda sync_conn: df.to_sql(
-                    conn,
-                    table,
-                    if_exists=if_exists,
-                ),
-            )
+            automap: AutomapBase = automap_base()
+            chunk_size = 1000
+            await conn.run_sync(lambda sync_conn: automap.prepare(autoload_with=sync_conn))
+            mapper = getattr(automap.classes, table)
+            stmt = insert(mapper)
+
+            for _, group in df.groupby(np.arange(df.shape[0], dtype=int) // chunk_size):
+                await session.execute(stmt, group.to_dict("records"))
+            await session.commit()
