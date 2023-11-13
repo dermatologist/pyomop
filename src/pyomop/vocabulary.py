@@ -11,6 +11,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import insert
 import numpy as np
 from sqlalchemy.ext.automap import automap_base, AutomapBase
+from sqlalchemy import select
 class CdmVocabulary(object):
     def __init__(self, cdm):
         self._concept_id = 0
@@ -47,7 +48,6 @@ class CdmVocabulary(object):
     @concept_id.setter
     def concept_id(self, concept_id):
         self._concept_id = concept_id
-        # _concept = self._cdm.session.query(Concept).filter_by(concept_id=concept_id).one()
         _concept = asyncio.run(self.get_concept(concept_id))
         self._concept_name = _concept.concept_name
         self._domain_id = _concept.domain_id
@@ -56,15 +56,17 @@ class CdmVocabulary(object):
         self._concept_code = _concept.concept_code
 
     async def get_concept(self, concept_id):
-        stmt = self._cdm.session.query(Concept).filter_by(concept_id=concept_id).one()
-        _concept = await self._cdm.session.execute(stmt)
-        return _concept
+        stmt = select(Concept).where(Concept.concept_id == concept_id)
+        async with self._cdm.session() as session:
+            _concept = await session.execute(stmt)
+        return _concept.scalar_one()
 
     async def get_concept_by_code(self, concept_code, vocabulary_id):
-        stmt = self._cdm.session.query(Concept).filter_by(concept_code=concept_code) \
-            .filter_by(vocabulary_id=vocabulary_id).one()
-        _concept = await self._cdm.session.execute(stmt)
-        return _concept
+        stmt = select(Concept).where(Concept.concept_code == concept_code) \
+            .where(Concept.vocabulary_id == vocabulary_id)
+        async with self._cdm.session() as session:
+            _concept = await session.execute(stmt)
+        return _concept.scalar_one()
 
     def set_concept(self, concept_code, vocabulary_id=None):
         self._concept_code = concept_code
