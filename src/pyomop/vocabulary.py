@@ -131,12 +131,13 @@ class CdmVocabulary(object):
                 print("Oops!  Could not write vocabulary")
 
     async def write_vocab(self, df, table, if_exists='replace'):
-        # async with engine.begin() as conn:
-        #     await conn.run_sync(df.to_sql, table, con=conn, if_exists=if_exists)
+        # async with self._engine.begin() as conn:
+        #     await conn.run_sync(df.to_sql, table, if_exists=if_exists)
         async with self._cdm.session() as session:
             conn = await session.connection()
             await conn.run_sync(
                 lambda sync_conn: df.to_sql(
+                    conn,
                     table,
                     if_exists=if_exists,
                 ),
