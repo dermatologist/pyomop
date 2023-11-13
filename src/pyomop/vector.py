@@ -1,7 +1,6 @@
 import pandas as pd
 from sqlalchemy.inspection import inspect
 from .sqldict import CDMSQL
-import asyncio
 # https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9
 # Thank you! https://gist.github.com/garaud
 class CdmVector(object):
@@ -44,7 +43,8 @@ class CdmVector(object):
     def sql_df(self, cdm, sqldict=None, query=None, chunksize=None):
         if sqldict:
             query=CDMSQL[sqldict]
-        asyncio.run(self.a_main(query, cdm, chunksize))
+        self.a_main(query, cdm, chunksize)
+        return self._df
 
 
     def pandas_query(self, query, cdm, chunksize=None):

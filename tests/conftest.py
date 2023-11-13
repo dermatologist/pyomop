@@ -20,3 +20,9 @@ def pyomop_fixture():
 def metadata_fixture():
     from src.pyomop import metadata
     return metadata
+
+
+@pytest.fixture
+def vector_fixture():
+    from src.pyomop import CdmVector
+    return CdmVector()
