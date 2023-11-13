@@ -2,7 +2,6 @@ import asyncio
 import pytest
 
 @staticmethod
-@pytest.mark.asyncio
 def test_create_patient(pyomop_fixture, metadata_fixture, capsys):
     engine = pyomop_fixture.engine
     # create tables

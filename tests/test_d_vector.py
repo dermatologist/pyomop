@@ -2,7 +2,6 @@ import asyncio
 import pytest
 
 @staticmethod
-@pytest.mark.asyncio
 def test_create_vector(pyomop_fixture, metadata_fixture, vector_fixture, capsys):
     engine = pyomop_fixture.engine
     # create tables

@@ -57,3 +57,4 @@ class CdmVector(object):
     async def a_main(self, query, cdm, chunksize=None):
         async with cdm.session() as session:
             self._df = await session.run_sync(self.pandas_query, query, cdm, chunksize)
+        await session.close()

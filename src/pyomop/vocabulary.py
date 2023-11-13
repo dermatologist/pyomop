@@ -169,3 +169,4 @@ class CdmVocabulary(object):
             for _, group in df.groupby(np.arange(df.shape[0], dtype=int) // chunk_size):
                 await session.execute(stmt, group.to_dict("records"))
             await session.commit()
+            await session.close()
