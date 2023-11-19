@@ -27,7 +27,7 @@ pip install pyomop
 pip install -e .
 ```
 
-## Usage >= 4.0.0 (SQLAlchemy >=2.0.0)
+## Usage >= 4.0.0 (Async)
 ```
 from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
 from sqlalchemy.future import select
