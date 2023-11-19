@@ -26,14 +26,14 @@ async def create_vector(pyomop_fixture, vector_fixture, engine):
     stmt = select(Cohort).where(Cohort.subject_id == 100)
     result = await session.execute(stmt)
 
-    # vector_fixture.result = result.scalars()
-    # print(vector_fixture.df.dtypes)
-    # assert vector_fixture.df.empty is False
-
-    result = await vector_fixture.sql_df(pyomop_fixture, 'TEST')
     vector_fixture.result = result.scalars()
     print(vector_fixture.df.dtypes)
     assert vector_fixture.df.empty is False
+
+    result2 = await vector_fixture.sql_df(pyomop_fixture, 'TEST')
+    for row in result2:
+        print(row)
+    assert row.subject_id == 100
 
     await session.close()
     await engine.dispose()

@@ -50,6 +50,8 @@ class CdmVector(object):
     async def sql_df(self, cdm, sqldict=None, query=None, chunksize=1000):
         if sqldict:
             query=CDMSQL[sqldict]
-        async with cdm.engine.begin() as conn:
-            result = await conn.execute(text(query))
+        async with cdm.session() as session:
+            result = await session.execute(text(query))
+        self._result = result
+        session.close()
         return result
