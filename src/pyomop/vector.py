@@ -29,6 +29,8 @@ class CdmVector(object):
         """
         result_list = []
         instance = None
+        if self._result is None:
+            return None, []
         for obj in self._result:
             instance = inspect(obj)
             items = instance.attrs.items()

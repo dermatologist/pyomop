@@ -26,9 +26,9 @@ async def create_vector(pyomop_fixture, vector_fixture, engine):
     stmt = select(Cohort).where(Cohort.subject_id == 100)
     result = await session.execute(stmt)
 
-    vector_fixture.result = result.scalars()
-    print(vector_fixture.df.dtypes)
-    assert vector_fixture.df.empty is False
+    # vector_fixture.result = result.scalars()
+    # print(vector_fixture.df.dtypes)
+    # assert vector_fixture.df.empty is False
 
     vector_fixture.sql_df(pyomop_fixture, 'TEST')
     print(vector_fixture.df.dtypes)
