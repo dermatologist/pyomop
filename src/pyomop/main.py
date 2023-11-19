@@ -30,6 +30,8 @@ def cli(verbose, create, dbtype, host, port, user, pw, name, schema, vocab):
         print("verbose")
     if create:
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
+        # initialize default engine
+        engine = cdm.engine
         asyncio.run(cdm.init_models(metadata))
     if vocab is not '':
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
