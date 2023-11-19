@@ -1,4 +1,5 @@
 import click
+import asyncio
 from . import CdmEngineFactory
 from . import CdmVocabulary
 from . import metadata
@@ -29,12 +30,11 @@ def cli(verbose, create, dbtype, host, port, user, pw, name, schema, vocab):
         print("verbose")
     if create:
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
-        engine = cdm.engine
-        metadata.create_all(engine)
+        asyncio.run(cdm.init_models(metadata))
     if vocab is not '':
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
-        vocab = CdmVocabulary(cdm)
-        vocab.create_vocab(vocab)
+        _vocab = CdmVocabulary(cdm)
+        _vocab.create_vocab(vocab)
         print("Done")
 
 def main_routine():
