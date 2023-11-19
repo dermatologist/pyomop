@@ -37,10 +37,6 @@ async def main():
     print(cohort)
     assert cohort.subject_id == 100
 
-    # Close session
-    await session.close()
-    await engine.dispose()
-
     # Convert result to a pandas dataframe
     vec = CdmVector()
     vec.result = result
@@ -54,6 +50,10 @@ async def main():
     for row in result:
         print(row)
 
+
+    # Close session
+    await session.close()
+    await engine.dispose()
 
 # Run the main function
 asyncio.run(main())
