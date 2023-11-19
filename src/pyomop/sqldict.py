@@ -1,7 +1,7 @@
 # https://github.com/OHDSI/QueryLibrary/tree/master/inst/shinyApps/QueryLibrary/queries
 
 # Test
-TEST = "SELECT * from person"
+TEST = "SELECT * from cohort"
 
 
 # PE03: Number of patients grouped by gender

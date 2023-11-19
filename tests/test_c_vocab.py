@@ -1,10 +1,4 @@
-import pytest
 
-@pytest.fixture
-def pyomop_fixture():
-    from src.pyomop import CdmEngineFactory
-    cdm = CdmEngineFactory()
-    return cdm
 
 def test_vocab(pyomop_fixture, capsys):
     from src.pyomop import CdmVocabulary
