@@ -117,8 +117,8 @@ class CdmVocabulary(object):
             df = pd.read_csv(folder + '/DOMAIN.csv', sep='\t', nrows=sample, on_bad_lines='skip')
             asyncio.run(self.write_vocab(df, 'domain', 'replace'))
             # df.to_sql('domain', con=self._engine, if_exists = 'replace')
-        except ValueError:
-            print("Oops!  Could not write vocabulary")
+        except Exception as e:
+            print(f"An error occurred while creating the vocabulary: {e}")
 
 
     @asynccontextmanager
@@ -126,11 +126,10 @@ class CdmVocabulary(object):
         async with self._scope() as session:
             yield session
 
-    async def write_vocab(self, df, table, if_exists='replace'):
+    async def write_vocab(self, df, table, if_exists='replace', chunk_size=1000):
         async with self.get_session() as session:
             conn = await session.connection()
             automap: AutomapBase = automap_base()
-            chunk_size = 1000
             await conn.run_sync(lambda sync_conn: automap.prepare(autoload_with=sync_conn))
             mapper = getattr(automap.classes, table)
             stmt = insert(mapper)
