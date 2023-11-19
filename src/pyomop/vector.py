@@ -28,10 +28,13 @@ class CdmVector(object):
         Return: columns name, list of result
         """
         result_list = []
+        instance = None
         for obj in self._result:
             instance = inspect(obj)
             items = instance.attrs.items()
             result_list.append([x.value for _,x in items])
+        if instance is None:
+            return None, []
         return instance.attrs.keys(), result_list
 
     def create_df(self, _names=None):
@@ -40,21 +43,21 @@ class CdmVector(object):
             names = _names
         self._df = pd.DataFrame.from_records(data, columns=names)
 
-    def sql_df(self, cdm, sqldict=None, query=None, chunksize=None):
+    def sql_df(self, cdm, sqldict=None, query=None, chunksize=1000):
         if sqldict:
             query=CDMSQL[sqldict]
         self.a_main(query, cdm, chunksize)
         return self._df
 
 
-    def pandas_query(self, query, cdm, chunksize=None):
+    def pandas_query(self, query, cdm, chunksize=1000):
         conn = cdm.engine.connect()
         if chunksize:
             return pd.read_sql_query(query, conn, chunksize)
         else:
             return pd.read_sql_query(query, conn)
 
-    async def a_main(self, query, cdm, chunksize=None):
+    async def a_main(self, query, cdm, chunksize=1000):
         async with cdm.session() as session:
             self._df = await session.run_sync(self.pandas_query, query, cdm, chunksize)
         await session.close()
