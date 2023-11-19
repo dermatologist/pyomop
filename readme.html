@@ -64,8 +64,68 @@
 </pre></div>
 </div>
 </section>
-<section id="usage">
-<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h2>
+<section id="usage-4-0-0-async">
+<h2>Usage &gt;= 4.0.0 (Async)<a class="headerlink" href="#usage-4-0-0-async" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyomop</span> <span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.future</span> <span class="kn">import</span> <span class="n">select</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+
+<span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">()</span>  <span class="c1"># Creates SQLite database by default</span>
+<span class="c1"># Postgres example (db=&#39;mysql&#39; also supported)</span>
+<span class="c1"># cdm = CdmEngineFactory(db=&#39;pgsql&#39;, host=&#39;&#39;, port=5432,</span>
+<span class="c1">#                       user=&#39;&#39;, pw=&#39;&#39;,</span>
+<span class="c1">#                       name=&#39;&#39;, schema=&#39;cdm6&#39;)</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">cdm</span><span class="o">.</span><span class="n">engine</span>
+<span class="c1"># Create Tables if required</span>
+<span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cdm</span><span class="o">.</span><span class="n">init_models</span><span class="p">(</span><span class="n">metadata</span><span class="p">))</span>
+<span class="c1"># Create vocabulary if required</span>
+<span class="n">vocab</span> <span class="o">=</span> <span class="n">CdmVocabulary</span><span class="p">(</span><span class="n">cdm</span><span class="p">)</span>
+<span class="c1"># vocab.create_vocab(&#39;/path/to/csv/files&#39;)  # Uncomment to load vocabulary csv files</span>
+
+<span class="c1"># Add a cohort</span>
+<span class="k">async</span> <span class="k">with</span> <span class="n">cdm</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+        <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cohort</span><span class="p">(</span><span class="n">cohort_definition_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">subject_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+            <span class="n">cohort_end_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+            <span class="n">cohort_start_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
+    <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+<span class="c1"># Query the cohort</span>
+<span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Cohort</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Cohort</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">row</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span>
+
+<span class="c1"># Query the cohort pattern 2</span>
+<span class="n">cohort</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Cohort</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">cohort</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span>
+
+<span class="c1"># Close session</span>
+<span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="k">await</span> <span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+
+<span class="c1"># Convert result to a pandas dataframe</span>
+<span class="n">vec</span> <span class="o">=</span> <span class="n">CdmVector</span><span class="p">()</span>
+<span class="n">vec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+
+<span class="c1"># Execute SQL statetements</span>
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vec</span><span class="o">.</span><span class="n">sql_df</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="s1">&#39;TEST&#39;</span><span class="p">)</span> <span class="c1"># TEST is defined in sqldict.py</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vec</span><span class="o">.</span><span class="n">sql_df</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;SELECT * from cohort&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="usage-3-2-0">
+<h2>Usage &lt;=3.2.0<a class="headerlink" href="#usage-3-2-0" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
 <span class="kn">from</span> <span class="nn">pyomop</span> <span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
 <span class="kn">from</span> <span class="nn">sqlalchemy.sql</span> <span class="kn">import</span> <span class="n">select</span>
@@ -86,7 +146,7 @@
 <span class="n">vocab</span> <span class="o">=</span> <span class="n">CdmVocabulary</span><span class="p">(</span><span class="n">cdm</span><span class="p">)</span>
 <span class="c1"># vocab.create_vocab(&#39;/path/to/csv/files&#39;)  # Uncomment to load vocabulary csv files</span>
 
-<span class="c1"># SQLAlchemy as ORM</span>
+<span class="c1"># Create a Cohort (SQLAlchemy as ORM)</span>
 <span class="n">session</span> <span class="o">=</span>  <span class="n">cdm</span><span class="o">.</span><span class="n">session</span>
 <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cohort</span><span class="p">(</span><span class="n">cohort_definition_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">subject_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
             <span class="n">cohort_end_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
@@ -115,15 +175,6 @@
 <section id="command-line-usage">
 <h2>command-line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyomop</span> <span class="o">-</span><span class="n">help</span>
-</pre></div>
-</div>
-</section>
-<section id="troubleshoot">
-<h2>Troubleshoot<a class="headerlink" href="#troubleshoot" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>sqlalchemy &gt; 1.4 may not work. See <a class="reference external" href="https://github.com/dermatologist/pyomop/issues/6">issue #6</a>. Please downgrade sqlalchemy untill <a class="reference external" href="https://github.com/dermatologist/pyomop/issues/6">issue #6</a> is fixed.</p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">sqlalchemy</span><span class="o">==</span><span class="mf">1.3.24</span>
 </pre></div>
 </div>
 </section>
@@ -177,9 +228,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation-stable">Installation (stable)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installation-current">Installation (current)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage">Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-4-0-0-async">Usage &gt;= 4.0.0 (Async)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage-3-2-0">Usage &lt;=3.2.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#command-line-usage">command-line usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#troubleshoot">Troubleshoot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#other-utils">Other utils</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#give-us-a-star">Give us a star ⭐️</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contributors">Contributors</a></li>

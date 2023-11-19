@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/3.2.0...HEAD)
+
+**Closed issues:**
+
+- SQLAlchemy 1.4 raises error [\#6](https://github.com/dermatologist/pyomop/issues/6)
+
+## [3.2.0](https://github.com/dermatologist/pyomop/tree/3.2.0) (2023-01-20)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/3.1.0...3.2.0)
+
 ## [3.1.0](https://github.com/dermatologist/pyomop/tree/3.1.0) (2021-09-17)
 
 [Full Changelog](https://github.com/dermatologist/pyomop/compare/3.0.0...3.1.0)

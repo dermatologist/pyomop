@@ -1,18 +1,7 @@
 # pyomop
 
 OMOP CDM utils in Python
-
-
-## Note
-
-> This is the main page of your project's [Sphinx] documentation. It is
-> formatted in [Markdown]. Add additional pages by creating md-files in
-> `docs` or rst-files (formated in [reStructuredText]) and adding links to
-> them in the `Contents` section below.
->
-> Please check [Sphinx], [recommonmark] and [autostructify] for more information
-> about how to document your project and how to configure your preferences.
-
+*[by Bell Eapen](https://nuchange.ca)*
 
 ## Contents
 
