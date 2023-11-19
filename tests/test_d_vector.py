@@ -30,9 +30,10 @@ async def create_vector(pyomop_fixture, vector_fixture, engine):
     print(vector_fixture.df.dtypes)
     assert vector_fixture.df.empty is False
 
-    vector_fixture.sql_df(pyomop_fixture, 'TEST')
-    print(vector_fixture.df.dtypes)
-    assert vector_fixture.df.empty is False
+    result2 = await vector_fixture.sql_df(pyomop_fixture, 'TEST')
+    for row in result2:
+        print(row)
+    assert row.subject_id == 100
 
     await session.close()
     await engine.dispose()
