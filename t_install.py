@@ -46,12 +46,13 @@ async def main():
     vec.result = result
     print(vec.df.dtypes)
 
-    # Execute a query and convert it to dataframe
-    vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
-    print(vec.df.dtypes) # vec.df is a pandas dataframe
-    # OR
-    vec.sql_df(cdm, query='SELECT * from cohort')
-    print(vec.df.dtypes) # vec.df is a pandas dataframe
+    result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
+    for row in result:
+        print(row)
+
+    result = await vec.sql_df(cdm, query='SELECT * from cohort')
+    for row in result:
+        print(row)
 
 
 # Run the main function
