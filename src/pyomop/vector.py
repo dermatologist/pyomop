@@ -1,5 +1,7 @@
+import asyncio
 import pandas as pd
 from sqlalchemy.inspection import inspect
+from sqlalchemy import text
 from .sqldict import CDMSQL
 # https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9
 # Thank you! https://gist.github.com/garaud
@@ -18,7 +20,7 @@ class CdmVector(object):
     @property
     def result(self):
         return self._result
-    
+
     @result.setter
     def result(self, value):
         self._result = value
@@ -28,10 +30,15 @@ class CdmVector(object):
         Return: columns name, list of result
         """
         result_list = []
+        instance = None
+        if self._result is None:
+            return None, []
         for obj in self._result:
             instance = inspect(obj)
             items = instance.attrs.items()
             result_list.append([x.value for _,x in items])
+        if instance is None:
+            return None, []
         return instance.attrs.keys(), result_list
 
     def create_df(self, _names=None):
@@ -39,12 +46,12 @@ class CdmVector(object):
         if(_names):
             names = _names
         self._df = pd.DataFrame.from_records(data, columns=names)
-    
-    def sql_df(self, cdm, sqldict=None, query=None, chunksize=None):
+
+    async def sql_df(self, cdm, sqldict=None, query=None, chunksize=1000):
         if sqldict:
             query=CDMSQL[sqldict]
-        if chunksize:
-            self._df = pd.read_sql_query(query, cdm.engine)
-        else:
-            self._df = pd.read_sql_query(query, cdm.engine, chunksize)  
-  
+        async with cdm.session() as session:
+            result = await session.execute(text(query))
+        self._result = result
+        await session.close()
+        return result

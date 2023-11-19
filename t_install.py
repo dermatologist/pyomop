@@ -1,35 +1,59 @@
 from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
-from sqlalchemy.sql import select
+from sqlalchemy.future import select
 import datetime
+import asyncio
 
-cdm = CdmEngineFactory()  # Creates SQLite database by default
+async def main():
+    cdm = CdmEngineFactory()  # Creates SQLite database by default
+    # Postgres example (db='mysql' also supported)
+    # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
+    #                       user='', pw='',
+    #                       name='', schema='cdm6')
 
-engine = cdm.engine
-## Create Tables if required
-metadata.create_all(engine)
-## Create vocabulary if required
-vocab = CdmVocabulary(cdm)
-# vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
+    engine = cdm.engine
+    # Create Tables if required
+    await cdm.init_models(metadata)
+    # Create vocabulary if required
+    vocab = CdmVocabulary(cdm)
+    # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
-# SQLAlchemy as ORM
-session =  cdm.session
-session.add(Cohort(cohort_definition_id=2, subject_id=100, 
-            cohort_end_date=datetime.datetime.now(), 
-            cohort_start_date=datetime.datetime.now()))
-session.commit()
+    # Add a cohort
+    async with cdm.session() as session:
+        async with session.begin():
+            session.add(Cohort(cohort_definition_id=2, subject_id=100,
+                cohort_end_date=datetime.datetime.now(),
+                cohort_start_date=datetime.datetime.now()))
+        await session.commit()
 
-result = session.query(Cohort).all()
-for row in result:
-    print(row)
+    # Query the cohort
+    stmt = select(Cohort).where(Cohort.subject_id == 100)
+    result = await session.execute(stmt)
+    for row in result.scalars():
+        print(row)
+        assert row.subject_id == 100
 
-# Convert result to a pandas dataframe
-vec = CdmVector()
-vec.result = result
-print(vec.df.dtypes)
+    # Query the cohort pattern 2
+    cohort = await session.get(Cohort, 1)
+    print(cohort)
+    assert cohort.subject_id == 100
 
-# Execute a query and convert it to dataframe
-vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
-print(vec.df.dtypes)
-# OR
-vec.sql_df(cdm, query='SELECT * from cohort')
-print(vec.df.dtypes)
+    # Close session
+    await session.close()
+    await engine.dispose()
+
+    # Convert result to a pandas dataframe
+    vec = CdmVector()
+    vec.result = result
+    print(vec.df.dtypes)
+
+    result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
+    for row in result:
+        print(row)
+
+    result = await vec.sql_df(cdm, query='SELECT * from cohort')
+    for row in result:
+        print(row)
+
+
+# Run the main function
+asyncio.run(main())

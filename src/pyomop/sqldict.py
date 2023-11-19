@@ -1,7 +1,7 @@
 # https://github.com/OHDSI/QueryLibrary/tree/master/inst/shinyApps/QueryLibrary/queries
 
 # Test
-TEST = "SELECT * from person"
+TEST = "SELECT * from cohort;"
 
 
 # PE03: Number of patients grouped by gender
@@ -12,7 +12,7 @@ SELECT
   COUNT(person.person_id) AS num_persons
 FROM person
   JOIN concept ON person.gender_concept_id = concept.concept_id
-GROUP BY person.gender_concept_id, concept.concept_name
+GROUP BY person.gender_concept_id, concept.concept_name;
 """
 CDMSQL = {
     "TEST": TEST,
