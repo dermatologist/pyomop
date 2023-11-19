@@ -53,5 +53,5 @@ class CdmVector(object):
         async with cdm.session() as session:
             result = await session.execute(text(query))
         self._result = result
-        session.close()
+        await session.close()
         return result
