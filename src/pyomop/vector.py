@@ -1,5 +1,7 @@
+import asyncio
 import pandas as pd
 from sqlalchemy.inspection import inspect
+from sqlalchemy import text
 from .sqldict import CDMSQL
 # https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9
 # Thank you! https://gist.github.com/garaud
@@ -45,21 +47,9 @@ class CdmVector(object):
             names = _names
         self._df = pd.DataFrame.from_records(data, columns=names)
 
-    def sql_df(self, cdm, sqldict=None, query=None, chunksize=1000):
+    async def sql_df(self, cdm, sqldict=None, query=None, chunksize=1000):
         if sqldict:
             query=CDMSQL[sqldict]
-        self.a_main(query, cdm, chunksize)
-        return self._df
-
-
-    def pandas_query(self, query, cdm, chunksize=1000):
-        conn = cdm.engine.connect()
-        if chunksize:
-            return pd.read_sql_query(query, conn, chunksize)
-        else:
-            return pd.read_sql_query(query, conn)
-
-    async def a_main(self, query, cdm, chunksize=1000):
-        async with cdm.session() as session:
-            self._df = await session.run_sync(self.pandas_query, query, cdm, chunksize)
-        await session.close()
+        async with cdm.engine.begin() as conn:
+            result = await conn.execute(text(query))
+        return result

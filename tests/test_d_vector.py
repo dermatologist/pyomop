@@ -30,7 +30,8 @@ async def create_vector(pyomop_fixture, vector_fixture, engine):
     # print(vector_fixture.df.dtypes)
     # assert vector_fixture.df.empty is False
 
-    vector_fixture.sql_df(pyomop_fixture, 'TEST')
+    result = await vector_fixture.sql_df(pyomop_fixture, 'TEST')
+    vector_fixture.result = result.scalars()
     print(vector_fixture.df.dtypes)
     assert vector_fixture.df.empty is False
 
