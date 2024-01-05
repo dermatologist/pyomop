@@ -8,11 +8,12 @@ from llama_index.objects import (
     SQLTableSchema,
 )
 from llama_index import VectorStoreIndex
-from llama_index import SQLDatabase, ServiceContext
+from llama_index import ServiceContext
 from typing import Any, Optional
 from llama_index.prompts import BasePromptTemplate
 from llama_index.objects.base import ObjectRetriever
 
+from .llm_engine import SQLDatabase
 
 class CdmLLMQuery(SQLTableRetrieverQueryEngine):
     def __init__(

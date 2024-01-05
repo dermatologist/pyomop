@@ -1,7 +1,7 @@
 import asyncio
 import pytest
 from llama_index.llms import Vertex
-from llama_index import SQLDatabase
+from src.pyomop.llm_engine import SQLDatabase
 
 @staticmethod
 def test_create_cohort(pyomop_fixture, metadata_fixture, capsys):
@@ -37,7 +37,7 @@ async def create_llm_query(pyomop_fixture,engine):
     assert cohort.subject_id == 100
 
     llm = Vertex()
-    sql_database = await SQLDatabase(engine, include_tables=[
+    sql_database = SQLDatabase(engine, include_tables=[
         "cohort",
     ])
     query_engine = CdmLLMQuery(sql_database, llm=llm)
