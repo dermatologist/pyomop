@@ -9,16 +9,16 @@ from llama_index.objects import (
 )
 from llama_index import VectorStoreIndex
 from llama_index import SQLDatabase, ServiceContext
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
-from llama_index.prompts import BasePromptTemplate, PromptTemplate
+from typing import Any, Optional
+from llama_index.prompts import BasePromptTemplate
 from llama_index.objects.base import ObjectRetriever
 
 
-class LLMQueryEngine(SQLTableRetrieverQueryEngine):
+class CdmLLMQuery(SQLTableRetrieverQueryEngine):
     def __init__(
         self,
             sql_database: SQLDatabase,
-            table_retriever: ObjectRetriever[SQLTableSchema],
+            table_retriever: ObjectRetriever[SQLTableSchema] = None,
             text_to_sql_prompt: Optional[BasePromptTemplate] = None,
             context_query_kwargs: Optional[dict] = None,
             synthesize_response: bool = True,
@@ -26,23 +26,12 @@ class LLMQueryEngine(SQLTableRetrieverQueryEngine):
             service_context: Optional[ServiceContext] = None,
             context_str_prefix: Optional[str] = None,
             sql_only: bool = False,
-            llm: Optional[LLM] = None,
+            llm: Optional[Any] = None, # FIXME: type
+            similarity_top_k: int = 1,
             **kwargs: Any,
         ):
-        super().__init__(
-            sql_database,
-            table_retriever,
-            text_to_sql_prompt,
-            context_query_kwargs,
-            synthesize_response,
-            response_synthesis_prompt,
-            service_context,
-            context_str_prefix,
-            sql_only,
-            **kwargs,
-        )
-        self._llm = kwargs.get('llm')
         self._sql_database = sql_database
+        self._similarity_top_k = similarity_top_k
         self._table_node_mapping = SQLTableNodeMapping(sql_database)
         self._table_schema_objs = [
             (SQLTableSchema(table_name='care_site')),
@@ -69,13 +58,29 @@ class LLMQueryEngine(SQLTableRetrieverQueryEngine):
             VectorStoreIndex,
         )
 
+        if table_retriever is None:
+            table_retriever = self._object_index.as_retriever(similarity_top_k=similarity_top_k)
 
+        self._table_retriever = table_retriever
 
-    def _get_table_node_mapping(self, table_name: str) -> SQLTableNodeMapping:
-        return self._index._table_node_mappings[table_name]
+        if service_context is None:
+            if llm is None:
+                raise ValueError("Must provide either llm or service_context")
+            service_context = ServiceContext.from_defaults(llm=llm)
+            self._llm = llm
 
-    def _get_table_schema(self, table_name: str) -> SQLTableSchema:
-        return self._index._table_schemas[table_name]
+        self._service_context = service_context
 
-    def _get_object_index(self, table_name: str) -> ObjectIndex:
-        return self._index._object_indices[table_name]
+        super().__init__(
+            sql_database,
+            table_retriever,
+            text_to_sql_prompt,
+            context_query_kwargs,
+            synthesize_response,
+            response_synthesis_prompt,
+            service_context,
+            context_str_prefix,
+            sql_only,
+            **kwargs,
+        )
+

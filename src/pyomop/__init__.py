@@ -4,6 +4,7 @@ from .engine_factory import CdmEngineFactory
 from .cdm6_tables import metadata
 from .vocabulary import CdmVocabulary
 from .vector import CdmVector
+from .llm_query import CdmLLMQuery
 
 from .cdm6_tables import AttributeDefinition
 from .cdm6_tables import CareSite
