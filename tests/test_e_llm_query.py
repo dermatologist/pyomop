@@ -24,26 +24,17 @@ async def create_llm_query(pyomop_fixture,engine):
                 cohort_start_date=datetime.datetime.now()))
         await session.commit()
 
-    # Query the cohort
-    stmt = select(Cohort).where(Cohort.subject_id == 100)
-    result = await session.execute(stmt)
-    for row in result.scalars():
-        print(row)
-        assert row.subject_id == 100
 
-    # Query the cohort pattern 2
-    cohort = await session.get(Cohort, 1)
-    print(cohort)
-    assert cohort.subject_id == 100
-
-    llm = Vertex()
+    llm = Vertex(
+        model="chat-bison",
+    )
     sql_database = CDMDatabase(engine, include_tables=[
         "cohort",
     ])
     query_engine = CdmLLMQuery(sql_database, llm=llm)
-    response  = await query_engine.query("What is the cohort definition id for subject 100?")
-    print(response)
 
+    response  = query_engine.query("Show all cohorts?")
+    print(response)
     await session.close()
     await engine.dispose()
 

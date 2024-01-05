@@ -33,7 +33,7 @@ class CdmLLMQuery(SQLTableRetrieverQueryEngine):
         ):
         self._sql_database = sql_database
         self._similarity_top_k = similarity_top_k
-        embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+        embed_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
 
         if service_context is None:
             if llm is None:

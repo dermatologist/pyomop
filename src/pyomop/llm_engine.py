@@ -1,10 +1,9 @@
 """SQL wrapper around SQLDatabase in langchain."""
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, List, Optional
 from overrides import override
 
-from sqlalchemy import MetaData, create_engine, insert, inspect, text
+from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine
-from sqlalchemy.exc import OperationalError, ProgrammingError
 from . import metadata
 from llama_index.utilities.sql_wrapper import SQLDatabase
 class CDMDatabase(SQLDatabase):
@@ -114,9 +113,6 @@ class CDMDatabase(SQLDatabase):
                 )
         column_str = ", ".join(columns)
         foreign_key_str = ", ".join(foreign_keys)
-        print(column_str)
-        print(foreign_key_str)
-
 
         #     if column.get("comment"):
         #         columns.append(
