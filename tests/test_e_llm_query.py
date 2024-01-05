@@ -33,7 +33,7 @@ async def create_llm_query(pyomop_fixture,engine):
         ])
         query_engine = CdmLLMQuery(sql_database, llm=llm)
 
-        response  = query_engine.query("Show all cohorts?")
+        response  = query_engine.query("Show each in table cohort with a subject id of 100?")
     print(response)
     await session.close()
     await engine.dispose()
