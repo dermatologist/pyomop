@@ -12,7 +12,7 @@ from llama_index import ServiceContext
 from typing import Any, Optional
 from llama_index.prompts import BasePromptTemplate
 from llama_index.objects.base import ObjectRetriever
-
+from langchain.embeddings import HuggingFaceEmbeddings
 from .llm_engine import SQLDatabase
 
 class CdmLLMQuery(SQLTableRetrieverQueryEngine):
@@ -33,6 +33,19 @@ class CdmLLMQuery(SQLTableRetrieverQueryEngine):
         ):
         self._sql_database = sql_database
         self._similarity_top_k = similarity_top_k
+        embed_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
+
+        if service_context is None:
+            if llm is None:
+                raise ValueError("Must provide either llm or service_context")
+            service_context = ServiceContext.from_defaults(
+                llm=llm,
+                embed_model=embed_model,
+            )
+            self._llm = llm
+
+        self._service_context = service_context
+
         self._table_node_mapping = SQLTableNodeMapping(sql_database)
         self._table_schema_objs = [
             (SQLTableSchema(table_name='care_site')),
@@ -57,6 +70,7 @@ class CdmLLMQuery(SQLTableRetrieverQueryEngine):
             self._table_schema_objs,
             self._table_node_mapping,
             VectorStoreIndex,
+            service_context=self._service_context,
         )
 
         if table_retriever is None:
@@ -64,13 +78,6 @@ class CdmLLMQuery(SQLTableRetrieverQueryEngine):
 
         self._table_retriever = table_retriever
 
-        if service_context is None:
-            if llm is None:
-                raise ValueError("Must provide either llm or service_context")
-            service_context = ServiceContext.from_defaults(llm=llm)
-            self._llm = llm
-
-        self._service_context = service_context
 
         super().__init__(
             sql_database,

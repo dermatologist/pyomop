@@ -4,7 +4,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from sqlalchemy import MetaData, create_engine, insert, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError, ProgrammingError
-
+import asyncio
 
 class SQLDatabase:
     """SQL Database.
@@ -179,11 +179,11 @@ class SQLDatabase:
             return sorted(self._include_tables)
         return sorted(self._all_tables - self._ignore_tables)
 
-    async def get_table_columns(self, table_name: str) -> List[Any]:
+    def get_table_columns(self, table_name: str) -> List[Any]:
         """Get table columns."""
-        return await self._inspector.get_columns(table_name)
+        return asyncio.run(self._inspector.get_columns(table_name))
 
-    async def get_single_table_info(self, table_name: str) -> str:
+    def get_single_table_info(self, table_name: str) -> str:
         """Get table info for a single table."""
         # same logic as table_info, but with specific table names
         template = (
@@ -191,7 +191,7 @@ class SQLDatabase:
             "and foreign keys: {foreign_keys}."
         )
         columns = []
-        for column in await self._inspector.get_clumns(table_name):
+        for column in asyncio.run(self._inspector.get_columns(table_name)):
             if column.get("comment"):
                 columns.append(
                     f"{column['name']} ({column['type']!s}): "
