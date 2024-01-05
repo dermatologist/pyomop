@@ -13,12 +13,12 @@ from typing import Any, Optional
 from llama_index.prompts import BasePromptTemplate
 from llama_index.objects.base import ObjectRetriever
 from langchain.embeddings import HuggingFaceEmbeddings
-from .llm_engine import SQLDatabase
+from .llm_engine import CDMDatabase
 
 class CdmLLMQuery(SQLTableRetrieverQueryEngine):
     def __init__(
         self,
-            sql_database: SQLDatabase,
+            sql_database: CDMDatabase,
             table_retriever: ObjectRetriever[SQLTableSchema] = None,
             text_to_sql_prompt: Optional[BasePromptTemplate] = None,
             context_query_kwargs: Optional[dict] = None,
