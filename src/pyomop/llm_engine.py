@@ -4,7 +4,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 from sqlalchemy import MetaData, create_engine, insert, inspect, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.exc import OperationalError, ProgrammingError
-import asyncio
+from . import metadata
 
 class SQLDatabase:
     """SQL Database.
@@ -41,7 +41,6 @@ class SQLDatabase:
         self,
         engine: Engine,
         schema: Optional[str] = None,
-        metadata: Optional[MetaData] = None,
         ignore_tables: Optional[List[str]] = None,
         include_tables: Optional[List[str]] = None,
         sample_rows_in_table_info: int = 3,
@@ -55,64 +54,13 @@ class SQLDatabase:
         self._schema = schema
         if include_tables and ignore_tables:
             raise ValueError("Cannot specify both include_tables and ignore_tables")
-        self._inspector = self.setup(
-            engine,
-            schema,
-            metadata,
-            ignore_tables,
-            include_tables,
-            sample_rows_in_table_info,
-            indexes_in_table_info,
-            custom_table_info,
-            view_support,
-            max_string_length,
-        )
 
-
-    @property
-    def engine(self) -> Engine:
-        """Return SQL Alchemy engine."""
-        return self._engine
-
-    @property
-    def metadata_obj(self) -> MetaData:
-        """Return SQL Alchemy metadata."""
-        return self._metadata
-
-    @classmethod
-    def from_uri(
-        cls, database_uri: str, engine_args: Optional[dict] = None, **kwargs: Any
-    ) -> "SQLDatabase":
-        """Construct a SQLAlchemy engine from URI."""
-        _engine_args = engine_args or {}
-        return cls(create_engine(database_uri, **_engine_args), **kwargs)
-
-    @property
-    def dialect(self) -> str:
-        """Return string representation of dialect to use."""
-        return self._engine.dialect.name
-
-    async def setup(
-            self,
-            engine,
-            schema: Optional[str] = None,
-            metadata: Optional[MetaData] = None,
-            ignore_tables: Optional[List[str]] = None,
-            include_tables: Optional[List[str]] = None,
-            sample_rows_in_table_info: int = 3,
-            indexes_in_table_info: bool = False,
-            custom_table_info: Optional[dict] = None,
-            view_support: bool = False,
-            max_string_length: int = 300,
-            ) -> None:
         # self._inspector = inspect(self._engine)
-        _inspector = await self.get_inspector(engine)
 
         # including view support by adding the views as well as tables to the all
         # tables list if view_support is True
         self._all_tables = set(
-            _inspector.get_table_names(schema=schema)
-            + (_inspector.get_view_names(schema=schema) if view_support else [])
+           metadata.tables.keys()
         )
 
         self._include_tables = set(include_tables) if include_tables else set()
@@ -157,21 +105,35 @@ class SQLDatabase:
 
         self._metadata = metadata or MetaData()
         # including view support if view_support = true
-        self._metadata.reflect(
-            views=view_support,
-            bind=self._engine,
-            only=list(self._usable_tables),
-            schema=self._schema,
-        )
-        return _inspector
+        # self._metadata.reflect(
+        #     views=view_support,
+        #     bind=self._engine,
+        #     only=list(self._usable_tables),
+        #     schema=self._schema,
+        # )
 
-    async def get_inspector(self, engine: Engine) -> Any:
-        """Return inspector."""
-        async with engine.connect() as conn:
-            _inspect = await conn.run_sync(
-                lambda sync_conn: inspect(sync_conn)
-            )
-        return _inspect
+    @property
+    def engine(self) -> Engine:
+        """Return SQL Alchemy engine."""
+        return self._engine
+
+    @property
+    def metadata_obj(self) -> MetaData:
+        """Return SQL Alchemy metadata."""
+        return self._metadata
+
+    @classmethod
+    def from_uri(
+        cls, database_uri: str, engine_args: Optional[dict] = None, **kwargs: Any
+    ) -> "SQLDatabase":
+        """Construct a SQLAlchemy engine from URI."""
+        _engine_args = engine_args or {}
+        return cls(create_engine(database_uri, **_engine_args), **kwargs)
+
+    @property
+    def dialect(self) -> str:
+        """Return string representation of dialect to use."""
+        return self._engine.dialect.name
 
     def get_usable_table_names(self) -> Iterable[str]:
         """Get names of tables available."""
@@ -181,7 +143,7 @@ class SQLDatabase:
 
     def get_table_columns(self, table_name: str) -> List[Any]:
         """Get table columns."""
-        return asyncio.run(self._inspector.get_columns(table_name))
+        return metadata.tables[table_name].columns.keys()
 
     def get_single_table_info(self, table_name: str) -> str:
         """Get table info for a single table."""
@@ -191,22 +153,37 @@ class SQLDatabase:
             "and foreign keys: {foreign_keys}."
         )
         columns = []
-        for column in asyncio.run(self._inspector.get_columns(table_name)):
-            if column.get("comment"):
-                columns.append(
-                    f"{column['name']} ({column['type']!s}): "
-                    f"'{column.get('comment')}'"
-                )
-            else:
-                columns.append(f"{column['name']} ({column['type']!s})")
-
-        column_str = ", ".join(columns)
+        # print(metadata.tables[table_name].foreign_keys)
         foreign_keys = []
-        for foreign_key in self._inspector.get_foreign_keys(table_name):
-            foreign_keys.append(
-                f"{foreign_key['constrained_columns']} -> "
-            )
+        for column in metadata.tables[table_name].columns:
+            columns.append(f"{column.name} ({column.type!s})")
+            for foreign_key in column.foreign_keys:
+                foreign_keys.append(
+                    f"{column.name} -> "
+                    f"{foreign_key.column.table.name}.{foreign_key.column.name}"
+                )
+        column_str = ", ".join(columns)
         foreign_key_str = ", ".join(foreign_keys)
+        print(column_str)
+        print(foreign_key_str)
+
+
+        #     if column.get("comment"):
+        #         columns.append(
+        #             f"{column['name']} ({column['type']!s}): "
+        #             f"'{column.get('comment')}'"
+        #         )
+        #     else:
+        #         columns.append(f"{column['name']} ({column['type']!s})")
+
+        # column_str = ", ".join(columns)
+        # foreign_keys = []
+        # for foreign_key in self._inspector.get_foreign_keys(table_name):
+        #     foreign_keys.append(
+        #         f"{foreign_key['constrained_columns']} -> "
+        #         f"{foreign_key['referred_table']}.{foreign_key['referred_columns']}"
+        #     )
+        # foreign_key_str = ", ".join(foreign_keys)
         return template.format(
             table_name=table_name, columns=column_str, foreign_keys=foreign_key_str
         )
