@@ -25,15 +25,15 @@ async def create_llm_query(pyomop_fixture,engine):
         await session.commit()
 
 
-    llm = Vertex(
-        model="chat-bison",
-    )
-    sql_database = CDMDatabase(engine, include_tables=[
-        "cohort",
-    ])
-    query_engine = CdmLLMQuery(sql_database, llm=llm)
+        llm = Vertex(
+            model="chat-bison",
+        )
+        sql_database = CDMDatabase(engine, include_tables=[
+            "cohort",
+        ])
+        query_engine = CdmLLMQuery(sql_database, llm=llm)
 
-    response  = query_engine.query("Show all cohorts?")
+        response  = query_engine.query("Show all cohorts?")
     print(response)
     await session.close()
     await engine.dispose()
