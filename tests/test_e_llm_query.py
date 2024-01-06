@@ -13,7 +13,7 @@ def test_create_cohort(pyomop_fixture, metadata_fixture, capsys):
 
 async def create_llm_query(pyomop_fixture,engine):
     response = "I'm running in CI with no LLM"
-    if "CI" not in os.environ or not os.environ["CI"] or "TOXINIDIR" not in os.environ or "DOCSDIR" not in os.environ:
+    try:
         from src.pyomop import Cohort, CdmLLMQuery
         from llama_index.llms import Vertex
         from src.pyomop.llm_engine import CDMDatabase
@@ -35,6 +35,8 @@ async def create_llm_query(pyomop_fixture,engine):
             query_engine = CdmLLMQuery(sql_database, llm=llm)
 
             response  = query_engine.query("Show each in table cohort with a subject id of 100?")
+    except ImportError:
+        pass
     ## If we are running in CI, we don't have access to the LLM
     print(response)
     await session.close()
