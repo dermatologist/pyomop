@@ -1,8 +1,15 @@
+"""Example of using LLMs with PyOMOP
+git clone https://github.com/dermatologist/pyomop.git@develop
+cd pyomop
+pip install -e .[llm]
+"""
+
 from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata, CdmLLMQuery, CDMDatabase
 from sqlalchemy.future import select
 import datetime
 import asyncio
-# Import any LLMs that llama_index supports
+# Import any LLMs that llama_index supports and you have access to
+# Require OpenAI API key to use OpenAI LLMs
 from llama_index.llms import Vertex, OpenAI, AzureOpenAI
 
 async def main():
@@ -16,10 +23,11 @@ async def main():
     # Create Tables if required
     await cdm.init_models(metadata)
 
-
     # Add a cohort
     async with cdm.session() as session:
         async with session.begin():
+
+            # Adding  a cohort just for the example (not required if you have a OMOP CDM database)
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
                 cohort_end_date=datetime.datetime.now(),
                 cohort_start_date=datetime.datetime.now()))
