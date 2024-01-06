@@ -1,11 +1,15 @@
 import sys
-
+import logging
+_logger = logging.getLogger(__name__)
 from .engine_factory import CdmEngineFactory
 from .cdm6_tables import metadata
 from .vocabulary import CdmVocabulary
 from .vector import CdmVector
-from .llm_query import CdmLLMQuery
-from .llm_engine import CDMDatabase
+try:
+    from .llm_query import CdmLLMQuery
+    from .llm_engine import CDMDatabase
+except ImportError:
+    _logger.warn("LLM is not installed. Please install LLM with pip install pyomop[llm] to use this package.")
 
 from .cdm6_tables import AttributeDefinition
 from .cdm6_tables import CareSite
