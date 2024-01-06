@@ -13,7 +13,7 @@ def test_create_cohort(pyomop_fixture, metadata_fixture, capsys):
 
 async def create_llm_query(pyomop_fixture,engine):
     response = "I'm running in CI with no LLM"
-    if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ or "DOCSDIR" not in os.environ:
+    if "CI" not in os.environ or not os.environ["CI"] or "TOXINIDIR" not in os.environ or "DOCSDIR" not in os.environ:
         from src.pyomop import Cohort, CdmLLMQuery
         from llama_index.llms import Vertex
         from src.pyomop.llm_engine import CDMDatabase
