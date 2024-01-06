@@ -22,18 +22,18 @@ async def main():
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
                 cohort_end_date=datetime.datetime.now(),
                 cohort_start_date=datetime.datetime.now()))
-        await session.commit()
+            await session.commit()
 
-        # Use any LLM that llama_index supports
-        llm = Vertex(
-            model="chat-bison",
-        )
-        sql_database = CDMDatabase(engine, include_tables=[
-            "cohort",
-        ])
-        query_engine = CdmLLMQuery(sql_database, llm=llm)
+            # Use any LLM that llama_index supports
+            llm = Vertex(
+                model="chat-bison",
+            )
+            sql_database = CDMDatabase(engine, include_tables=[
+                "cohort",
+            ])
+            query_engine = CdmLLMQuery(sql_database, llm=llm)
 
-        response  = query_engine.query("Show each in table cohort with a subject id of 100?")
+            response  = query_engine.query("Show each in table cohort with a subject id of 100?")
     print(response)
 
     # Close session
