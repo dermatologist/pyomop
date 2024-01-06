@@ -15,7 +15,6 @@ def test_create_cohort(pyomop_fixture, metadata_fixture, capsys):
 async def create_llm_query(pyomop_fixture,engine):
     from src.pyomop import Cohort, CdmLLMQuery
     import datetime
-    from sqlalchemy.future import select
 
     # Add a cohort
     async with pyomop_fixture.session() as session:
@@ -27,7 +26,7 @@ async def create_llm_query(pyomop_fixture,engine):
 
         response = "I'm running in CI with no LLM"
         if "CI" not in os.environ or not os.environ["CI"] or "GITHUB_RUN_ID" not in os.environ or "DOCSDIR" not in os.environ:
-
+            # Use any LLM that llama_index supports
             llm = Vertex(
                 model="chat-bison",
             )
