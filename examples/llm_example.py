@@ -4,16 +4,17 @@ cd pyomop
 pip install -e .[llm]
 """
 
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata, CdmLLMQuery, CDMDatabase
-from sqlalchemy.future import select
+from pyomop import CdmEngineFactory, Cohort, metadata, CdmLLMQuery, CDMDatabase
 import datetime
 import asyncio
 # Import any LLMs that llama_index supports and you have access to
 # Require OpenAI API key to use OpenAI LLMs
-from llama_index.llms import Vertex, OpenAI, AzureOpenAI
+from llama_index.llms import Vertex
 
 async def main():
-    cdm = CdmEngineFactory()  # Creates SQLite database by default
+    # Create a sqllite database by default
+    # You can also connect to an existing CDM database using the CdmEngineFactory
+    cdm = CdmEngineFactory()
     # Postgres example below (db='mysql' also supported)
     # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
     #                       user='', pw='',
@@ -23,7 +24,6 @@ async def main():
     # Create Tables if required
     await cdm.init_models(metadata)
 
-    # Add a cohort
     async with cdm.session() as session:
         async with session.begin():
 
