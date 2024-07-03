@@ -108,7 +108,7 @@ tomli==1.2.1
     # via setuptools-scm
 tox==3.24.5
     # via -r dev-requirements.in
-urllib3==1.26.18
+urllib3==1.26.19
     # via requests
 virtualenv==20.8.0
     # via tox
