@@ -33,7 +33,7 @@ def cli(verbose, create, dbtype, host, port, user, pw, name, schema, vocab):
         # initialize default engine
         engine = cdm.engine
         asyncio.run(cdm.init_models(metadata))
-    if vocab is not '':
+    if vocab != '':
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
         _vocab = CdmVocabulary(cdm)
         _vocab.create_vocab(vocab)
