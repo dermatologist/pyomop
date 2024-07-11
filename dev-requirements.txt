@@ -64,7 +64,7 @@ pytest==6.2.5
     # via
     #   -r dev-requirements.in
     #   pytest-cov
-pytest-cov==3.0.0
+pytest-cov==5.0.0
     # via -r dev-requirements.in
 pytz==2024.1
     # via
