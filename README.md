@@ -10,12 +10,12 @@
 ### [Documentation](https://dermatologist.github.io/pyomop/)
 
 ## UPDATE
-Recently added support for **LLM based natural language queries** of OMOP CDM databases using [llama-index](examples/llm_example.py). Please install the llm extras from the develop branch as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. [See usage](examples/llm_example.py)!
+Recently added support for **LLM based natural language queries** of OMOP CDM databases using [llama-index](examples/llm_example.py). Please install the llm extras as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. [See usage](examples/llm_example.py)!
 
 ```
 git clone https://github.com/dermatologist/pyomop.git@develop
 cd pyomop
-pip install -e .[llm]
+pip install pyomop[llm]
 ```
 [See usage](examples/llm_example.py).
 
