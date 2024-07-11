@@ -9,6 +9,16 @@
 
 ### [Documentation](https://dermatologist.github.io/pyomop/)
 
+## UPDATE
+Recently added support for **LLM based natural language queries** of OMOP CDM databases using [llama-index](examples/llm_example.py). Please install the llm extras as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. [See usage](examples/llm_example.py)!
+
+```
+git clone https://github.com/dermatologist/pyomop.git@develop
+cd pyomop
+pip install pyomop[llm]
+```
+[See usage](examples/llm_example.py).
+
 ## Description
 
 The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)

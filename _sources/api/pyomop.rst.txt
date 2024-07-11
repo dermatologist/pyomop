@@ -20,6 +20,22 @@ pyomop.engine\_factory module
    :undoc-members:
    :show-inheritance:
 
+pyomop.llm\_engine module
+-------------------------
+
+.. automodule:: pyomop.llm_engine
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+pyomop.llm\_query module
+------------------------
+
+.. automodule:: pyomop.llm_query
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 pyomop.main module
 ------------------
 

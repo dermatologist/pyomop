@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/4.2.0...HEAD)
+
+**Closed issues:**
+
+- Google Cloud Platform Compatibility [\#9](https://github.com/dermatologist/pyomop/issues/9)
+
+## [4.2.0](https://github.com/dermatologist/pyomop/tree/4.2.0) (2023-11-19)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/4.1.0...4.2.0)
+
 ## [4.1.0](https://github.com/dermatologist/pyomop/tree/4.1.0) (2023-11-19)
 
 [Full Changelog](https://github.com/dermatologist/pyomop/compare/4.0.0...4.1.0)

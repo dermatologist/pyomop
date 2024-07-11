@@ -66,7 +66,7 @@
         <span class="c1"># initialize default engine</span>
         <span class="n">engine</span> <span class="o">=</span> <span class="n">cdm</span><span class="o">.</span><span class="n">engine</span>
         <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">cdm</span><span class="o">.</span><span class="n">init_models</span><span class="p">(</span><span class="n">metadata</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">vocab</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">vocab</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
         <span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">(</span><span class="n">dbtype</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">,</span> <span class="n">user</span><span class="p">,</span> <span class="n">pw</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">schema</span><span class="p">)</span>
         <span class="n">_vocab</span> <span class="o">=</span> <span class="n">CdmVocabulary</span><span class="p">(</span><span class="n">cdm</span><span class="p">)</span>
         <span class="n">_vocab</span><span class="o">.</span><span class="n">create_vocab</span><span class="p">(</span><span class="n">vocab</span><span class="p">)</span>
