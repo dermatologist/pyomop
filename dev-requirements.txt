@@ -4,11 +4,11 @@
 #
 #    pip-compile dev-requirements.in
 #
-alabaster==0.7.12
+alabaster==0.7.16
     # via sphinx
 attrs==21.2.0
     # via pytest
-babel==2.9.1
+babel==2.15.0
     # via sphinx
 backports-entry-points-selectable==1.1.0
     # via virtualenv
@@ -22,7 +22,7 @@ coverage[toml]==5.5
     # via pytest-cov
 distlib==0.3.2
     # via virtualenv
-docutils==0.17.1
+docutils==0.21.2
     # via
     #   recommonmark
     #   sphinx
@@ -32,7 +32,7 @@ filelock==3.0.12
     #   virtualenv
 idna==3.2
     # via requests
-imagesize==1.2.0
+imagesize==1.4.1
     # via sphinx
 iniconfig==1.1.1
     # via pytest
@@ -40,7 +40,7 @@ jinja2==3.1.4
     # via sphinx
 markupsafe==2.0.1
     # via jinja2
-packaging==21.0
+packaging==24.1
     # via
     #   pytest
     #   setuptools-scm
@@ -56,20 +56,14 @@ py==1.10.0
     # via
     #   pytest
     #   tox
-pygments==2.15.0
+pygments==2.18.0
     # via sphinx
-pyparsing==2.4.7
-    # via packaging
 pytest==6.2.5
     # via
     #   -r dev-requirements.in
     #   pytest-cov
 pytest-cov==3.0.0
     # via -r dev-requirements.in
-pytz==2024.1
-    # via
-    #   -c requirements.txt
-    #   babel
 recommonmark==0.7.1
     # via -r dev-requirements.in
 requests==2.32.2
@@ -81,9 +75,9 @@ six==1.16.0
     #   -c requirements.txt
     #   tox
     #   virtualenv
-snowballstemmer==2.1.0
+snowballstemmer==2.2.0
     # via sphinx
-sphinx==4.2.0
+sphinx==7.4.0
     # via
     #   -r dev-requirements.in
     #   recommonmark
@@ -97,15 +91,17 @@ sphinxcontrib-jsmath==1.0.1
     # via sphinx
 sphinxcontrib-qthelp==1.0.3
     # via sphinx
-sphinxcontrib-serializinghtml==1.1.5
+sphinxcontrib-serializinghtml==1.1.10
     # via sphinx
 toml==0.10.2
     # via
     #   coverage
     #   pytest
     #   tox
-tomli==1.2.1
-    # via setuptools-scm
+tomli==2.0.1
+    # via
+    #   setuptools-scm
+    #   sphinx
 tox==3.24.5
     # via -r dev-requirements.in
 urllib3==1.26.19
