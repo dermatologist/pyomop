@@ -112,7 +112,7 @@ urllib3==1.26.19
     # via requests
 virtualenv==20.8.0
     # via tox
-wheel==0.37.1
+wheel==0.44.0
     # via -r dev-requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
