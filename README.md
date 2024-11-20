@@ -5,8 +5,6 @@
 [![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
 [![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
 
-* *Inspired by [@jbadger3's](https://github.com/jbadger3) [inspectomop](https://github.com/jbadger3/inspectomop)*
-
 ### [Documentation](https://dermatologist.github.io/pyomop/)
 
 ## UPDATE
