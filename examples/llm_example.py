@@ -1,7 +1,7 @@
 """Example of using LLMs with PyOMOP
-git clone https://github.com/dermatologist/pyomop.git@develop
-cd pyomop
-pip install -e .[llm]
+
+pip install pyomop[llm]
+
 """
 
 from pyomop import CdmEngineFactory, Cohort, metadata, CdmLLMQuery, CDMDatabase
