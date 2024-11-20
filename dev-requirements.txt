@@ -79,7 +79,7 @@ recommonmark==0.7.1
     # via -r dev-requirements.in
 requests==2.32.2
     # via sphinx
-setuptools==75.6.0
+setuptools==70.3.0
     # via
     #   -r dev-requirements.in
     #   setuptools-scm
