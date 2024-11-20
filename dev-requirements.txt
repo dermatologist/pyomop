@@ -2,8 +2,6 @@
 #    uv pip compile dev-requirements.in -o dev-requirements.txt --universal
 alabaster==0.7.12
     # via sphinx
-atomicwrites==1.4.1 ; sys_platform == 'win32'
-    # via pytest
 attrs==21.2.0
     # via pytest
 babel==2.9.1
@@ -14,15 +12,9 @@ certifi==2024.7.4
     # via requests
 charset-normalizer==2.0.6
     # via requests
-colorama==0.4.6 ; sys_platform == 'win32' or platform_system == 'Windows'
-    # via
-    #   -c requirements.txt
-    #   pytest
-    #   sphinx
-    #   tox
 commonmark==0.9.1
     # via recommonmark
-coverage==5.5
+coverage[toml]==5.5
     # via pytest-cov
 distlib==0.3.2
     # via virtualenv
@@ -79,11 +71,6 @@ recommonmark==0.7.1
     # via -r dev-requirements.in
 requests==2.32.2
     # via sphinx
-setuptools==70.3.0
-    # via
-    #   -r dev-requirements.in
-    #   setuptools-scm
-    #   sphinx
 setuptools-scm==6.3.2
     # via -r dev-requirements.in
 six==1.16.0
@@ -122,5 +109,5 @@ urllib3==1.26.19
     # via requests
 virtualenv==20.8.0
     # via tox
-wheel==0.37.1
+wheel==0.45.0
     # via -r dev-requirements.in
