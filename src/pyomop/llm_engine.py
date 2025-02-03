@@ -1,4 +1,5 @@
 """SQL wrapper around SQLDatabase in langchain."""
+
 from typing import Any, List, Optional
 from overrides import override
 
@@ -6,8 +7,9 @@ from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine
 from . import metadata
 from llama_index.utilities.sql_wrapper import SQLDatabase
-class CDMDatabase(SQLDatabase):
 
+
+class CDMDatabase(SQLDatabase):
 
     def __init__(
         self,
@@ -32,9 +34,7 @@ class CDMDatabase(SQLDatabase):
 
         # including view support by adding the views as well as tables to the all
         # tables list if view_support is True
-        self._all_tables = set(
-           metadata.tables.keys()
-        )
+        self._all_tables = set(metadata.tables.keys())
 
         self._include_tables = set(include_tables) if include_tables else set()
         if self._include_tables:
@@ -78,7 +78,6 @@ class CDMDatabase(SQLDatabase):
 
         self._metadata = metadata or MetaData()
 
-
         # including view support if view_support = true
         # self._metadata.reflect(
         #     views=view_support,
@@ -86,7 +85,6 @@ class CDMDatabase(SQLDatabase):
         #     only=list(self._usable_tables),
         #     schema=self._schema,
         # )
-
 
     @override
     def get_table_columns(self, table_name: str) -> List[Any]:
@@ -133,4 +131,3 @@ class CDMDatabase(SQLDatabase):
         return template.format(
             table_name=table_name, columns=column_str, foreign_keys=foreign_key_str
         )
-

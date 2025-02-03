@@ -14,7 +14,4 @@ FROM person
   JOIN concept ON person.gender_concept_id = concept.concept_id
 GROUP BY person.gender_concept_id, concept.concept_name;
 """
-CDMSQL = {
-    "TEST": TEST,
-    "PE03": PE03
-}
+CDMSQL = {"TEST": TEST, "PE03": PE03}

@@ -26,7 +26,7 @@ metadata = Base.metadata
 
 
 class AttributeDefinition(Base):
-    __tablename__ = 'attribute_definition'
+    __tablename__ = "attribute_definition"
 
     # _id = Column(Integer, primary_key=True)
     attribute_definition_id = Column(Integer, primary_key=True)
@@ -37,7 +37,7 @@ class AttributeDefinition(Base):
 
 
 class CareSite(Base):
-    __tablename__ = 'care_site'
+    __tablename__ = "care_site"
 
     # _id = Column(Integer, primary_key=True)
     care_site_id = Column(Integer, primary_key=True)
@@ -49,7 +49,7 @@ class CareSite(Base):
 
 
 class CdmSource(Base):
-    __tablename__ = 'cdm_source'
+    __tablename__ = "cdm_source"
 
     # _id = Column(Integer, primary_key=True)
     cdm_source_name = Column(String(255), primary_key=True)
@@ -65,7 +65,7 @@ class CdmSource(Base):
 
 
 class Cohort(Base):
-    __tablename__ = 'cohort'
+    __tablename__ = "cohort"
 
     _id = Column(Integer, primary_key=True)
     cohort_definition_id = Column(Integer, nullable=False)
@@ -75,7 +75,7 @@ class Cohort(Base):
 
 
 class CohortAttribute(Base):
-    __tablename__ = 'cohort_attribute'
+    __tablename__ = "cohort_attribute"
 
     _id = Column(Integer, primary_key=True)
     cohort_definition_id = Column(Integer, nullable=False)
@@ -88,7 +88,7 @@ class CohortAttribute(Base):
 
 
 class CohortDefinition(Base):
-    __tablename__ = 'cohort_definition'
+    __tablename__ = "cohort_definition"
 
     # _id = Column(Integer, primary_key=True)
     cohort_definition_id = Column(Integer, primary_key=True)
@@ -101,7 +101,7 @@ class CohortDefinition(Base):
 
 
 class Concept(Base):
-    __tablename__ = 'concept'
+    __tablename__ = "concept"
 
     # _id = Column(Integer, primary_key=True)
     concept_id = Column(Integer, primary_key=True)
@@ -117,7 +117,7 @@ class Concept(Base):
 
 
 class ConceptAncestor(Base):
-    __tablename__ = 'concept_ancestor'
+    __tablename__ = "concept_ancestor"
 
     _id = Column(Integer, primary_key=True)
     ancestor_concept_id = Column(Integer, nullable=False)
@@ -127,7 +127,7 @@ class ConceptAncestor(Base):
 
 
 class ConceptClass(Base):
-    __tablename__ = 'concept_class'
+    __tablename__ = "concept_class"
 
     # _id = Column(Integer, primary_key=True)
     concept_class_id = Column(String(20), primary_key=True)
@@ -136,7 +136,7 @@ class ConceptClass(Base):
 
 
 class ConceptRelationship(Base):
-    __tablename__ = 'concept_relationship'
+    __tablename__ = "concept_relationship"
 
     _id = Column(Integer, primary_key=True)
     concept_id_1 = Column(Integer, nullable=False)
@@ -148,7 +148,7 @@ class ConceptRelationship(Base):
 
 
 class ConceptSynonym(Base):
-    __tablename__ = 'concept_synonym'
+    __tablename__ = "concept_synonym"
 
     _id = Column(Integer, primary_key=True)
     concept_id = Column(Integer, nullable=False)
@@ -157,7 +157,7 @@ class ConceptSynonym(Base):
 
 
 class ConditionEra(Base):
-    __tablename__ = 'condition_era'
+    __tablename__ = "condition_era"
 
     # _id = Column(Integer, primary_key=True)
     condition_era_id = Column(Integer, primary_key=True)
@@ -169,7 +169,7 @@ class ConditionEra(Base):
 
 
 class ConditionOccurrence(Base):
-    __tablename__ = 'condition_occurrence'
+    __tablename__ = "condition_occurrence"
 
     # _id = Column(Integer, primary_key=True)
     condition_occurrence_id = Column(Integer, primary_key=True)
@@ -186,7 +186,7 @@ class ConditionOccurrence(Base):
 
 
 class Death(Base):
-    __tablename__ = 'death'
+    __tablename__ = "death"
 
     _id = Column(Integer, primary_key=True)
     person_id = Column(Integer, nullable=False)
@@ -198,7 +198,7 @@ class Death(Base):
 
 
 class DeviceCost(Base):
-    __tablename__ = 'device_cost'
+    __tablename__ = "device_cost"
 
     # _id = Column(Integer, primary_key=True)
     device_cost_id = Column(Integer, primary_key=True)
@@ -215,7 +215,7 @@ class DeviceCost(Base):
 
 
 class DeviceExposure(Base):
-    __tablename__ = 'device_exposure'
+    __tablename__ = "device_exposure"
 
     # _id = Column(Integer, primary_key=True)
     device_exposure_id = Column(Integer, primary_key=True)
@@ -233,7 +233,7 @@ class DeviceExposure(Base):
 
 
 class Domain(Base):
-    __tablename__ = 'domain'
+    __tablename__ = "domain"
 
     # _id = Column(Integer, primary_key=True, nullable=False)
     domain_id = Column(String(20), primary_key=True)
@@ -242,7 +242,7 @@ class Domain(Base):
 
 
 class DoseEra(Base):
-    __tablename__ = 'dose_era'
+    __tablename__ = "dose_era"
 
     # _id = Column(Integer, primary_key=True)
     dose_era_id = Column(Integer, primary_key=True)
@@ -255,7 +255,7 @@ class DoseEra(Base):
 
 
 class DrugCost(Base):
-    __tablename__ = 'drug_cost'
+    __tablename__ = "drug_cost"
 
     # _id = Column(Integer, primary_key=True)
     drug_cost_id = Column(Integer, primary_key=True)
@@ -275,7 +275,7 @@ class DrugCost(Base):
 
 
 class DrugEra(Base):
-    __tablename__ = 'drug_era'
+    __tablename__ = "drug_era"
 
     # _id = Column(Integer, primary_key=True)
     drug_era_id = Column(Integer, primary_key=True)
@@ -288,7 +288,7 @@ class DrugEra(Base):
 
 
 class DrugExposure(Base):
-    __tablename__ = 'drug_exposure'
+    __tablename__ = "drug_exposure"
 
     # _id = Column(Integer, primary_key=True)
     drug_exposure_id = Column(Integer, primary_key=True)
@@ -315,7 +315,7 @@ class DrugExposure(Base):
 
 
 class DrugStrength(Base):
-    __tablename__ = 'drug_strength'
+    __tablename__ = "drug_strength"
 
     # TODO Check this
     # _id = Column(Integer, primary_key=True)
@@ -335,7 +335,7 @@ class DrugStrength(Base):
 
 
 class FactRelationship(Base):
-    __tablename__ = 'fact_relationship'
+    __tablename__ = "fact_relationship"
 
     _id = Column(Integer, primary_key=True)
     domain_concept_id_1 = Column(Integer, nullable=False)
@@ -346,7 +346,7 @@ class FactRelationship(Base):
 
 
 class Location(Base):
-    __tablename__ = 'location'
+    __tablename__ = "location"
 
     # _id = Column(Integer, primary_key=True)
     location_id = Column(Integer, primary_key=True)
@@ -360,7 +360,7 @@ class Location(Base):
 
 
 class Measurement(Base):
-    __tablename__ = 'measurement'
+    __tablename__ = "measurement"
 
     # _id = Column(Integer, primary_key=True)
     measurement_id = Column(Integer, primary_key=True)
@@ -384,7 +384,7 @@ class Measurement(Base):
 
 
 class Note(Base):
-    __tablename__ = 'note'
+    __tablename__ = "note"
 
     # _id = Column(Integer, primary_key=True)
     note_id = Column(Integer, primary_key=True)
@@ -399,7 +399,7 @@ class Note(Base):
 
 
 class Observation(Base):
-    __tablename__ = 'observation'
+    __tablename__ = "observation"
 
     # _id = Column(Integer, primary_key=True)
     observation_id = Column(Integer, primary_key=True)
@@ -422,7 +422,7 @@ class Observation(Base):
 
 
 class ObservationPeriod(Base):
-    __tablename__ = 'observation_period'
+    __tablename__ = "observation_period"
 
     # _id = Column(Integer, primary_key=True)
     observation_period_id = Column(Integer, primary_key=True)
@@ -433,7 +433,7 @@ class ObservationPeriod(Base):
 
 
 class PayerPlanPeriod(Base):
-    __tablename__ = 'payer_plan_period'
+    __tablename__ = "payer_plan_period"
 
     # _id = Column(Integer, primary_key=True)
     payer_plan_period_id = Column(Integer, primary_key=True)
@@ -446,15 +446,15 @@ class PayerPlanPeriod(Base):
 
 
 class Person(Base):
-    __tablename__ = 'person'
+    __tablename__ = "person"
 
-    #_id = Column(Integer, primary_key=True)
+    # _id = Column(Integer, primary_key=True)
     person_id = Column(Integer, primary_key=True)
     gender_concept_id = Column(Integer, nullable=False)
     year_of_birth = Column(Integer, nullable=False)
     month_of_birth = Column(Integer)
     day_of_birth = Column(Integer)
-    #time_of_birth = Column(String(10))
+    # time_of_birth = Column(String(10))
     birth_datetime = Column(String(10))
     death_datetime = Column(String(10))
     race_concept_id = Column(Integer, nullable=False)
@@ -472,7 +472,7 @@ class Person(Base):
 
 
 class ProcedureCost(Base):
-    __tablename__ = 'procedure_cost'
+    __tablename__ = "procedure_cost"
 
     # _id = Column(Integer, primary_key=True)
     procedure_cost_id = Column(Integer, primary_key=True)
@@ -491,7 +491,7 @@ class ProcedureCost(Base):
 
 
 class ProcedureOccurrence(Base):
-    __tablename__ = 'procedure_occurrence'
+    __tablename__ = "procedure_occurrence"
 
     # _id = Column(Integer, primary_key=True)
     procedure_occurrence_id = Column(Integer, primary_key=True)
@@ -509,7 +509,7 @@ class ProcedureOccurrence(Base):
 
 
 class Provider(Base):
-    __tablename__ = 'provider'
+    __tablename__ = "provider"
 
     # _id = Column(Integer, primary_key=True)
     provider_id = Column(Integer, primary_key=True)
@@ -528,7 +528,7 @@ class Provider(Base):
 
 
 class Relationship(Base):
-    __tablename__ = 'relationship'
+    __tablename__ = "relationship"
 
     # _id = Column(Integer, primary_key=True)
     relationship_id = Column(String(20), primary_key=True)
@@ -540,7 +540,7 @@ class Relationship(Base):
 
 
 class SourceToConceptMap(Base):
-    __tablename__ = 'source_to_concept_map'
+    __tablename__ = "source_to_concept_map"
 
     _id = Column(Integer, primary_key=True)
     source_code = Column(String(50), nullable=False)
@@ -555,7 +555,7 @@ class SourceToConceptMap(Base):
 
 
 class Speciman(Base):
-    __tablename__ = 'specimen'
+    __tablename__ = "specimen"
 
     # _id = Column(Integer, primary_key=True)
     specimen_id = Column(Integer, primary_key=True)
@@ -576,7 +576,7 @@ class Speciman(Base):
 
 
 class VisitCost(Base):
-    __tablename__ = 'visit_cost'
+    __tablename__ = "visit_cost"
 
     # _id = Column(Integer, primary_key=True)
     visit_cost_id = Column(Integer, primary_key=True)
@@ -593,7 +593,7 @@ class VisitCost(Base):
 
 
 class VisitOccurrence(Base):
-    __tablename__ = 'visit_occurrence'
+    __tablename__ = "visit_occurrence"
 
     # _id = Column(Integer, primary_key=True)
     visit_occurrence_id = Column(BigInteger, primary_key=True)
@@ -611,7 +611,7 @@ class VisitOccurrence(Base):
 
 
 class Vocabulary(Base):
-    __tablename__ = 'vocabulary'
+    __tablename__ = "vocabulary"
 
     # _id = Column(Integer, primary_key=True)
     vocabulary_id = Column(String(20), primary_key=True)
