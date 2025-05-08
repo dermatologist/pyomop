@@ -9,7 +9,7 @@ import datetime
 import asyncio
 # Import any LLMs that llama_index supports and you have access to
 # Require OpenAI API key to use OpenAI LLMs
-from llama_index.llms import Vertex
+from llama_index.llms.google_genai import GoogleGenAI
 
 async def main():
     # Create a sqllite database by default
@@ -34,8 +34,9 @@ async def main():
             await session.commit()
 
             # Use any LLM that llama_index supports
-            llm = Vertex(
-                model="chat-bison",
+            llm = GoogleGenAI(
+                model="gemini-2.0-flash",
+                api_key="some-key",  # Replace this with your key
             )
             # Include tables that you want to query
             sql_database = CDMDatabase(engine, include_tables=[
