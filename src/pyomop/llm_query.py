@@ -1,52 +1,32 @@
-from typing import Any
-from llama_index.indices.struct_store.sql_query import (
+from typing import Any, Optional
+from llama_index.core.indices.struct_store.sql_query import (
     SQLTableRetrieverQueryEngine,
 )
-from llama_index.objects import (
+from llama_index.core.objects import (
     SQLTableNodeMapping,
     ObjectIndex,
     SQLTableSchema,
 )
-from llama_index import VectorStoreIndex
-from llama_index import ServiceContext
-from typing import Any, Optional
-from llama_index.prompts import BasePromptTemplate
-from llama_index.objects.base import ObjectRetriever
-from langchain.embeddings import HuggingFaceEmbeddings
+from llama_index.core import VectorStoreIndex
+from langchain_huggingface import HuggingFaceEmbeddings
+from llama_index.core import Settings
 from .llm_engine import CDMDatabase
 
 
-class CdmLLMQuery(SQLTableRetrieverQueryEngine):
+class CdmLLMQuery:
     def __init__(
         self,
         sql_database: CDMDatabase,
-        table_retriever: ObjectRetriever[SQLTableSchema] = None,
-        text_to_sql_prompt: Optional[BasePromptTemplate] = None,
-        context_query_kwargs: Optional[dict] = None,
-        synthesize_response: bool = True,
-        response_synthesis_prompt: Optional[BasePromptTemplate] = None,
-        service_context: Optional[ServiceContext] = None,
-        context_str_prefix: Optional[str] = None,
-        sql_only: bool = False,
         llm: Optional[Any] = None,  # FIXME: type
         similarity_top_k: int = 1,
         **kwargs: Any,
     ):
         self._sql_database = sql_database
         self._similarity_top_k = similarity_top_k
-        embed_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
-
-        if service_context is None:
-            if llm is None:
-                raise ValueError("Must provide either llm or service_context")
-            service_context = ServiceContext.from_defaults(
-                llm=llm,
-                embed_model=embed_model,
-            )
-            self._llm = llm
-
-        self._service_context = service_context
-
+        self._embed_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+        self._llm = llm
+        Settings.llm = llm
+        Settings.embed_model = self._embed_model
         self._table_node_mapping = SQLTableNodeMapping(sql_database)
         self._table_schema_objs = [
             (SQLTableSchema(table_name="care_site")),
@@ -71,25 +51,32 @@ class CdmLLMQuery(SQLTableRetrieverQueryEngine):
             self._table_schema_objs,
             self._table_node_mapping,
             VectorStoreIndex,
-            service_context=self._service_context,
         )
 
-        if table_retriever is None:
-            table_retriever = self._object_index.as_retriever(
-                similarity_top_k=similarity_top_k
-            )
 
-        self._table_retriever = table_retriever
-
-        super().__init__(
-            sql_database,
-            table_retriever,
-            text_to_sql_prompt,
-            context_query_kwargs,
-            synthesize_response,
-            response_synthesis_prompt,
-            service_context,
-            context_str_prefix,
-            sql_only,
-            **kwargs,
+        self._query_engine = SQLTableRetrieverQueryEngine(
+            self._sql_database, self._object_index.as_retriever(similarity_top_k=1)
         )
+
+
+    @property
+    def sql_database(self) -> CDMDatabase:
+        return self._sql_database
+    @property
+    def embed_model(self) -> HuggingFaceEmbeddings:
+        return self._embed_model
+    @property
+    def llm(self) -> Any:
+        return self._llm
+    @property
+    def table_node_mapping(self) -> SQLTableNodeMapping:
+        return self._table_node_mapping
+    @property
+    def table_schema_objs(self) -> list[SQLTableSchema]:
+        return self._table_schema_objs
+    @property
+    def object_index(self) -> ObjectIndex:
+        return self._object_index
+    @property
+    def query_engine(self) -> SQLTableRetrieverQueryEngine:
+        return self._query_engine
