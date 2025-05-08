@@ -6,6 +6,7 @@ from . import metadata
 from . import __version__
 
 
+
 @click.command()
 @click.option("--verbose", "-v", is_flag=True, help="Will print verbose messages.")
 @click.option(
@@ -16,7 +17,7 @@ from . import __version__
     "-t",
     multiple=False,
     default="sqlite",
-    help="Database Type for creating CDM (sqlite, mysql or pgsql",
+    help="Database Type for creating CDM (sqlite, mysql or pgsql)",
 )
 @click.option("--host", "-h", multiple=False, default="localhost", help="Database host")
 @click.option("--port", "-p", multiple=False, default="5432", help="Database port")
