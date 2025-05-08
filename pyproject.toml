@@ -1,8 +1,89 @@
 [build-system]
-# AVOID CHANGING REQUIRES: IT WILL BE UPDATED BY PYSCAFFOLD!
-requires = ["setuptools>=46.1.0", "setuptools_scm[toml]>=5", "wheel"]
+requires = ["setuptools>=77.0.0", "wheel", "pip"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools_scm]
-# See configuration details in https://github.com/pypa/setuptools_scm
-version_scheme = "no-guess-dev"
+[project]
+name = "pyomop"
+description = "OMOP CDM utils in Python"
+license = "GPL-3.0"
+classifiers = [ "Intended Audience :: Science/Research", "Development Status :: 4 - Beta", "Operating System :: OS Independent", "Programming Language :: Python", "Programming Language :: Python :: 3.10", "Programming Language :: Python :: 3.11", "Topic :: Scientific/Engineering :: Information Analysis",]
+requires-python = ">=3.10, <3.12"
+dependencies = [ "importlib-metadata; python_version<\"3.8\"", "sqlalchemy>=1.4", "click", "pandas", "aiosqlite",]
+dynamic = [ "version",]
+
+[[project.authors]]
+name = "Bell Eapen"
+email = "github@gulfdoctor.net"
+
+
+[project.readme]
+file = "README.md"
+content-type = "text/markdown; charset=UTF-8"
+
+[project.urls]
+Homepage = "https://github.com/dermatologist/pyomop"
+Documentation = "https://dermatologist.github.io/pyomop/"
+
+[project.optional-dependencies]
+llm = [ "llama-index", "llama-index-experimental", "langchain", "langchain-community", "langchain-huggingface", "llama-index-embeddings-langchain", "overrides", "llama-index-llms-google-genai",]
+testing = [ "setuptools", "pytest", "pytest-cov",]
+dev = [
+    "setuptools>=77.0.0",
+    "packaging>=24.2",
+    "setuptools_scm",
+    "pytest",
+    "pytest-cov",
+    "tox",
+    "black",
+    "recommonmark",
+    "sphinx",
+    "wheel",
+    "twine",
+    "build",
+]
+
+[project.scripts]
+pyomop = "pyomop.main:main_routine"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = true
+platforms = [ "any",]
+
+[tool.test]
+extras = "True"
+
+[tool.aliases]
+dists = "bdist_wheel"
+
+[tool.flake8]
+exclude = "\n.tox\nbuild\ndist\n.eggs\ndocs/conf.py"
+
+[tool.pyscaffold]
+version = "4.0.2"
+package = "pyomop"
+extensions = "\ntravis\ntox\nmarkdown"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.pytest.ini_options]
+addopts = "\n--verbose"
+norecursedirs = [ "dist", "build", ".tox",]
+testpaths = [ "tests",]
+
+[tool.distutils.bdist_wheel]
+universal = 1
+
+[tool.distutils.build_sphinx]
+source-dir = "docs"
+build-dir = "build/sphinx"
+
+[tool.devpi.upload]
+no-vcs = "1"
+formats = "bdist_wheel"
+
+[tool.setuptools.packages.find]
+where = [ "src"]
+exclude = [ "tests", "notes", "docs"]
+namespaces = true
