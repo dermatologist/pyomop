@@ -42,7 +42,7 @@ async def main():
             sql_database = CDMDatabase(engine, include_tables=[
                 "cohort",
             ])
-            query_engine = CdmLLMQuery(sql_database, llm=llm)
+            query_engine = CdmLLMQuery(sql_database, llm=llm).query_engine
             # Try any complex query.
             response  = query_engine.query("Show each in table cohort with a subject id of 100?")
     print(response)

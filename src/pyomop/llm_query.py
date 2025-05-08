@@ -17,13 +17,14 @@ class CdmLLMQuery:
     def __init__(
         self,
         sql_database: CDMDatabase,
-        llm: Optional[Any] = None,  # FIXME: type
+        llm: Any = None,  # FIXME: type
         similarity_top_k: int = 1,
+        embed_model: str = "BAAI/bge-small-en-v1.5",
         **kwargs: Any,
     ):
         self._sql_database = sql_database
         self._similarity_top_k = similarity_top_k
-        self._embed_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+        self._embed_model = HuggingFaceEmbeddings(model_name=embed_model)
         self._llm = llm
         Settings.llm = llm
         Settings.embed_model = self._embed_model
@@ -59,15 +60,6 @@ class CdmLLMQuery:
         )
 
 
-    @property
-    def sql_database(self) -> CDMDatabase:
-        return self._sql_database
-    @property
-    def embed_model(self) -> HuggingFaceEmbeddings:
-        return self._embed_model
-    @property
-    def llm(self) -> Any:
-        return self._llm
     @property
     def table_node_mapping(self) -> SQLTableNodeMapping:
         return self._table_node_mapping
