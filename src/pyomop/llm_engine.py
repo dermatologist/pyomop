@@ -6,7 +6,7 @@ from overrides import override
 from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine
 from . import metadata
-from llama_index.utilities.sql_wrapper import SQLDatabase
+from llama_index.core import SQLDatabase
 
 
 class CDMDatabase(SQLDatabase):
