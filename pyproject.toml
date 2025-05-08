@@ -85,5 +85,5 @@ formats = "bdist_wheel"
 
 [tool.setuptools.packages.find]
 where = [ "src"]
-exclude = [ "tests", "notes", "docs"]
+exclude = [ "tests", "notes", "docs", "examples", "notebooks",]
 namespaces = true
