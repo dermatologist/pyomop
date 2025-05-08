@@ -16,7 +16,7 @@ from . import __version__
     "-t",
     multiple=False,
     default="sqlite",
-    help="Database Type for creating CDM (sqlite, mysql or pgsql",
+    help="Database Type for creating CDM (sqlite, mysql or pgsql)",
 )
 @click.option("--host", "-h", multiple=False, default="localhost", help="Database host")
 @click.option("--port", "-p", multiple=False, default="5432", help="Database port")
