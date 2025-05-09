@@ -8,12 +8,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
+
 class CdmEngineFactory(object):
 
-    def __init__(self, db = 'sqlite',
-                host = 'localhost', port = 5432,
-                user = 'root', pw='pass',
-                name = 'cdm6.sqlite', schema = 'public'):
+    def __init__(
+        self,
+        db="sqlite",
+        host="localhost",
+        port=5432,
+        user="root",
+        pw="pass",
+        name="cdm6.sqlite",
+        schema="public",
+    ):
         self._db = db
         self._name = name
         self._host = host
@@ -28,7 +35,6 @@ class CdmEngineFactory(object):
         async with self._engine.begin() as conn:
             await conn.run_sync(metadata.drop_all)
             await conn.run_sync(metadata.create_all)
-
 
     @property
     def db(self):
@@ -72,35 +78,44 @@ class CdmEngineFactory(object):
 
     @property
     def engine(self):
-        if self._db == 'sqlite':
-            self._engine = create_async_engine("sqlite+aiosqlite:///"+self._name)
-        if self._db == 'mysql':
-            mysql_url = 'mysql://{}:{}@{}:{}/{}'
-            mysql_url = mysql_url.format(self._user, self._pw, self._host, self._port, self._name)
-            self._engine = create_async_engine(mysql_url, isolation_level="READ UNCOMMITTED")
-        if self._db == 'pgsql':
-            # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
-            dbschema = '{},public'  # Searches left-to-right
-            dbschema = dbschema.format(self._schema)
-            pgsql_url = 'postgresql+psycopg2://{}:{}@{}:{}/{}'
-            pgsql_url = pgsql_url.format(self._user, self._pw,
-                                        self._host, self._port, self._name)
+        if self._db == "sqlite":
+            self._engine = create_async_engine("sqlite+aiosqlite:///" + self._name)
+        if self._db == "mysql":
+            mysql_url = "mysql://{}:{}@{}:{}/{}"
+            mysql_url = mysql_url.format(
+                self._user, self._pw, self._host, self._port, self._name
+            )
             self._engine = create_async_engine(
-                pgsql_url,
-                connect_args={'options': '-csearch_path={}'.format(dbschema)})
+                mysql_url, isolation_level="READ UNCOMMITTED"
+            )
+        if self._db == "pgsql":
+            # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
+            dbschema = "{},public"  # Searches left-to-right
+            dbschema = dbschema.format(self._schema)
+            pgsql_url = "postgresql+psycopg2://{}:{}@{}:{}/{}"
+            pgsql_url = pgsql_url.format(
+                self._user, self._pw, self._host, self._port, self._name
+            )
+            self._engine = create_async_engine(
+                pgsql_url, connect_args={"options": "-csearch_path={}".format(dbschema)}
+            )
         return self._engine
 
     @property
     def session(self):
         if self._engine is not None:
-            async_session = sessionmaker(self._engine, expire_on_commit=False, class_=AsyncSession)
+            async_session = sessionmaker(
+                self._engine, expire_on_commit=False, class_=AsyncSession
+            )
             return async_session
         return None
 
     @property
     def async_session(self):
         if self._engine is not None:
-            async_session = sessionmaker(self._engine, expire_on_commit=False, class_=AsyncSession)
+            async_session = sessionmaker(
+                self._engine, expire_on_commit=False, class_=AsyncSession
+            )
             return async_session
         return None
 
@@ -131,7 +146,3 @@ class CdmEngineFactory(object):
     @schema.setter
     def schema(self, value):
         self._schema = value
-
-
-
-
