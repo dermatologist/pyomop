@@ -5,11 +5,15 @@ pip install pyomop[llm]
 """
 
 from pyomop import CdmEngineFactory, Cohort, metadata, CdmLLMQuery, CDMDatabase
+import re
+from sqlalchemy import text
 import datetime
 import asyncio
 # Import any LLMs that llama_index supports and you have access to
 # Require OpenAI API key to use OpenAI LLMs
 from llama_index.llms.google_genai import GoogleGenAI
+
+
 
 async def main():
     # Create a sqllite database by default
@@ -45,7 +49,21 @@ async def main():
             query_engine = CdmLLMQuery(sql_database, llm=llm).query_engine
             # Try any complex query.
             response  = query_engine.query("Show each in table cohort with a subject id of 100?")
-    print(response)
+            sqls = response.metadata["sql_query"].split("\n")
+
+        async with session.begin():
+            # run each sql query
+            for sql in sqls:
+                try:
+                    if re.search(r"SELECT", sql):
+                        result = await session.execute(text(sql))
+                        # print(result.all())
+                        print(f"SQL: {sql}")
+                        # Print the result in a table format
+                        print("\n".join([str(row) for row in result.all()]))
+                except Exception as e:
+                    print(f"Error executing SQL: {sql}")
+                    print(e)
     """
 
 | cohort_id | subject_id | cohort_name |
@@ -54,8 +72,8 @@ async def main():
 
     """
     # Close session
-    await session.close()
-    await engine.dispose()
+    # await session.close()
+    # await engine.dispose()
 
 # Run the main function
 asyncio.run(main())

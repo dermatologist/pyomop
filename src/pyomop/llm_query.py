@@ -56,7 +56,7 @@ class CdmLLMQuery:
 
 
         self._query_engine = SQLTableRetrieverQueryEngine(
-            self._sql_database, self._object_index.as_retriever(similarity_top_k=1)
+            self._sql_database, self._object_index.as_retriever(similarity_top_k=1), sql_only=True
         )
 
 
