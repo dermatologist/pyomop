@@ -1,18 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pyomop &#8212; pyomop unknown documentation</title>
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
-    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
+    <title>pyomop &#8212; pyomop 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=0ca6144b" />
+    <script src="../_static/documentation_options.js?v=7026087e"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="pyomop package" href="pyomop.html" />
@@ -20,8 +19,9 @@
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -34,19 +34,559 @@
           <div class="body" role="main">
             
   <section id="pyomop">
-<h1>pyomop<a class="headerlink" href="#pyomop" title="Permalink to this headline">¶</a></h1>
+<h1>pyomop<a class="headerlink" href="#pyomop" title="Link to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="pyomop.html">pyomop package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pyomop.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.cdm6_tables">pyomop.cdm6_tables module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.engine_factory">pyomop.engine_factory module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#pyomop-llm-engine-module">pyomop.llm_engine module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#pyomop-llm-query-module">pyomop.llm_query module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.main">pyomop.main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.cdm6_tables">pyomop.cdm6_tables module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.AttributeDefinition"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.AttributeDefinition.attribute_definition_id"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.attribute_definition_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.AttributeDefinition.attribute_description"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.attribute_description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.AttributeDefinition.attribute_name"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.attribute_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.AttributeDefinition.attribute_syntax"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.attribute_syntax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.AttributeDefinition.attribute_type_concept_id"><code class="docutils literal notranslate"><span class="pre">AttributeDefinition.attribute_type_concept_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite"><code class="docutils literal notranslate"><span class="pre">CareSite</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite.care_site_id"><code class="docutils literal notranslate"><span class="pre">CareSite.care_site_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite.care_site_name"><code class="docutils literal notranslate"><span class="pre">CareSite.care_site_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite.care_site_source_value"><code class="docutils literal notranslate"><span class="pre">CareSite.care_site_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite.location_id"><code class="docutils literal notranslate"><span class="pre">CareSite.location_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite.place_of_service_concept_id"><code class="docutils literal notranslate"><span class="pre">CareSite.place_of_service_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CareSite.place_of_service_source_value"><code class="docutils literal notranslate"><span class="pre">CareSite.place_of_service_source_value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource"><code class="docutils literal notranslate"><span class="pre">CdmSource</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.cdm_etl_reference"><code class="docutils literal notranslate"><span class="pre">CdmSource.cdm_etl_reference</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.cdm_holder"><code class="docutils literal notranslate"><span class="pre">CdmSource.cdm_holder</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.cdm_release_date"><code class="docutils literal notranslate"><span class="pre">CdmSource.cdm_release_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.cdm_source_abbreviation"><code class="docutils literal notranslate"><span class="pre">CdmSource.cdm_source_abbreviation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.cdm_source_name"><code class="docutils literal notranslate"><span class="pre">CdmSource.cdm_source_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.cdm_version"><code class="docutils literal notranslate"><span class="pre">CdmSource.cdm_version</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.source_description"><code class="docutils literal notranslate"><span class="pre">CdmSource.source_description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.source_documentation_reference"><code class="docutils literal notranslate"><span class="pre">CdmSource.source_documentation_reference</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.source_release_date"><code class="docutils literal notranslate"><span class="pre">CdmSource.source_release_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CdmSource.vocabulary_version"><code class="docutils literal notranslate"><span class="pre">CdmSource.vocabulary_version</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Cohort"><code class="docutils literal notranslate"><span class="pre">Cohort</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Cohort.cohort_definition_id"><code class="docutils literal notranslate"><span class="pre">Cohort.cohort_definition_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Cohort.cohort_end_date"><code class="docutils literal notranslate"><span class="pre">Cohort.cohort_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Cohort.cohort_start_date"><code class="docutils literal notranslate"><span class="pre">Cohort.cohort_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Cohort.subject_id"><code class="docutils literal notranslate"><span class="pre">Cohort.subject_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute"><code class="docutils literal notranslate"><span class="pre">CohortAttribute</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.attribute_definition_id"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.attribute_definition_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.cohort_definition_id"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.cohort_definition_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.cohort_end_date"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.cohort_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.cohort_start_date"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.cohort_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.subject_id"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.subject_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.value_as_concept_id"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.value_as_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortAttribute.value_as_number"><code class="docutils literal notranslate"><span class="pre">CohortAttribute.value_as_number</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition"><code class="docutils literal notranslate"><span class="pre">CohortDefinition</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.cohort_definition_description"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.cohort_definition_description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.cohort_definition_id"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.cohort_definition_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.cohort_definition_name"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.cohort_definition_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.cohort_definition_syntax"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.cohort_definition_syntax</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.cohort_initiation_date"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.cohort_initiation_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.definition_type_concept_id"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.definition_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.CohortDefinition.subject_concept_id"><code class="docutils literal notranslate"><span class="pre">CohortDefinition.subject_concept_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept"><code class="docutils literal notranslate"><span class="pre">Concept</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.concept_class_id"><code class="docutils literal notranslate"><span class="pre">Concept.concept_class_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.concept_code"><code class="docutils literal notranslate"><span class="pre">Concept.concept_code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.concept_id"><code class="docutils literal notranslate"><span class="pre">Concept.concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.concept_name"><code class="docutils literal notranslate"><span class="pre">Concept.concept_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.domain_id"><code class="docutils literal notranslate"><span class="pre">Concept.domain_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.invalid_reason"><code class="docutils literal notranslate"><span class="pre">Concept.invalid_reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.standard_concept"><code class="docutils literal notranslate"><span class="pre">Concept.standard_concept</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.valid_end_date"><code class="docutils literal notranslate"><span class="pre">Concept.valid_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.valid_start_date"><code class="docutils literal notranslate"><span class="pre">Concept.valid_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Concept.vocabulary_id"><code class="docutils literal notranslate"><span class="pre">Concept.vocabulary_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptAncestor"><code class="docutils literal notranslate"><span class="pre">ConceptAncestor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptAncestor.ancestor_concept_id"><code class="docutils literal notranslate"><span class="pre">ConceptAncestor.ancestor_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptAncestor.descendant_concept_id"><code class="docutils literal notranslate"><span class="pre">ConceptAncestor.descendant_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptAncestor.max_levels_of_separation"><code class="docutils literal notranslate"><span class="pre">ConceptAncestor.max_levels_of_separation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptAncestor.min_levels_of_separation"><code class="docutils literal notranslate"><span class="pre">ConceptAncestor.min_levels_of_separation</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptClass"><code class="docutils literal notranslate"><span class="pre">ConceptClass</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptClass.concept_class_concept_id"><code class="docutils literal notranslate"><span class="pre">ConceptClass.concept_class_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptClass.concept_class_id"><code class="docutils literal notranslate"><span class="pre">ConceptClass.concept_class_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptClass.concept_class_name"><code class="docutils literal notranslate"><span class="pre">ConceptClass.concept_class_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship.concept_id_1"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship.concept_id_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship.concept_id_2"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship.concept_id_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship.invalid_reason"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship.invalid_reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship.relationship_id"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship.relationship_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship.valid_end_date"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship.valid_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptRelationship.valid_start_date"><code class="docutils literal notranslate"><span class="pre">ConceptRelationship.valid_start_date</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptSynonym"><code class="docutils literal notranslate"><span class="pre">ConceptSynonym</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptSynonym.concept_id"><code class="docutils literal notranslate"><span class="pre">ConceptSynonym.concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptSynonym.concept_synonym_name"><code class="docutils literal notranslate"><span class="pre">ConceptSynonym.concept_synonym_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConceptSynonym.language_concept_id"><code class="docutils literal notranslate"><span class="pre">ConceptSynonym.language_concept_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra"><code class="docutils literal notranslate"><span class="pre">ConditionEra</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra.condition_concept_id"><code class="docutils literal notranslate"><span class="pre">ConditionEra.condition_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra.condition_era_end_date"><code class="docutils literal notranslate"><span class="pre">ConditionEra.condition_era_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra.condition_era_id"><code class="docutils literal notranslate"><span class="pre">ConditionEra.condition_era_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra.condition_era_start_date"><code class="docutils literal notranslate"><span class="pre">ConditionEra.condition_era_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra.condition_occurrence_count"><code class="docutils literal notranslate"><span class="pre">ConditionEra.condition_occurrence_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionEra.person_id"><code class="docutils literal notranslate"><span class="pre">ConditionEra.person_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_concept_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_end_date"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_occurrence_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_occurrence_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_source_concept_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_source_value"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_start_date"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.condition_type_concept_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.condition_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.person_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.provider_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.stop_reason"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.stop_reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ConditionOccurrence.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">ConditionOccurrence.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death"><code class="docutils literal notranslate"><span class="pre">Death</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death.cause_concept_id"><code class="docutils literal notranslate"><span class="pre">Death.cause_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death.cause_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Death.cause_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death.cause_source_value"><code class="docutils literal notranslate"><span class="pre">Death.cause_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death.death_date"><code class="docutils literal notranslate"><span class="pre">Death.death_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death.death_type_concept_id"><code class="docutils literal notranslate"><span class="pre">Death.death_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Death.person_id"><code class="docutils literal notranslate"><span class="pre">Death.person_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost"><code class="docutils literal notranslate"><span class="pre">DeviceCost</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.currency_concept_id"><code class="docutils literal notranslate"><span class="pre">DeviceCost.currency_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.device_cost_id"><code class="docutils literal notranslate"><span class="pre">DeviceCost.device_cost_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.device_exposure_id"><code class="docutils literal notranslate"><span class="pre">DeviceCost.device_exposure_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.paid_by_coordination_benefits"><code class="docutils literal notranslate"><span class="pre">DeviceCost.paid_by_coordination_benefits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.paid_by_payer"><code class="docutils literal notranslate"><span class="pre">DeviceCost.paid_by_payer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.paid_coinsurance"><code class="docutils literal notranslate"><span class="pre">DeviceCost.paid_coinsurance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.paid_copay"><code class="docutils literal notranslate"><span class="pre">DeviceCost.paid_copay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.paid_toward_deductible"><code class="docutils literal notranslate"><span class="pre">DeviceCost.paid_toward_deductible</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.payer_plan_period_id"><code class="docutils literal notranslate"><span class="pre">DeviceCost.payer_plan_period_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.total_out_of_pocket"><code class="docutils literal notranslate"><span class="pre">DeviceCost.total_out_of_pocket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceCost.total_paid"><code class="docutils literal notranslate"><span class="pre">DeviceCost.total_paid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure"><code class="docutils literal notranslate"><span class="pre">DeviceExposure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_concept_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_exposure_end_date"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_exposure_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_exposure_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_exposure_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_exposure_start_date"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_exposure_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_source_concept_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_source_value"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.device_type_concept_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.device_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.person_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.provider_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.quantity"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.quantity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.unique_device_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.unique_device_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DeviceExposure.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">DeviceExposure.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Domain"><code class="docutils literal notranslate"><span class="pre">Domain</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Domain.domain_concept_id"><code class="docutils literal notranslate"><span class="pre">Domain.domain_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Domain.domain_id"><code class="docutils literal notranslate"><span class="pre">Domain.domain_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Domain.domain_name"><code class="docutils literal notranslate"><span class="pre">Domain.domain_name</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra"><code class="docutils literal notranslate"><span class="pre">DoseEra</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.dose_era_end_date"><code class="docutils literal notranslate"><span class="pre">DoseEra.dose_era_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.dose_era_id"><code class="docutils literal notranslate"><span class="pre">DoseEra.dose_era_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.dose_era_start_date"><code class="docutils literal notranslate"><span class="pre">DoseEra.dose_era_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.dose_value"><code class="docutils literal notranslate"><span class="pre">DoseEra.dose_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.drug_concept_id"><code class="docutils literal notranslate"><span class="pre">DoseEra.drug_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.person_id"><code class="docutils literal notranslate"><span class="pre">DoseEra.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DoseEra.unit_concept_id"><code class="docutils literal notranslate"><span class="pre">DoseEra.unit_concept_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost"><code class="docutils literal notranslate"><span class="pre">DrugCost</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.average_wholesale_price"><code class="docutils literal notranslate"><span class="pre">DrugCost.average_wholesale_price</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.currency_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugCost.currency_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.dispensing_fee"><code class="docutils literal notranslate"><span class="pre">DrugCost.dispensing_fee</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.drug_cost_id"><code class="docutils literal notranslate"><span class="pre">DrugCost.drug_cost_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.drug_exposure_id"><code class="docutils literal notranslate"><span class="pre">DrugCost.drug_exposure_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.ingredient_cost"><code class="docutils literal notranslate"><span class="pre">DrugCost.ingredient_cost</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.paid_by_coordination_benefits"><code class="docutils literal notranslate"><span class="pre">DrugCost.paid_by_coordination_benefits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.paid_by_payer"><code class="docutils literal notranslate"><span class="pre">DrugCost.paid_by_payer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.paid_coinsurance"><code class="docutils literal notranslate"><span class="pre">DrugCost.paid_coinsurance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.paid_copay"><code class="docutils literal notranslate"><span class="pre">DrugCost.paid_copay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.paid_toward_deductible"><code class="docutils literal notranslate"><span class="pre">DrugCost.paid_toward_deductible</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.payer_plan_period_id"><code class="docutils literal notranslate"><span class="pre">DrugCost.payer_plan_period_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.total_out_of_pocket"><code class="docutils literal notranslate"><span class="pre">DrugCost.total_out_of_pocket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugCost.total_paid"><code class="docutils literal notranslate"><span class="pre">DrugCost.total_paid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra"><code class="docutils literal notranslate"><span class="pre">DrugEra</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.drug_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugEra.drug_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.drug_era_end_date"><code class="docutils literal notranslate"><span class="pre">DrugEra.drug_era_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.drug_era_id"><code class="docutils literal notranslate"><span class="pre">DrugEra.drug_era_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.drug_era_start_date"><code class="docutils literal notranslate"><span class="pre">DrugEra.drug_era_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.drug_exposure_count"><code class="docutils literal notranslate"><span class="pre">DrugEra.drug_exposure_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.gap_days"><code class="docutils literal notranslate"><span class="pre">DrugEra.gap_days</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugEra.person_id"><code class="docutils literal notranslate"><span class="pre">DrugEra.person_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure"><code class="docutils literal notranslate"><span class="pre">DrugExposure</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.days_supply"><code class="docutils literal notranslate"><span class="pre">DrugExposure.days_supply</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.dose_unit_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.dose_unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.dose_unit_source_value"><code class="docutils literal notranslate"><span class="pre">DrugExposure.dose_unit_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_exposure_end_date"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_exposure_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_exposure_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_exposure_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_exposure_start_date"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_exposure_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_source_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_source_value"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.drug_type_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.drug_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.effective_drug_dose"><code class="docutils literal notranslate"><span class="pre">DrugExposure.effective_drug_dose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.lot_number"><code class="docutils literal notranslate"><span class="pre">DrugExposure.lot_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.person_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.provider_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.quantity"><code class="docutils literal notranslate"><span class="pre">DrugExposure.quantity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.refills"><code class="docutils literal notranslate"><span class="pre">DrugExposure.refills</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.route_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.route_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.route_source_value"><code class="docutils literal notranslate"><span class="pre">DrugExposure.route_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.sig"><code class="docutils literal notranslate"><span class="pre">DrugExposure.sig</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.stop_reason"><code class="docutils literal notranslate"><span class="pre">DrugExposure.stop_reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugExposure.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">DrugExposure.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength"><code class="docutils literal notranslate"><span class="pre">DrugStrength</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.amount_unit_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugStrength.amount_unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.amount_value"><code class="docutils literal notranslate"><span class="pre">DrugStrength.amount_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.box_size"><code class="docutils literal notranslate"><span class="pre">DrugStrength.box_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.denominator_unit_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugStrength.denominator_unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.denominator_value"><code class="docutils literal notranslate"><span class="pre">DrugStrength.denominator_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.drug_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugStrength.drug_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.ingredient_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugStrength.ingredient_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.invalid_reason"><code class="docutils literal notranslate"><span class="pre">DrugStrength.invalid_reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.numerator_unit_concept_id"><code class="docutils literal notranslate"><span class="pre">DrugStrength.numerator_unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.numerator_value"><code class="docutils literal notranslate"><span class="pre">DrugStrength.numerator_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.valid_end_date"><code class="docutils literal notranslate"><span class="pre">DrugStrength.valid_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.DrugStrength.valid_start_date"><code class="docutils literal notranslate"><span class="pre">DrugStrength.valid_start_date</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.FactRelationship"><code class="docutils literal notranslate"><span class="pre">FactRelationship</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.FactRelationship.domain_concept_id_1"><code class="docutils literal notranslate"><span class="pre">FactRelationship.domain_concept_id_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.FactRelationship.domain_concept_id_2"><code class="docutils literal notranslate"><span class="pre">FactRelationship.domain_concept_id_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.FactRelationship.fact_id_1"><code class="docutils literal notranslate"><span class="pre">FactRelationship.fact_id_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.FactRelationship.fact_id_2"><code class="docutils literal notranslate"><span class="pre">FactRelationship.fact_id_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.FactRelationship.relationship_concept_id"><code class="docutils literal notranslate"><span class="pre">FactRelationship.relationship_concept_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location"><code class="docutils literal notranslate"><span class="pre">Location</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.address_1"><code class="docutils literal notranslate"><span class="pre">Location.address_1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.address_2"><code class="docutils literal notranslate"><span class="pre">Location.address_2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.city"><code class="docutils literal notranslate"><span class="pre">Location.city</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.county"><code class="docutils literal notranslate"><span class="pre">Location.county</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.location_id"><code class="docutils literal notranslate"><span class="pre">Location.location_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.location_source_value"><code class="docutils literal notranslate"><span class="pre">Location.location_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.state"><code class="docutils literal notranslate"><span class="pre">Location.state</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Location.zip"><code class="docutils literal notranslate"><span class="pre">Location.zip</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement"><code class="docutils literal notranslate"><span class="pre">Measurement</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_concept_id"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_date"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_id"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_source_value"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_time"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.measurement_type_concept_id"><code class="docutils literal notranslate"><span class="pre">Measurement.measurement_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.operator_concept_id"><code class="docutils literal notranslate"><span class="pre">Measurement.operator_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.person_id"><code class="docutils literal notranslate"><span class="pre">Measurement.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.provider_id"><code class="docutils literal notranslate"><span class="pre">Measurement.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.range_high"><code class="docutils literal notranslate"><span class="pre">Measurement.range_high</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.range_low"><code class="docutils literal notranslate"><span class="pre">Measurement.range_low</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.unit_concept_id"><code class="docutils literal notranslate"><span class="pre">Measurement.unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.unit_source_value"><code class="docutils literal notranslate"><span class="pre">Measurement.unit_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.value_as_concept_id"><code class="docutils literal notranslate"><span class="pre">Measurement.value_as_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.value_as_number"><code class="docutils literal notranslate"><span class="pre">Measurement.value_as_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.value_source_value"><code class="docutils literal notranslate"><span class="pre">Measurement.value_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Measurement.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">Measurement.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note"><code class="docutils literal notranslate"><span class="pre">Note</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.note_date"><code class="docutils literal notranslate"><span class="pre">Note.note_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.note_id"><code class="docutils literal notranslate"><span class="pre">Note.note_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.note_source_value"><code class="docutils literal notranslate"><span class="pre">Note.note_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.note_text"><code class="docutils literal notranslate"><span class="pre">Note.note_text</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.note_time"><code class="docutils literal notranslate"><span class="pre">Note.note_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.note_type_concept_id"><code class="docutils literal notranslate"><span class="pre">Note.note_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.person_id"><code class="docutils literal notranslate"><span class="pre">Note.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.provider_id"><code class="docutils literal notranslate"><span class="pre">Note.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Note.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">Note.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation"><code class="docutils literal notranslate"><span class="pre">Observation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_concept_id"><code class="docutils literal notranslate"><span class="pre">Observation.observation_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_date"><code class="docutils literal notranslate"><span class="pre">Observation.observation_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_id"><code class="docutils literal notranslate"><span class="pre">Observation.observation_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Observation.observation_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_source_value"><code class="docutils literal notranslate"><span class="pre">Observation.observation_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_time"><code class="docutils literal notranslate"><span class="pre">Observation.observation_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.observation_type_concept_id"><code class="docutils literal notranslate"><span class="pre">Observation.observation_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.person_id"><code class="docutils literal notranslate"><span class="pre">Observation.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.provider_id"><code class="docutils literal notranslate"><span class="pre">Observation.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.qualifier_concept_id"><code class="docutils literal notranslate"><span class="pre">Observation.qualifier_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.qualifier_source_value"><code class="docutils literal notranslate"><span class="pre">Observation.qualifier_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.unit_concept_id"><code class="docutils literal notranslate"><span class="pre">Observation.unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.unit_source_value"><code class="docutils literal notranslate"><span class="pre">Observation.unit_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.value_as_concept_id"><code class="docutils literal notranslate"><span class="pre">Observation.value_as_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.value_as_number"><code class="docutils literal notranslate"><span class="pre">Observation.value_as_number</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.value_as_string"><code class="docutils literal notranslate"><span class="pre">Observation.value_as_string</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Observation.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">Observation.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ObservationPeriod"><code class="docutils literal notranslate"><span class="pre">ObservationPeriod</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ObservationPeriod.observation_period_end_date"><code class="docutils literal notranslate"><span class="pre">ObservationPeriod.observation_period_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ObservationPeriod.observation_period_id"><code class="docutils literal notranslate"><span class="pre">ObservationPeriod.observation_period_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ObservationPeriod.observation_period_start_date"><code class="docutils literal notranslate"><span class="pre">ObservationPeriod.observation_period_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ObservationPeriod.period_type_concept_id"><code class="docutils literal notranslate"><span class="pre">ObservationPeriod.period_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ObservationPeriod.person_id"><code class="docutils literal notranslate"><span class="pre">ObservationPeriod.person_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.family_source_value"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.family_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.payer_plan_period_end_date"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.payer_plan_period_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.payer_plan_period_id"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.payer_plan_period_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.payer_plan_period_start_date"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.payer_plan_period_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.payer_source_value"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.payer_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.person_id"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.PayerPlanPeriod.plan_source_value"><code class="docutils literal notranslate"><span class="pre">PayerPlanPeriod.plan_source_value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person"><code class="docutils literal notranslate"><span class="pre">Person</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.birth_datetime"><code class="docutils literal notranslate"><span class="pre">Person.birth_datetime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.care_site_id"><code class="docutils literal notranslate"><span class="pre">Person.care_site_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.day_of_birth"><code class="docutils literal notranslate"><span class="pre">Person.day_of_birth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.death_datetime"><code class="docutils literal notranslate"><span class="pre">Person.death_datetime</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.ethnicity_concept_id"><code class="docutils literal notranslate"><span class="pre">Person.ethnicity_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.ethnicity_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Person.ethnicity_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.ethnicity_source_value"><code class="docutils literal notranslate"><span class="pre">Person.ethnicity_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.gender_concept_id"><code class="docutils literal notranslate"><span class="pre">Person.gender_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.gender_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Person.gender_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.gender_source_value"><code class="docutils literal notranslate"><span class="pre">Person.gender_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.location_id"><code class="docutils literal notranslate"><span class="pre">Person.location_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.month_of_birth"><code class="docutils literal notranslate"><span class="pre">Person.month_of_birth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.person_id"><code class="docutils literal notranslate"><span class="pre">Person.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.person_source_value"><code class="docutils literal notranslate"><span class="pre">Person.person_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.provider_id"><code class="docutils literal notranslate"><span class="pre">Person.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.race_concept_id"><code class="docutils literal notranslate"><span class="pre">Person.race_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.race_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Person.race_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.race_source_value"><code class="docutils literal notranslate"><span class="pre">Person.race_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Person.year_of_birth"><code class="docutils literal notranslate"><span class="pre">Person.year_of_birth</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost"><code class="docutils literal notranslate"><span class="pre">ProcedureCost</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.currency_concept_id"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.currency_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.paid_by_coordination_benefits"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.paid_by_coordination_benefits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.paid_by_payer"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.paid_by_payer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.paid_coinsurance"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.paid_coinsurance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.paid_copay"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.paid_copay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.paid_toward_deductible"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.paid_toward_deductible</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.payer_plan_period_id"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.payer_plan_period_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.procedure_cost_id"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.procedure_cost_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.procedure_occurrence_id"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.procedure_occurrence_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.revenue_code_concept_id"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.revenue_code_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.revenue_code_source_value"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.revenue_code_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.total_out_of_pocket"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.total_out_of_pocket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureCost.total_paid"><code class="docutils literal notranslate"><span class="pre">ProcedureCost.total_paid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.modifier_concept_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.modifier_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.person_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.procedure_concept_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.procedure_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.procedure_date"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.procedure_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.procedure_occurrence_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.procedure_occurrence_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.procedure_source_concept_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.procedure_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.procedure_source_value"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.procedure_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.procedure_type_concept_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.procedure_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.provider_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.qualifier_source_value"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.qualifier_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.quantity"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.quantity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.ProcedureOccurrence.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">ProcedureOccurrence.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider"><code class="docutils literal notranslate"><span class="pre">Provider</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.care_site_id"><code class="docutils literal notranslate"><span class="pre">Provider.care_site_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.dea"><code class="docutils literal notranslate"><span class="pre">Provider.dea</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.gender_concept_id"><code class="docutils literal notranslate"><span class="pre">Provider.gender_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.gender_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Provider.gender_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.gender_source_value"><code class="docutils literal notranslate"><span class="pre">Provider.gender_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.npi"><code class="docutils literal notranslate"><span class="pre">Provider.npi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.provider_id"><code class="docutils literal notranslate"><span class="pre">Provider.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.provider_name"><code class="docutils literal notranslate"><span class="pre">Provider.provider_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.provider_source_value"><code class="docutils literal notranslate"><span class="pre">Provider.provider_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.specialty_concept_id"><code class="docutils literal notranslate"><span class="pre">Provider.specialty_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.specialty_source_concept_id"><code class="docutils literal notranslate"><span class="pre">Provider.specialty_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.specialty_source_value"><code class="docutils literal notranslate"><span class="pre">Provider.specialty_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Provider.year_of_birth"><code class="docutils literal notranslate"><span class="pre">Provider.year_of_birth</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship"><code class="docutils literal notranslate"><span class="pre">Relationship</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship.defines_ancestry"><code class="docutils literal notranslate"><span class="pre">Relationship.defines_ancestry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship.is_hierarchical"><code class="docutils literal notranslate"><span class="pre">Relationship.is_hierarchical</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship.relationship_concept_id"><code class="docutils literal notranslate"><span class="pre">Relationship.relationship_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship.relationship_id"><code class="docutils literal notranslate"><span class="pre">Relationship.relationship_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship.relationship_name"><code class="docutils literal notranslate"><span class="pre">Relationship.relationship_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Relationship.reverse_relationship_id"><code class="docutils literal notranslate"><span class="pre">Relationship.reverse_relationship_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.invalid_reason"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.invalid_reason</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.source_code"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.source_code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.source_code_description"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.source_code_description</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.source_concept_id"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.source_vocabulary_id"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.source_vocabulary_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.target_concept_id"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.target_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.target_vocabulary_id"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.target_vocabulary_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.valid_end_date"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.valid_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.SourceToConceptMap.valid_start_date"><code class="docutils literal notranslate"><span class="pre">SourceToConceptMap.valid_start_date</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman"><code class="docutils literal notranslate"><span class="pre">Speciman</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.anatomic_site_concept_id"><code class="docutils literal notranslate"><span class="pre">Speciman.anatomic_site_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.anatomic_site_source_value"><code class="docutils literal notranslate"><span class="pre">Speciman.anatomic_site_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.disease_status_concept_id"><code class="docutils literal notranslate"><span class="pre">Speciman.disease_status_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.disease_status_source_value"><code class="docutils literal notranslate"><span class="pre">Speciman.disease_status_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.person_id"><code class="docutils literal notranslate"><span class="pre">Speciman.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.quantity"><code class="docutils literal notranslate"><span class="pre">Speciman.quantity</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_concept_id"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_date"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_id"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_source_id"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_source_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_source_value"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_time"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.specimen_type_concept_id"><code class="docutils literal notranslate"><span class="pre">Speciman.specimen_type_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.unit_concept_id"><code class="docutils literal notranslate"><span class="pre">Speciman.unit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Speciman.unit_source_value"><code class="docutils literal notranslate"><span class="pre">Speciman.unit_source_value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost"><code class="docutils literal notranslate"><span class="pre">VisitCost</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.currency_concept_id"><code class="docutils literal notranslate"><span class="pre">VisitCost.currency_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.paid_by_coordination_benefits"><code class="docutils literal notranslate"><span class="pre">VisitCost.paid_by_coordination_benefits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.paid_by_payer"><code class="docutils literal notranslate"><span class="pre">VisitCost.paid_by_payer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.paid_coinsurance"><code class="docutils literal notranslate"><span class="pre">VisitCost.paid_coinsurance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.paid_copay"><code class="docutils literal notranslate"><span class="pre">VisitCost.paid_copay</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.paid_toward_deductible"><code class="docutils literal notranslate"><span class="pre">VisitCost.paid_toward_deductible</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.payer_plan_period_id"><code class="docutils literal notranslate"><span class="pre">VisitCost.payer_plan_period_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.total_out_of_pocket"><code class="docutils literal notranslate"><span class="pre">VisitCost.total_out_of_pocket</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.total_paid"><code class="docutils literal notranslate"><span class="pre">VisitCost.total_paid</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.visit_cost_id"><code class="docutils literal notranslate"><span class="pre">VisitCost.visit_cost_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitCost.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">VisitCost.visit_occurrence_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.care_site_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.care_site_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.person_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.person_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.provider_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.provider_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_concept_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_end_date"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_end_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_end_time"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_end_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_occurrence_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_occurrence_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_source_concept_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_source_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_source_value"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_source_value</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_start_date"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_start_date</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_start_time"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_start_time</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.VisitOccurrence.visit_type_concept_id"><code class="docutils literal notranslate"><span class="pre">VisitOccurrence.visit_type_concept_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Vocabulary"><code class="docutils literal notranslate"><span class="pre">Vocabulary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Vocabulary.vocabulary_concept_id"><code class="docutils literal notranslate"><span class="pre">Vocabulary.vocabulary_concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Vocabulary.vocabulary_id"><code class="docutils literal notranslate"><span class="pre">Vocabulary.vocabulary_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Vocabulary.vocabulary_name"><code class="docutils literal notranslate"><span class="pre">Vocabulary.vocabulary_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Vocabulary.vocabulary_reference"><code class="docutils literal notranslate"><span class="pre">Vocabulary.vocabulary_reference</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.cdm6_tables.Vocabulary.vocabulary_version"><code class="docutils literal notranslate"><span class="pre">Vocabulary.vocabulary_version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.engine_factory">pyomop.engine_factory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.async_session"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.async_session</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.base"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.base</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.db"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.db</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.engine"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.engine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.host"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.host</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.init_models"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.init_models()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.name"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.port"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.port</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.pw"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.pw</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.schema"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.schema</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.session"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.session</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.engine_factory.CdmEngineFactory.user"><code class="docutils literal notranslate"><span class="pre">CdmEngineFactory.user</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.llm_engine">pyomop.llm_engine module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.llm_engine.CDMDatabase"><code class="docutils literal notranslate"><span class="pre">CDMDatabase</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.llm_engine.CDMDatabase.get_single_table_info"><code class="docutils literal notranslate"><span class="pre">CDMDatabase.get_single_table_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.llm_engine.CDMDatabase.get_table_columns"><code class="docutils literal notranslate"><span class="pre">CDMDatabase.get_table_columns()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.llm_query">pyomop.llm_query module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.llm_query.CdmLLMQuery"><code class="docutils literal notranslate"><span class="pre">CdmLLMQuery</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.llm_query.CdmLLMQuery.object_index"><code class="docutils literal notranslate"><span class="pre">CdmLLMQuery.object_index</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.llm_query.CdmLLMQuery.query_engine"><code class="docutils literal notranslate"><span class="pre">CdmLLMQuery.query_engine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.llm_query.CdmLLMQuery.table_node_mapping"><code class="docutils literal notranslate"><span class="pre">CdmLLMQuery.table_node_mapping</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.llm_query.CdmLLMQuery.table_schema_objs"><code class="docutils literal notranslate"><span class="pre">CdmLLMQuery.table_schema_objs</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.main">pyomop.main module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.main.main_routine"><code class="docutils literal notranslate"><span class="pre">main_routine()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.sqldict">pyomop.sqldict module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.vector">pyomop.vector module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.vocabulary">pyomop.vocabulary module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.vector">pyomop.vector module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.vector.CdmVector"><code class="docutils literal notranslate"><span class="pre">CdmVector</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vector.CdmVector.create_df"><code class="docutils literal notranslate"><span class="pre">CdmVector.create_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vector.CdmVector.df"><code class="docutils literal notranslate"><span class="pre">CdmVector.df</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vector.CdmVector.query_to_list"><code class="docutils literal notranslate"><span class="pre">CdmVector.query_to_list()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vector.CdmVector.result"><code class="docutils literal notranslate"><span class="pre">CdmVector.result</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vector.CdmVector.sql_df"><code class="docutils literal notranslate"><span class="pre">CdmVector.sql_df()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop.vocabulary">pyomop.vocabulary module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.concept_code"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.concept_code</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.concept_id"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.concept_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.concept_name"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.concept_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.create_vocab"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.create_vocab()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.domain_id"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.domain_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.get_concept"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.get_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.get_concept_by_code"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.get_concept_by_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.get_session"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.get_session()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.set_concept"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.set_concept()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.vocabulary_id"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.vocabulary_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pyomop.html#pyomop.vocabulary.CdmVocabulary.write_vocab"><code class="docutils literal notranslate"><span class="pre">CdmVocabulary.write_vocab()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="pyomop.html#module-pyomop">Module contents</a></li>
 </ul>
 </li>
@@ -59,7 +599,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../index.html">pyomop</a></h1>
 
@@ -70,7 +610,16 @@
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../readme.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
@@ -91,16 +640,6 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -114,11 +653,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2021, Bell Eapen.
+      &#169;2021, Bell Eapen.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="../_sources/api/modules.rst.txt"

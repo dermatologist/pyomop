@@ -9,69 +9,69 @@ pyomop.cdm6\_tables module
 
 .. automodule:: pyomop.cdm6_tables
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.engine\_factory module
 -----------------------------
 
 .. automodule:: pyomop.engine_factory
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.llm\_engine module
 -------------------------
 
 .. automodule:: pyomop.llm_engine
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.llm\_query module
 ------------------------
 
 .. automodule:: pyomop.llm_query
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.main module
 ------------------
 
 .. automodule:: pyomop.main
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.sqldict module
 ---------------------
 
 .. automodule:: pyomop.sqldict
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.vector module
 --------------------
 
 .. automodule:: pyomop.vector
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 pyomop.vocabulary module
 ------------------------
 
 .. automodule:: pyomop.vocabulary
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 
 Module contents
 ---------------
 
 .. automodule:: pyomop
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:

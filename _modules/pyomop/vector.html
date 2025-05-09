@@ -1,24 +1,24 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>pyomop.vector &#8212; pyomop unknown documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/jquery.js"></script>
-    <script src="../../_static/underscore.js"></script>
-    <script src="../../_static/doctools.js"></script>
+    <title>pyomop.vector &#8212; pyomop 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="../../_static/alabaster.css?v=0ca6144b" />
+    <script src="../../_static/documentation_options.js?v=7026087e"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -31,34 +31,40 @@
           <div class="body" role="main">
             
   <h1>Source code for pyomop.vector</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.inspection</span> <span class="kn">import</span> <span class="n">inspect</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">text</span>
-<span class="kn">from</span> <span class="nn">.sqldict</span> <span class="kn">import</span> <span class="n">CDMSQL</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">inspect</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.sqldict</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDMSQL</span>
+
+
 <span class="c1"># https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9</span>
 <span class="c1"># Thank you! https://gist.github.com/garaud</span>
-<div class="viewcode-block" id="CdmVector"><a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector">[docs]</a><span class="k">class</span> <span class="nc">CdmVector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="CdmVector">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CdmVector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">result</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">create_df</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span>
 
     <span class="nd">@result</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">value</span>
 
-<div class="viewcode-block" id="CdmVector.query_to_list"><a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.query_to_list">[docs]</a>    <span class="k">def</span> <span class="nf">query_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CdmVector.query_to_list">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.query_to_list">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">query_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of result</span>
 <span class="sd">        Return: columns name, list of result</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -69,32 +75,40 @@
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">:</span>
             <span class="n">instance</span> <span class="o">=</span> <span class="n">inspect</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
             <span class="n">items</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span><span class="n">x</span> <span class="ow">in</span> <span class="n">items</span><span class="p">])</span>
+            <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">items</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[]</span>
         <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">result_list</span></div>
 
-<div class="viewcode-block" id="CdmVector.create_df"><a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.create_df">[docs]</a>    <span class="k">def</span> <span class="nf">create_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CdmVector.create_df">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.create_df">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">names</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_to_list</span><span class="p">()</span>
-        <span class="k">if</span><span class="p">(</span><span class="n">_names</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">_names</span><span class="p">:</span>
             <span class="n">names</span> <span class="o">=</span> <span class="n">_names</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">names</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="CdmVector.sql_df"><a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.sql_df">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">sql_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">,</span> <span class="n">sqldict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CdmVector.sql_df">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.sql_df">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">sql_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">,</span> <span class="n">sqldict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">sqldict</span><span class="p">:</span>
-            <span class="n">query</span><span class="o">=</span><span class="n">CDMSQL</span><span class="p">[</span><span class="n">sqldict</span><span class="p">]</span>
+            <span class="n">query</span> <span class="o">=</span> <span class="n">CDMSQL</span><span class="p">[</span><span class="n">sqldict</span><span class="p">]</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">cdm</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">result</span>
         <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">result</span></div></div>
+        <span class="k">return</span> <span class="n">result</span></div>
+</div>
+
 </pre></div>
 
           </div>
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="../../index.html">pyomop</a></h1>
 
@@ -105,7 +119,16 @@
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../readme.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../license.html">License</a></li>
@@ -123,16 +146,6 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -146,11 +159,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2021, Bell Eapen.
+      &#169;2021, Bell Eapen.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
     </div>
 

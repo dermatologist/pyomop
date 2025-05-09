@@ -1,18 +1,17 @@
-
 <!DOCTYPE html>
 
-<html>
+<html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>pyomop &#8212; pyomop unknown documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+    <title>pyomop &#8212; pyomop 0.0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=0ca6144b" />
+    <script src="_static/documentation_options.js?v=7026087e"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="License" href="license.html" />
@@ -20,8 +19,9 @@
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
+
   
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+  
 
   </head><body>
   
@@ -34,39 +34,34 @@
           <div class="body" role="main">
             
   <section id="pyomop">
-<h1>pyomop<a class="headerlink" href="#pyomop" title="Permalink to this headline">¶</a></h1>
+<h1>pyomop<a class="headerlink" href="#pyomop" title="Link to this heading">¶</a></h1>
 <p><img alt="Libraries.io SourceRank" src="https://img.shields.io/librariesio/sourcerank/pypi/pyomop" />
 <a class="reference external" href="https://www.python.org/"><img alt="forthebadge made-with-python" src="http://ForTheBadge.com/images/badges/made-with-python.svg" /></a>
 <a class="reference external" href="https://pypi.python.org/pypi/pyomop/"><img alt="PyPI download total" src="https://img.shields.io/pypi/dm/pyomop.svg" /></a>
 <a class="reference external" href="https://nuchange.ca"><img alt="Build" src="https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg" /></a></p>
-<ul class="simple">
-<li><p><em>Inspired by <a class="reference external" href="https://github.com/jbadger3">&#64;jbadger3’s</a> <a class="reference external" href="https://github.com/jbadger3/inspectomop">inspectomop</a></em></p></li>
-</ul>
 <section id="documentation">
-<h2><a class="reference external" href="https://dermatologist.github.io/pyomop/">Documentation</a><a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<h2><a class="reference external" href="https://dermatologist.github.io/pyomop/">Documentation</a><a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
 </section>
 <section id="update">
-<h2>UPDATE<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h2>
+<h2>UPDATE<a class="headerlink" href="#update" title="Link to this heading">¶</a></h2>
 <p>Recently added support for <strong>LLM based natural language queries</strong> of OMOP CDM databases using <a class="reference external" href="examples/llm_example.py">llama-index</a>. Please install the llm extras as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. <a class="reference external" href="examples/llm_example.py">See usage</a>!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dermatologist</span><span class="o">/</span><span class="n">pyomop</span><span class="o">.</span><span class="n">git</span><span class="nd">@develop</span>
-<span class="n">cd</span> <span class="n">pyomop</span>
-<span class="n">pip</span> <span class="n">install</span> <span class="n">pyomop</span><span class="p">[</span><span class="n">llm</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyomop</span><span class="p">[</span><span class="n">llm</span><span class="p">]</span>
 </pre></div>
 </div>
 <p><a class="reference external" href="examples/llm_example.py">See usage</a>.</p>
 </section>
 <section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
 <p>The <a class="reference external" href="https://www.ohdsi.org/">OHSDI</a> OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. <strong>pyomop</strong> also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful <a class="reference external" href="https://github.com/OHDSI/QueryLibrary">SQL Queries here.</a></p>
 </section>
 <section id="installation-stable">
-<h2>Installation (stable)<a class="headerlink" href="#installation-stable" title="Permalink to this headline">¶</a></h2>
+<h2>Installation (stable)<a class="headerlink" href="#installation-stable" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyomop</span>
 </pre></div>
 </div>
 </section>
 <section id="installation-current">
-<h2>Installation (current)<a class="headerlink" href="#installation-current" title="Permalink to this headline">¶</a></h2>
+<h2>Installation (current)<a class="headerlink" href="#installation-current" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>git clone this repository and:</p></li>
 </ul>
@@ -75,13 +70,13 @@
 </div>
 </section>
 <section id="usage-4-0-0-async-example">
-<h2>Usage &gt;= 4.0.0 (Async) Example<a class="headerlink" href="#usage-4-0-0-async-example" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pyomop</span> <span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.future</span> <span class="kn">import</span> <span class="n">select</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<h2>Usage &gt;= 4.0.0 (Async) Example<a class="headerlink" href="#usage-4-0-0-async-example" title="Link to this heading">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyomop</span><span class="w"> </span><span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.future</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">()</span>  <span class="c1"># Creates SQLite database by default</span>
     <span class="c1"># Postgres example (db=&#39;mysql&#39; also supported)</span>
     <span class="c1"># cdm = CdmEngineFactory(db=&#39;pgsql&#39;, host=&#39;&#39;, port=5432,</span>
@@ -139,11 +134,11 @@
 </div>
 </section>
 <section id="usage-3-2-0">
-<h2>Usage &lt;=3.2.0<a class="headerlink" href="#usage-3-2-0" title="Permalink to this headline">¶</a></h2>
+<h2>Usage &lt;=3.2.0<a class="headerlink" href="#usage-3-2-0" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span> <span class="nn">pyomop</span> <span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
-<span class="kn">from</span> <span class="nn">sqlalchemy.sql</span> <span class="kn">import</span> <span class="n">select</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyomop</span><span class="w"> </span><span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 
 <span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">()</span>  <span class="c1"># Creates SQLite database by default</span>
 
@@ -187,17 +182,17 @@
 </div>
 </section>
 <section id="command-line-usage">
-<h2>command-line usage<a class="headerlink" href="#command-line-usage" title="Permalink to this headline">¶</a></h2>
+<h2>command-line usage<a class="headerlink" href="#command-line-usage" title="Link to this heading">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyomop</span> <span class="o">-</span><span class="n">help</span>
 </pre></div>
 </div>
 </section>
 <section id="other-utils">
-<h2>Other utils<a class="headerlink" href="#other-utils" title="Permalink to this headline">¶</a></h2>
+<h2>Other utils<a class="headerlink" href="#other-utils" title="Link to this heading">¶</a></h2>
 <p><strong>Want to convert FHIR to pandas data frame? Try <a class="reference external" href="https://github.com/dermatologist/fhiry">fhiry</a></strong></p>
 <p><strong>Use the same functions in <a class="reference external" href="https://github.com/dermatologist/omopcdm-dot-net">.NET</a> and <a class="reference external" href="https://github.com/E-Health/gocdm">Golang</a>!</strong></p>
 <section id="support">
-<h3>Support<a class="headerlink" href="#support" title="Permalink to this headline">¶</a></h3>
+<h3>Support<a class="headerlink" href="#support" title="Link to this heading">¶</a></h3>
 <ul class="simple">
 <li><p>Postgres</p></li>
 <li><p>MySQL</p></li>
@@ -207,11 +202,11 @@
 </section>
 </section>
 <section id="give-us-a-star">
-<h2>Give us a star ⭐️<a class="headerlink" href="#give-us-a-star" title="Permalink to this headline">¶</a></h2>
+<h2>Give us a star ⭐️<a class="headerlink" href="#give-us-a-star" title="Link to this heading">¶</a></h2>
 <p>If you find this project useful, give us a star. It helps others discover the project.</p>
 </section>
 <section id="contributors">
-<h2>Contributors<a class="headerlink" href="#contributors" title="Permalink to this headline">¶</a></h2>
+<h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://nuchange.ca">Bell Eapen</a> | <a class="reference external" href="https://twitter.com/beapen"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/beapen?style=social" /></a></p></li>
 <li><p>PRs welcome. See CONTRIBUTING.md</p></li>
@@ -224,7 +219,7 @@
           
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
 <h1 class="logo"><a href="index.html">pyomop</a></h1>
 
@@ -235,7 +230,16 @@
 
 
 
-<h3>Navigation</h3>
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
@@ -266,16 +270,6 @@
   </ul></li>
 </ul>
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
 
 
 
@@ -289,11 +283,11 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2021, Bell Eapen.
+      &#169;2021, Bell Eapen.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 8.2.3</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
       
       |
       <a href="_sources/readme.md.txt"
