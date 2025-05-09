@@ -72,8 +72,8 @@ async def main():
 
     """
     # Close session
-    # await session.close()
-    # await engine.dispose()
+    await session.close()
+    await engine.dispose()
 
 # Run the main function
 asyncio.run(main())
