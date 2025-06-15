@@ -15,10 +15,13 @@ jobs:
     - name: Checkout Latest Commit
       uses: actions/checkout@v4
 
-    - name: Generate changelog
-      uses: charmixer/auto-changelog-action@v1
+    - name: "✏️ Generate release changelog"
+      uses: janheinrichmerker/action-github-changelog-generator@v2.4
       with:
-        token: ${{ secrets.github_token }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        user: dermatologist
+        maxIssues: 15
+        httpCache: true
 
     - name: Commit changes
       uses: EndBug/add-and-commit@v9
