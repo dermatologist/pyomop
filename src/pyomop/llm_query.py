@@ -54,21 +54,24 @@ class CdmLLMQuery:
             VectorStoreIndex,
         )
 
-
         self._query_engine = SQLTableRetrieverQueryEngine(
-            self._sql_database, self._object_index.as_retriever(similarity_top_k=1), sql_only=True
+            self._sql_database,
+            self._object_index.as_retriever(similarity_top_k=1),
+            sql_only=True,
         )
-
 
     @property
     def table_node_mapping(self) -> SQLTableNodeMapping:
         return self._table_node_mapping
+
     @property
     def table_schema_objs(self) -> list[SQLTableSchema]:
         return self._table_schema_objs
+
     @property
     def object_index(self) -> ObjectIndex:
         return self._object_index
+
     @property
     def query_engine(self) -> SQLTableRetrieverQueryEngine:
         return self._query_engine
