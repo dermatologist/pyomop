@@ -4,8 +4,8 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
 [![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
+[![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/pyomop/)
 
-### [Documentation](https://dermatologist.github.io/pyomop/)
 
 ## UPDATE
 Recently added support for **LLM based natural language queries** of OMOP CDM databases using [llama-index](examples/llm_example.py). Please install the llm extras as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. [See usage](examples/llm_example.py)!
