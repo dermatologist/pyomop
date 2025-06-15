@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 from llama_index.core.indices.struct_store.sql_query import (
     SQLTableRetrieverQueryEngine,
 )
@@ -51,7 +51,7 @@ class CdmLLMQuery:
         self._object_index = ObjectIndex.from_objects(
             self._table_schema_objs,
             self._table_node_mapping,
-            VectorStoreIndex,
+            VectorStoreIndex,  # type: ignore
         )
 
         self._query_engine = SQLTableRetrieverQueryEngine(
