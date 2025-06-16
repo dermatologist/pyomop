@@ -2,12 +2,12 @@
 # from sqlalchemy.orm import Session
 # from sqlalchemy.ext.automap import automap_base
 
-import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.automap import automap_base
 from omop_cdm.constants import CDM_SCHEMA, VOCAB_SCHEMA
+
 
 class CdmEngineFactory(object):
 
@@ -37,6 +37,9 @@ class CdmEngineFactory(object):
         }
 
     async def init_models(self, metadata):
+        # throw exception if engine is None
+        if self._engine is None:
+            raise ValueError("Engine is not initialized. Call `engine` property first.")
         async with self._engine.begin() as conn:
             await conn.run_sync(metadata.drop_all)
             await conn.run_sync(metadata.create_all)
@@ -70,14 +73,10 @@ class CdmEngineFactory(object):
         return self._schema
 
     @property
-    def engine(self):
-        return self.engine
-
-    @property
     def base(self):
-        if self.engine is not None:  # Not self_engine
+        if self._engine is not None:  # Not self_engine
             Base = automap_base()
-            Base.prepare(self.engine, reflect=True)
+            Base.prepare(self._engine, reflect=True)
             return Base.classes
         return None
 
@@ -112,7 +111,7 @@ class CdmEngineFactory(object):
     @property
     def session(self):
         if self._engine is not None:
-            async_session = sessionmaker(
+            async_session = async_sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )
             return async_session
@@ -121,10 +120,11 @@ class CdmEngineFactory(object):
     @property
     def async_session(self):
         if self._engine is not None:
-            async_session = sessionmaker(
+            async_session = async_sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )
             return async_session
+        return None
         return None
 
     @db.setter
