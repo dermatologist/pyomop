@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
-
+from omop_cdm.constants import CDM_SCHEMA, VOCAB_SCHEMA
 
 class CdmEngineFactory(object):
 
@@ -20,6 +20,7 @@ class CdmEngineFactory(object):
         pw="pass",
         name="cdm6.sqlite",
         schema="public",
+        omop_schema="cdm54",
     ):
         self._db = db
         self._name = name
@@ -30,6 +31,10 @@ class CdmEngineFactory(object):
         self._schema = schema
         self._engine = None
         self._base = None
+        self._schema_map = {
+            CDM_SCHEMA: omop_schema,
+            VOCAB_SCHEMA: omop_schema,
+        }
 
     async def init_models(self, metadata):
         async with self._engine.begin() as conn:
@@ -98,6 +103,9 @@ class CdmEngineFactory(object):
             )
             self._engine = create_async_engine(
                 pgsql_url, connect_args={"options": "-csearch_path={}".format(dbschema)}
+            )
+            self._engine = self._engine.execution_options(
+                schema_translate_map=self._schema_map
             )
         return self._engine
 
