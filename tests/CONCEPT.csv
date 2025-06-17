@@ -1,6 +1,6 @@
 concept_id	concept_name	domain_id	vocabulary_id	concept_class_id	standard_concept	concept_code	valid_start_date	valid_end_date	invalid_reason
-45956931	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3578611000001105	19700101	20991231
-45956935	xxxx xxxxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3579011000001108	19700101	20991231
-45956943	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3330611000001108	19700101	20991231
-45956945	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	x	3565611000001107	19700101	20991231
+45956931	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	C	3578611000001105	19700101	20991231	D
+45956935	xxxx xxxxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	C	3579011000001108	19700101	20991231	D
+45956943	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	C	3330611000001108	19700101	20991231	D
+45956945	xxxxx	xxxxxxxxxxx	xxxxxx	xxxxxxxxx	C	3565611000001107	19700101	20991231	D
 
