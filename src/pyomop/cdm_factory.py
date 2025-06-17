@@ -3,7 +3,10 @@ from omop_cdm.regular import cdm531
 from omop_cdm.regular import cdm600
 
 
-def class_factory(cdm_version: str, class_name: str):
+def class_factory(
+    class_name: str,
+    cdm_version: str = "cdm54",
+):
     """
     Factory function to create a class based on the CDM version and class name.
 

@@ -20,7 +20,6 @@ class CdmEngineFactory(object):
         pw="pass",
         name="cdm6.sqlite",
         schema="public",
-        omop_schema="cdm54",
     ):
         self._db = db
         self._name = name
@@ -32,8 +31,8 @@ class CdmEngineFactory(object):
         self._engine = None
         self._base = None
         self._schema_map = {
-            CDM_SCHEMA: omop_schema,
-            VOCAB_SCHEMA: omop_schema,
+            CDM_SCHEMA: None,  # set to none to support sqlite
+            VOCAB_SCHEMA: None,
         }
 
     async def init_models(self, metadata):
