@@ -17,10 +17,14 @@ def pyomop_fixture():
     return cdm
 
 @pytest.fixture
-def metadata_fixture():
-    from src.pyomop import metadata
-    return metadata
+def cdm6_metadata_fixture():
+    from src.pyomop.cdm6 import Base
+    return Base.metadata
 
+@pytest.fixture
+def cdm54_metadata_fixture():
+    from src.pyomop.cdm54 import Base
+    return Base.metadata
 
 @pytest.fixture
 def vector_fixture():

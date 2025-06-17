@@ -10,8 +10,8 @@ def test_create_patient(pyomop_fixture, metadata_fixture, capsys):
 
 
 async def create_patient(pyomop_fixture,engine):
-    from src.pyomop import Person
-    from src.pyomop import Cohort
+    from src.pyomop.cdm6 import Person
+    from src.pyomop.cdm6 import Cohort
     import datetime
     from sqlalchemy.future import select
 
@@ -19,10 +19,14 @@ async def create_patient(pyomop_fixture,engine):
     async with pyomop_fixture.session() as session:
         async with session.begin():
             session.add(Person(
+                person_id=1,
                 gender_concept_id=100,
+                gender_source_concept_id=10,
                 year_of_birth=2000,
                 race_concept_id=200,
-                ethnicity_concept_id=300
+                race_source_concept_id=20,
+                ethnicity_concept_id=300,
+                ethnicity_source_concept_id=30,
             ))
         await session.commit()
 
