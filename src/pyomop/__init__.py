@@ -4,6 +4,7 @@ import logging
 _logger = logging.getLogger(__name__)
 from .engine_factory import CdmEngineFactory
 from .cdm6_tables import metadata
+from .cdm_factory import class_factory
 from .vocabulary import CdmVocabulary
 from .vector import CdmVector
 

@@ -25,6 +25,8 @@ Base = declarative_base()
 metadata = Base.metadata
 
 
+
+
 # class AttributeDefinition(Base):
 #     __tablename__ = "attribute_definition"
 
@@ -100,60 +102,60 @@ class CohortDefinition(Base):
     cohort_initiation_date = Column(String(30))
 
 
-# class Concept(Base):
-#     __tablename__ = "concept"
+class Concept(Base):
+    __tablename__ = "concept"
 
-#     # _id = Column(Integer, primary_key=True)
-#     concept_id = Column(Integer, primary_key=True)
-#     concept_name = Column(String(255), nullable=False)
-#     domain_id = Column(String(20), nullable=False)
-#     vocabulary_id = Column(String(20), nullable=False)
-#     concept_class_id = Column(String(20), nullable=False)
-#     standard_concept = Column(String(1))
-#     concept_code = Column(String(50), nullable=False)
-#     valid_start_date = Column(String(30), nullable=False)
-#     valid_end_date = Column(String(30), nullable=False)
-#     invalid_reason = Column(String(1))
-
-
-# class ConceptAncestor(Base):
-#     __tablename__ = "concept_ancestor"
-
-#     _id = Column(Integer, primary_key=True)
-#     ancestor_concept_id = Column(Integer, nullable=False)
-#     descendant_concept_id = Column(Integer, nullable=False)
-#     min_levels_of_separation = Column(Integer, nullable=False)
-#     max_levels_of_separation = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    concept_id = Column(Integer, primary_key=True)
+    concept_name = Column(String(255), nullable=False)
+    domain_id = Column(String(20), nullable=False)
+    vocabulary_id = Column(String(20), nullable=False)
+    concept_class_id = Column(String(20), nullable=False)
+    standard_concept = Column(String(1))
+    concept_code = Column(String(50), nullable=False)
+    valid_start_date = Column(String(30), nullable=False)
+    valid_end_date = Column(String(30), nullable=False)
+    invalid_reason = Column(String(1))
 
 
-# class ConceptClass(Base):
-#     __tablename__ = "concept_class"
+class ConceptAncestor(Base):
+    __tablename__ = "concept_ancestor"
 
-#     # _id = Column(Integer, primary_key=True)
-#     concept_class_id = Column(String(20), primary_key=True)
-#     concept_class_name = Column(String(255), nullable=False)
-#     concept_class_concept_id = Column(Integer, nullable=False)
-
-
-# class ConceptRelationship(Base):
-#     __tablename__ = "concept_relationship"
-
-#     _id = Column(Integer, primary_key=True)
-#     concept_id_1 = Column(Integer, nullable=False)
-#     concept_id_2 = Column(Integer, nullable=False)
-#     relationship_id = Column(String(20), nullable=False)
-#     valid_start_date = Column(String(30), nullable=False)
-#     valid_end_date = Column(String(30), nullable=False)
-#     invalid_reason = Column(String(1))
+    _id = Column(Integer, primary_key=True)
+    ancestor_concept_id = Column(Integer, nullable=False)
+    descendant_concept_id = Column(Integer, nullable=False)
+    min_levels_of_separation = Column(Integer, nullable=False)
+    max_levels_of_separation = Column(Integer, nullable=False)
 
 
-# class ConceptSynonym(Base):
-#     __tablename__ = "concept_synonym"
+class ConceptClass(Base):
+    __tablename__ = "concept_class"
 
-#     _id = Column(Integer, primary_key=True)
-#     concept_id = Column(Integer, nullable=False)
-#     concept_synonym_name = Column(String(1000), nullable=False)
-#     language_concept_id = Column(Integer, nullable=False)
+    # _id = Column(Integer, primary_key=True)
+    concept_class_id = Column(String(20), primary_key=True)
+    concept_class_name = Column(String(255), nullable=False)
+    concept_class_concept_id = Column(Integer, nullable=False)
+
+
+class ConceptRelationship(Base):
+    __tablename__ = "concept_relationship"
+
+    _id = Column(Integer, primary_key=True)
+    concept_id_1 = Column(Integer, nullable=False)
+    concept_id_2 = Column(Integer, nullable=False)
+    relationship_id = Column(String(20), nullable=False)
+    valid_start_date = Column(String(30), nullable=False)
+    valid_end_date = Column(String(30), nullable=False)
+    invalid_reason = Column(String(1))
+
+
+class ConceptSynonym(Base):
+    __tablename__ = "concept_synonym"
+
+    _id = Column(Integer, primary_key=True)
+    concept_id = Column(Integer, nullable=False)
+    concept_synonym_name = Column(String(1000), nullable=False)
+    language_concept_id = Column(Integer, nullable=False)
 
 
 # class ConditionEra(Base):

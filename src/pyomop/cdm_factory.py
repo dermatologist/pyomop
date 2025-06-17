@@ -1,11 +1,17 @@
-from omop_cdm.regular import cdm54
-from omop_cdm.regular import cdm531
-from omop_cdm.regular import cdm600
+from omop_cdm.dynamic import cdm54
+from omop_cdm.dynamic import cdm531
+from omop_cdm.dynamic import cdm600
+
+from sqlalchemy.orm import DeclarativeBase
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 def class_factory(
     class_name: str,
-    cdm_version: str = "cdm54",
+    cdm_version: str = "Cdm54",
 ):
     """
     Factory function to create a class based on the CDM version and class name.
@@ -17,11 +23,18 @@ def class_factory(
     Returns:
         type: The class corresponding to the specified CDM version and class name.
     """
-    if cdm_version == "cdm54":
-        return getattr(cdm54, class_name)
-    elif cdm_version == "cdm531":
+    if cdm_version == "Cdm54":
+        name = f"Base{class_name}Cdm54"
+        Klass = getattr(cdm54, name)
+        new_class = type(
+            class_name,
+            (Klass, Base),
+            {"__tablename__": class_name.lower(), "__table_args__": {"schema": None}},
+        )
+        return new_class
+    elif cdm_version == "Cdm531":
         return getattr(cdm531, class_name)
-    elif cdm_version == "cdm600":
+    elif cdm_version == "Cdm600":
         return getattr(cdm600, class_name)
     else:
         raise ValueError(f"Unsupported CDM version: {cdm_version}")

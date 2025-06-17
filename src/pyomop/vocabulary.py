@@ -1,5 +1,5 @@
 import pandas as pd
-from .cdm6_tables import Concept
+# from .cdm6_tables import Concept
 import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
@@ -13,6 +13,10 @@ import numpy as np
 from sqlalchemy.ext.automap import automap_base, AutomapBase
 from sqlalchemy import select
 
+from .cdm6_tables import Concept
+
+# from .cdm_factory import class_factory
+# Concept = class_factory("Concept")
 
 class CdmVocabulary(object):
     def __init__(self, cdm):
