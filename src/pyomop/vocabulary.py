@@ -27,10 +27,7 @@ class CdmVocabulary(object):
         self._engine = cdm.engine
         self._maker = async_sessionmaker(self._engine, class_=AsyncSession)
         self._scope = async_scoped_session(self._maker, scopefunc=asyncio.current_task)
-        if version=="cdm6":
-            from .cdm6 import Concept
-        else:
-            from .cdm54 import Concept
+        self._version = version
 
     @property
     def concept_id(self):
@@ -63,16 +60,24 @@ class CdmVocabulary(object):
         self._concept_code = _concept.concept_code
 
     async def get_concept(self, concept_id):
-        stmt = select(Concept).where(Concept.concept_id == concept_id) # type: ignore
+        if self._version == "cdm6":
+            from .cdm6 import Concept
+        else:
+            from .cdm54 import Concept
+        stmt = select(Concept).where(Concept.concept_id == concept_id)
         async with self._cdm.session() as session:
             _concept = await session.execute(stmt)
         return _concept.scalar_one()
 
     async def get_concept_by_code(self, concept_code, vocabulary_id):
+        if self._version == "cdm6":
+            from .cdm6 import Concept
+        else:
+            from .cdm54 import Concept
         stmt = (
-            select(Concept) # type: ignore
-            .where(Concept.concept_code == concept_code) # type: ignore
-            .where(Concept.vocabulary_id == vocabulary_id) # type: ignore
+            select(Concept)
+            .where(Concept.concept_code == concept_code)
+            .where(Concept.vocabulary_id == vocabulary_id)
         )
         async with self._cdm.session() as session:
             _concept = await session.execute(stmt)
