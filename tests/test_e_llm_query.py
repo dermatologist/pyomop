@@ -4,17 +4,18 @@ import os
 import datetime
 
 @staticmethod
-def test_create_cohort(pyomop_fixture, metadata_fixture, capsys):
+def test_create_cohort_cdm54(pyomop_fixture, cdm54_metadata_fixture, capsys):
     engine = pyomop_fixture.engine
     # create tables
-    asyncio.run(pyomop_fixture.init_models(metadata_fixture))
+    asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
     asyncio.run(create_llm_query(pyomop_fixture, engine))
 
 
 async def create_llm_query(pyomop_fixture,engine):
     response = "I'm running in CI with no LLM"
     try:
-        from src.pyomop import Cohort, CdmLLMQuery
+        from src.pyomop.cdm54 import Cohort
+        from src.pyomop import CdmLLMQuery
         from llama_index.llms import Vertex
         from src.pyomop.llm_engine import CDMDatabase
         # Add a cohort
