@@ -35,7 +35,9 @@ pip install -e .
 
 ## Usage >= 4.0.0 (Async) Example
 ```
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
+from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
+# cdm6 and cdm54 are supported
+from pyomop.cdm54 import Cohort, Vocabulary, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
@@ -49,9 +51,9 @@ async def main():
 
     engine = cdm.engine
     # Create Tables if required
-    await cdm.init_models(metadata)
+    await cdm.init_models(Base.metadata)
     # Create vocabulary if required
-    vocab = CdmVocabulary(cdm)
+    vocab = CdmVocabulary(cdm, version='cdm54')  # Use cdm6 for CDM v6
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
     # Add a cohort
