@@ -29,7 +29,7 @@ async def main():
     # Create Tables if required
     await cdm.init_models(Base.metadata)
 
-    async with cdm.session() as session:
+    async with cdm.session() as session: # type: ignore
         async with session.begin():
 
             # Adding  a cohort just for the example (not required if you have a OMOP CDM database)
@@ -44,13 +44,13 @@ async def main():
                 api_key="some-key",  # Replace this with your key
             )
             # Include tables that you want to query
-            sql_database = CDMDatabase(engine, include_tables=[
+            sql_database = CDMDatabase(engine, include_tables=[ # type: ignore
                 "cohort",
             ])
             query_engine = CdmLLMQuery(sql_database, llm=llm).query_engine
             # Try any complex query.
             response  = query_engine.query("Show each in table cohort with a subject id of 100?")
-            sqls = response.metadata["sql_query"].split("\n")
+            sqls = response.metadata["sql_query"].split("\n") # type: ignore
 
         async with session.begin():
             # run each sql query
@@ -74,7 +74,7 @@ async def main():
     """
     # Close session
     await session.close()
-    await engine.dispose()
+    await engine.dispose() # type: ignore
 
 # Run the main function
 asyncio.run(main())
