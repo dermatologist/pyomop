@@ -4,7 +4,8 @@ pip install pyomop[llm]
 
 """
 
-from pyomop import CdmEngineFactory, Cohort, metadata, CdmLLMQuery, CDMDatabase
+from pyomop.cdm54 import Cohort, Base
+from pyomop import CdmEngineFactory, CdmLLMQuery, CDMDatabase
 import re
 from sqlalchemy import text
 import datetime
@@ -26,7 +27,7 @@ async def main():
 
     engine = cdm.engine
     # Create Tables if required
-    await cdm.init_models(metadata)
+    await cdm.init_models(Base.metadata)
 
     async with cdm.session() as session:
         async with session.begin():

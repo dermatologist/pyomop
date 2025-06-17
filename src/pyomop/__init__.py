@@ -11,10 +11,10 @@ try:
     from .llm_query import CdmLLMQuery
     from .llm_engine import CDMDatabase
 except ImportError:
-    _logger.warn(
-        "LLM is not installed. Please install LLM with pip install pyomop[llm] to use this package."
+    _logger.warning(
+        "LLM is not installed. Please install LLM with pip install pyomop[llm] to use this function."
     )
-
+    exit(0)
 
 if sys.version_info[:2] >= (3, 8):
     # TODO: Import directly (no need for conditional) when `python_requires = >= 3.8`
