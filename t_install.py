@@ -1,4 +1,5 @@
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
+from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
+from src.pyomop.cdm54 import Cohort, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
@@ -12,13 +13,13 @@ async def main():
 
     engine = cdm.engine
     # Create Tables if required
-    await cdm.init_models(metadata)
+    await cdm.init_models(Base.metadata)
     # Create vocabulary if required
     vocab = CdmVocabulary(cdm)
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
     # Add a cohort
-    async with cdm.session() as session:
+    async with cdm.session() as session:  # type: ignore
         async with session.begin():
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
                 cohort_end_date=datetime.datetime.now(),
@@ -35,12 +36,12 @@ async def main():
     # Query the cohort pattern 2
     cohort = await session.get(Cohort, 1)
     print(cohort)
-    assert cohort.subject_id == 100
+    assert cohort.subject_id == 100 # type: ignore
 
     # Convert result to a pandas dataframe
     vec = CdmVector()
     vec.result = result
-    print(vec.df.dtypes)
+    print(vec.df.dtypes) # type: ignore
 
     result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
     for row in result:
@@ -53,7 +54,7 @@ async def main():
 
     # Close session
     await session.close()
-    await engine.dispose()
+    await engine.dispose() # type: ignore
 
 # Run the main function
 asyncio.run(main())
