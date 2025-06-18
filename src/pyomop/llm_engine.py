@@ -5,7 +5,6 @@ from overrides import override
 
 from sqlalchemy import MetaData
 from sqlalchemy.engine import Engine
-from . import metadata
 from llama_index.core import SQLDatabase
 
 
@@ -22,12 +21,19 @@ class CDMDatabase(SQLDatabase):
         custom_table_info: Optional[dict] = None,
         view_support: bool = False,
         max_string_length: int = 300,
+        version: str = "cdm54",
     ):
         """Create engine from database URI."""
         self._engine = engine
         self._schema = schema
         if include_tables and ignore_tables:
             raise ValueError("Cannot specify both include_tables and ignore_tables")
+
+        if version == "cdm6":
+            from .cdm6 import Base
+        else:
+            from .cdm54 import Base
+        metadata = Base.metadata
 
         #! Inspect is not supported in SQL Alchemy 1.4. So getting info from metadata
         # self._inspector = inspect(self._engine)
@@ -89,7 +95,7 @@ class CDMDatabase(SQLDatabase):
     @override
     def get_table_columns(self, table_name: str) -> List[Any]:
         """Get table columns."""
-        return metadata.tables[table_name].columns.keys()
+        return self._metadata.tables[table_name].columns.keys()
 
     @override
     def get_single_table_info(self, table_name: str) -> str:
@@ -100,9 +106,9 @@ class CDMDatabase(SQLDatabase):
             "and foreign keys: {foreign_keys}."
         )
         columns = []
-        # print(metadata.tables[table_name].foreign_keys)
+        # print(self._metadata.tables[table_name].foreign_keys)
         foreign_keys = []
-        for column in metadata.tables[table_name].columns:
+        for column in self._metadata.tables[table_name].columns:
             columns.append(f"{column.name} ({column.type!s})")
             for foreign_key in column.foreign_keys:
                 foreign_keys.append(
