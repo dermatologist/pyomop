@@ -39,15 +39,6 @@ FK_CARE_SITE_ID = "care_site.care_site_id"
 FK_LOCATION_ID = "location.location_id"
 
 
-class Cdm6Test(Base):
-    __tablename__ = "cdm6_test"
-
-    # _id = Column(Integer, primary_key=True)
-    attribute_definition_id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    attribute_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    attribute_description: Mapped[str] = mapped_column(Text)
-    attribute_type_concept_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    attribute_syntax: Mapped[str] = mapped_column(Text)
 
 class AttributeDefinition(Base):
     __tablename__ = "attribute_definition"
@@ -96,16 +87,6 @@ class CohortDefinition(Base):
     cohort_initiation_date: Mapped[str] = mapped_column(String(30))
 
 
-class Death(Base):
-    __tablename__ = "death"
-
-    _id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    person_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    death_date: Mapped[str] = mapped_column(String(30), nullable=False)
-    death_type_concept_id: Mapped[int] = mapped_column(Integer, nullable=False)
-    cause_concept_id: Mapped[int] = mapped_column(Integer)
-    cause_source_value: Mapped[str] = mapped_column(String(50))
-    cause_source_concept_id: Mapped[int] = mapped_column(Integer)
 
 class DeviceCost(Base):
     __tablename__ = "device_cost"

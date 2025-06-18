@@ -4,7 +4,6 @@ from .cdm6_tables import (
     Cohort,
     CohortAttribute,
     CohortDefinition,
-    Death,
     DeviceCost,
     DrugCost,
     ProcedureCost,
