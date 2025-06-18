@@ -39,7 +39,6 @@ FK_CARE_SITE_ID = "care_site.care_site_id"
 FK_LOCATION_ID = "location.location_id"
 
 
-
 class AttributeDefinition(Base):
     __tablename__ = "attribute_definition"
 
@@ -85,7 +84,6 @@ class CohortDefinition(Base):
     cohort_definition_syntax: Mapped[str] = mapped_column(Text)
     subject_concept_id: Mapped[int] = mapped_column(Integer, nullable=False)
     cohort_initiation_date: Mapped[str] = mapped_column(String(30))
-
 
 
 class DeviceCost(Base):
@@ -164,6 +162,7 @@ class Specimen(Base):
     anatomic_site_source_value: Mapped[str] = mapped_column(String(50))
     disease_status_source_value: Mapped[str] = mapped_column(String(50))
 
+
 class VisitCost(Base):
     __tablename__ = "visit_cost"
 
@@ -180,7 +179,9 @@ class VisitCost(Base):
     total_paid: Mapped[decimal.Decimal] = mapped_column(Numeric)
     payer_plan_period_id: Mapped[int] = mapped_column(Integer)
 
+
 #####################################################################################
+
 
 class FactRelationship(Base):
     __tablename__ = "fact_relationship"
@@ -888,9 +889,7 @@ class NoteNlp(Base):
     __table_args__ = {"schema": CDM_SCHEMA}
 
     note_nlp_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    note_id: Mapped[int] = mapped_column(
-        ForeignKey("note.note_id"), index=True
-    )
+    note_id: Mapped[int] = mapped_column(ForeignKey("note.note_id"), index=True)
     section_concept_id: Mapped[int] = mapped_column(ForeignKey(FK_CONCEPT_ID))
     snippet: Mapped[Optional[str]] = mapped_column(String(250))
     offset: Mapped[Optional[str]] = mapped_column(String(250))

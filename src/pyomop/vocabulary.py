@@ -13,8 +13,6 @@ from sqlalchemy.ext.asyncio import (
 from sqlalchemy.ext.automap import AutomapBase, automap_base
 
 
-
-
 class CdmVocabulary(object):
     def __init__(self, cdm, version="cdm54"):
         self._concept_id = 0

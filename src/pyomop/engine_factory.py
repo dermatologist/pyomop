@@ -66,7 +66,6 @@ class CdmEngineFactory(object):
     def schema(self):
         return self._schema
 
-
     @property
     def base(self):
         if self.engine is not None:  # Not self_engine

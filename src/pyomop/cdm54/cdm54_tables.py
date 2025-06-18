@@ -17,6 +17,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 
+
 class Base(DeclarativeBase):
     pass
 
@@ -172,13 +173,18 @@ class VisitCost(Base):
 class LocationHistory(Base):
     __tablename__ = "location_history"
 
-    location_history_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, sort_order=100)
+    location_history_id: Mapped[int] = mapped_column(
+        BigInteger, primary_key=True, sort_order=100
+    )
     location_id: Mapped[int] = mapped_column(ForeignKey(FK_LOCATION_ID), sort_order=200)
-    relationship_type_concept_id: Mapped[int] = mapped_column(ForeignKey(FK_CONCEPT_ID), sort_order=300)
+    relationship_type_concept_id: Mapped[int] = mapped_column(
+        ForeignKey(FK_CONCEPT_ID), sort_order=300
+    )
     domain_id: Mapped[str] = mapped_column(String(50), sort_order=400)
     entity_id: Mapped[int] = mapped_column(BigInteger, sort_order=500)
     start_date: Mapped[datetime.date] = mapped_column(Date, sort_order=600)
     end_date: Mapped[Optional[datetime.date]] = mapped_column(Date, sort_order=700)
+
 
 ###################################################################################
 
@@ -186,7 +192,6 @@ class LocationHistory(Base):
 class Concept(Base):
     __tablename__ = "concept"
     __table_args__ = {"schema": VOCAB_SCHEMA}
-
 
     concept_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     concept_name: Mapped[str] = mapped_column(String(255))
@@ -214,7 +219,6 @@ class ConceptClass(Base):
     __tablename__ = "concept_class"
     __table_args__ = {"schema": VOCAB_SCHEMA}
 
-
     concept_class_id: Mapped[str] = mapped_column(
         String(20), primary_key=True, index=True
     )
@@ -230,7 +234,6 @@ class Domain(Base):
     __tablename__ = "domain"
     __table_args__ = {"schema": VOCAB_SCHEMA}
 
-
     domain_id: Mapped[str] = mapped_column(String(20), primary_key=True, index=True)
     domain_name: Mapped[str] = mapped_column(String(255))
     domain_concept_id: Mapped[int] = mapped_column(ForeignKey(FK_CONCEPT_ID))
@@ -243,7 +246,6 @@ class Domain(Base):
 class Vocabulary(Base):
     __tablename__ = "vocabulary"
     __table_args__ = {"schema": VOCAB_SCHEMA}
-
 
     vocabulary_id: Mapped[str] = mapped_column(String(20), primary_key=True, index=True)
     vocabulary_name: Mapped[str] = mapped_column(String(255))
@@ -259,7 +261,6 @@ class Vocabulary(Base):
 class ConceptAncestor(Base):
     __tablename__ = "concept_ancestor"
     __table_args__ = {"schema": VOCAB_SCHEMA}
-
 
     ancestor_concept_id: Mapped[int] = mapped_column(
         ForeignKey(FK_CONCEPT_ID), primary_key=True, index=True
@@ -282,7 +283,6 @@ class ConceptSynonym(Base):
     __tablename__ = "concept_synonym"
     __table_args__ = {"schema": VOCAB_SCHEMA}
 
-
     concept_id: Mapped[int] = mapped_column(
         ForeignKey(FK_CONCEPT_ID), primary_key=True, index=True
     )
@@ -302,7 +302,6 @@ class ConceptSynonym(Base):
 class DrugStrength(Base):
     __tablename__ = "drug_strength"
     __table_args__ = {"schema": VOCAB_SCHEMA}
-
 
     drug_concept_id: Mapped[int] = mapped_column(
         ForeignKey(FK_CONCEPT_ID), primary_key=True, index=True
@@ -348,7 +347,6 @@ class Relationship(Base):
     __tablename__ = "relationship"
     __table_args__ = {"schema": VOCAB_SCHEMA}
 
-
     relationship_id: Mapped[str] = mapped_column(String(20), primary_key=True)
     relationship_name: Mapped[str] = mapped_column(String(255))
     is_hierarchical: Mapped[str] = mapped_column(String(1))
@@ -369,7 +367,6 @@ class Relationship(Base):
 class ConceptRelationship(Base):
     __tablename__ = "concept_relationship"
     __table_args__ = {"schema": VOCAB_SCHEMA}
-
 
     concept_id_1: Mapped[int] = mapped_column(
         ForeignKey(FK_CONCEPT_ID), primary_key=True, index=True
@@ -400,7 +397,6 @@ class ConceptRelationship(Base):
 class SourceToConceptMap(Base):
     __tablename__ = "source_to_concept_map"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     source_code: Mapped[str] = mapped_column(String(1000), primary_key=True, index=True)
     source_concept_id: Mapped[int] = mapped_column(ForeignKey(FK_CONCEPT_ID))
@@ -435,7 +431,6 @@ class SourceToConceptMap(Base):
 class ConditionOccurrence(Base):
     __tablename__ = "condition_occurrence"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     condition_occurrence_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -500,7 +495,6 @@ class Death(Base):
     __tablename__ = "death"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), primary_key=True, index=True
     )
@@ -531,7 +525,6 @@ class FactRelationship(Base):
     __tablename__ = "fact_relationship"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     domain_concept_id_1: Mapped[int] = mapped_column(
         ForeignKey(FK_CONCEPT_ID), primary_key=True, index=True
     )
@@ -558,7 +551,6 @@ class FactRelationship(Base):
 class NoteNlp(Base):
     __tablename__ = "note_nlp"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     note_nlp_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     note_id: Mapped[int] = mapped_column(Integer, index=True)
@@ -593,7 +585,6 @@ class NoteNlp(Base):
 class Person(Base):
     __tablename__ = "person"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     person_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     gender_concept_id: Mapped[int] = mapped_column(
@@ -707,7 +698,6 @@ class ObservationPeriod(Base):
     __tablename__ = "observation_period"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     observation_period_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -727,7 +717,6 @@ class ObservationPeriod(Base):
 class Specimen(Base):
     __tablename__ = "specimen"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     specimen_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -774,7 +763,6 @@ class Specimen(Base):
 class VisitOccurrence(Base):
     __tablename__ = "visit_occurrence"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     visit_occurrence_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -836,7 +824,6 @@ class VisitOccurrence(Base):
 class VisitDetail(Base):
     __tablename__ = "visit_detail"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     visit_detail_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -917,7 +904,6 @@ class DeviceExposure(Base):
     __tablename__ = "device_exposure"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     device_exposure_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -987,7 +973,6 @@ class DrugExposure(Base):
     __tablename__ = "drug_exposure"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     drug_exposure_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -1053,7 +1038,6 @@ class DrugExposure(Base):
 class Measurement(Base):
     __tablename__ = "measurement"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     measurement_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -1139,7 +1123,6 @@ class Note(Base):
     __tablename__ = "note"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     note_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -1197,7 +1180,6 @@ class Note(Base):
 class Observation(Base):
     __tablename__ = "observation"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     observation_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -1276,7 +1258,6 @@ class ProcedureOccurrence(Base):
     __tablename__ = "procedure_occurrence"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     procedure_occurrence_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -1338,7 +1319,6 @@ class ConditionEra(Base):
     __tablename__ = "condition_era"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     condition_era_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -1361,7 +1341,6 @@ class ConditionEra(Base):
 class DoseEra(Base):
     __tablename__ = "dose_era"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     dose_era_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -1386,7 +1365,6 @@ class DrugEra(Base):
     __tablename__ = "drug_era"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     drug_era_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
         ForeignKey(FK_PERSON_ID, ondelete="CASCADE"), index=True
@@ -1406,7 +1384,6 @@ class DrugEra(Base):
 class Episode(Base):
     __tablename__ = "episode"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     episode_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     person_id: Mapped[int] = mapped_column(ForeignKey(FK_PERSON_ID, ondelete="CASCADE"))
@@ -1445,7 +1422,6 @@ class EpisodeEvent(Base):
     __tablename__ = "episode_event"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     episode_id: Mapped[int] = mapped_column(
         ForeignKey("episode.episode_id", ondelete="CASCADE"),
         primary_key=True,
@@ -1466,7 +1442,6 @@ class EpisodeEvent(Base):
 class PayerPlanPeriod(Base):
     __tablename__ = "payer_plan_period"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     payer_plan_period_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     person_id: Mapped[int] = mapped_column(
@@ -1531,7 +1506,6 @@ class Cost(Base):
     __tablename__ = "cost"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     cost_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     cost_event_id: Mapped[int] = mapped_column(Integer, index=True)
     cost_domain_id: Mapped[str] = mapped_column(ForeignKey(FK_DOMAIN_ID))
@@ -1582,7 +1556,6 @@ class CareSite(Base):
     __tablename__ = "care_site"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     care_site_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     care_site_name: Mapped[Optional[str]] = mapped_column(String(255))
     place_of_service_concept_id: Mapped[Optional[int]] = mapped_column(
@@ -1603,7 +1576,6 @@ class CareSite(Base):
 class Location(Base):
     __tablename__ = "location"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     location_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     address_1: Mapped[Optional[str]] = mapped_column(String(50))
@@ -1626,7 +1598,6 @@ class Location(Base):
 class Provider(Base):
     __tablename__ = "provider"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     provider_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     provider_name: Mapped[Optional[str]] = mapped_column(String(255))
@@ -1669,7 +1640,6 @@ class CdmSource(Base):
     __tablename__ = "cdm_source"
     __table_args__ = {"schema": CDM_SCHEMA}
 
-
     cdm_source_name: Mapped[str] = mapped_column(String(255), primary_key=True)
     cdm_source_abbreviation: Mapped[str] = mapped_column(String(25))
     cdm_holder: Mapped[str] = mapped_column(String(255))
@@ -1690,7 +1660,6 @@ class CdmSource(Base):
 class Metadata(Base):
     __tablename__ = "metadata"
     __table_args__ = {"schema": CDM_SCHEMA}
-
 
     metadata_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     metadata_concept_id: Mapped[int] = mapped_column(
