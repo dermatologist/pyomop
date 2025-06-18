@@ -10,10 +10,10 @@ import re
 from sqlalchemy import text
 import datetime
 import asyncio
+
 # Import any LLMs that llama_index supports and you have access to
 # Require OpenAI API key to use OpenAI LLMs
 from llama_index.llms.google_genai import GoogleGenAI
-
 
 
 async def main():
@@ -29,13 +29,18 @@ async def main():
     # Create Tables if required
     await cdm.init_models(Base.metadata)
 
-    async with cdm.session() as session: # type: ignore
+    async with cdm.session() as session:  # type: ignore
         async with session.begin():
 
             # Adding  a cohort just for the example (not required if you have a OMOP CDM database)
-            session.add(Cohort(cohort_definition_id=2, subject_id=100,
-                cohort_end_date=datetime.datetime.now(),
-                cohort_start_date=datetime.datetime.now()))
+            session.add(
+                Cohort(
+                    cohort_definition_id=2,
+                    subject_id=100,
+                    cohort_end_date=datetime.datetime.now(),
+                    cohort_start_date=datetime.datetime.now(),
+                )
+            )
             await session.commit()
 
             # Use any LLM that llama_index supports
@@ -44,13 +49,19 @@ async def main():
                 api_key="some-key",  # Replace this with your key
             )
             # Include tables that you want to query
-            sql_database = CDMDatabase(engine, include_tables=[ # type: ignore
-                "cohort",
-            ], version="cdm54") # version can be 'cdm54' or 'cdm6'
+            sql_database = CDMDatabase(
+                engine,  # type: ignore
+                include_tables=[  # type: ignore
+                    "cohort",
+                ],
+                version="cdm54",
+            )  # version can be 'cdm54' or 'cdm6'
             query_engine = CdmLLMQuery(sql_database, llm=llm).query_engine
             # Try any complex query.
-            response  = query_engine.query("Show each in table cohort with a subject id of 100?")
-            sqls = response.metadata["sql_query"].split("\n") # type: ignore
+            response = query_engine.query(
+                "Show each in table cohort with a subject id of 100?"
+            )
+            sqls = response.metadata["sql_query"].split("\n")  # type: ignore
 
         async with session.begin():
             # run each sql query
@@ -74,7 +85,8 @@ async def main():
     """
     # Close session
     await session.close()
-    await engine.dispose() # type: ignore
+    await engine.dispose()  # type: ignore
+
 
 # Run the main function
 asyncio.run(main())
