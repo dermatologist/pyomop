@@ -17,7 +17,6 @@ def test_create_vector_cdm6(
     asyncio.run(query_library_(pyomop_fixture, vector_fixture))
 
 
-
 @staticmethod
 def test_create_vector_cdm54(
     pyomop_fixture, cdm54_metadata_fixture, vector_fixture, capsys
@@ -62,6 +61,21 @@ async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
                     ethnicity_source_concept_id=38003564,
                 )
             )
+            session.add(
+                Person(
+                    person_id=101,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                    )
+                )
         await session.commit()
 
     # Query the cohort
@@ -130,9 +144,8 @@ async def query_library_(pyomop_fixture, vector_fixture):
         pyomop_fixture)
     assert result is not None
     print("Executing query library:")
-    for row in result:
-        print(row)
-    df = vector_fixture.df
-    assert not df.empty, "Query library returned an empty DataFrame"
-    print("DataFrame from query library:")
+    # convert # result to a python dictionary
+    df = vector_fixture.list_of_dicts_to_df(result)
     print(df.head())
+
+

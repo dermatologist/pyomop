@@ -72,13 +72,19 @@ async def main():
         vec.result = result
         print(vec.df.dtypes)
 
-        result = await vec.sql_df(cdm, 'TEST')
+        # supports QueryLibrary queries
+        # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
+        result = await vec.query_library(cdm, resource="person", query_name="PE02")
         for row in result:
             print(row)
 
         result = await vec.sql_df(cdm, query='SELECT * from cohort')
         for row in result:
             print(row)
+
+        # Convert to pandas DataFrame
+        vec.create_df()
+        print(vec.df.head())
 
     await session.close()
     await engine.dispose()

@@ -53,6 +53,7 @@ async def main():
     for row in result:
         print(row)
 
+    print(vec.df.head())
 
     # Close session
     await session.close()

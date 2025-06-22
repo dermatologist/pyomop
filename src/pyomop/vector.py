@@ -64,6 +64,12 @@ class CdmVector(object):
         await session.close()
         return result
 
+    def list_of_dicts_to_df(self, result):
+        list_of_dicts = result.mappings().all()
+        """Convert a list of dictionaries to a DataFrame."""
+        if not list_of_dicts:
+            return pd.DataFrame()
+        return pd.DataFrame(list_of_dicts)
 
     async def query_library(self, cdm, resource="person", query_name= "PE02"):
         # Get the markdown from the query library repository: https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
