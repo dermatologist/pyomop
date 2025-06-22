@@ -72,6 +72,8 @@ class CdmVector(object):
         if markdown.status_code != 200:
             raise ValueError(f"Query {query_name} not found in the Query Library.")
         query = markdown.text.split("```sql")[1].split("```")[0].strip()
+        # remove @cdm. and @vocab. references
+        query = query.replace("@cdm.", "").replace("@vocab.", "")
         if not query:
             raise ValueError(f"Query {query_name} is empty.")
         return await self.sql_df(cdm, query=query)

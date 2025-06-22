@@ -8,11 +8,11 @@
 
 ## ✨ Overview
 
-**pyomop** is a Python library for working with [OHDSI](https://www.ohdsi.org/) OMOP Common Data Model (CDM) v5.4 or v6 compliant databases using SQLAlchemy as the ORM. It supports converting query results to pandas DataFrames for machine learning pipelines and provides utilities for working with OMOP vocabularies. Table definitions are based on the [omop-cdm](https://github.com/thehyve/omop-cdm) library. Pyomop is designed to be a lightweight, easy-to-use library for researchers and developers experimenting and testing with OMOP CDM databases. 
+**pyomop** is a Python library for working with [OHDSI](https://www.ohdsi.org/) OMOP Common Data Model (CDM) v5.4 or v6 compliant databases using SQLAlchemy as the ORM. It supports converting query results to pandas DataFrames for machine learning pipelines and provides utilities for working with OMOP vocabularies. Table definitions are based on the [omop-cdm](https://github.com/thehyve/omop-cdm) library. Pyomop is designed to be a lightweight, easy-to-use library for researchers and developers experimenting and testing with OMOP CDM databases.
 
 - Supports SQLite, PostgreSQL, and MySQL.
 - LLM-based natural language queries via [llama-index](examples/llm_example.py).
-- Execute [QueryLibrary](https://github.com/OHDSI/QueryLibrary). (Coming soon)
+- Execute [QueryLibrary](https://github.com/OHDSI/QueryLibrary).
 
 ## Installation
 

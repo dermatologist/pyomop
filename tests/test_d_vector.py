@@ -32,7 +32,7 @@ def test_create_vector_cdm54(
 
 
 async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
-    from src.pyomop.cdm6 import Cohort
+    from src.pyomop.cdm6 import Cohort, Person
     import datetime
     from sqlalchemy.future import select
 
@@ -45,6 +45,21 @@ async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
                     subject_id=100,
                     cohort_end_date=datetime.datetime.now(),
                     cohort_start_date=datetime.datetime.now(),
+                )
+            )
+            session.add(
+                Person(
+                    person_id=100,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
                 )
             )
         await session.commit()
@@ -107,10 +122,10 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
     await engine.dispose()
 
 async def query_library_(pyomop_fixture, vector_fixture):
-    result = await vector_fixture.sql_df(pyomop_fixture, "TEST")
-    print("Executing TEST query:")
-    for row in result:
-        print(row)
+    # result = await vector_fixture.sql_df(pyomop_fixture, "TEST")
+    # print("Executing TEST query:")
+    # for row in result:
+    #     print(row)
     result = await vector_fixture.query_library(
         pyomop_fixture)
     assert result is not None
@@ -119,4 +134,5 @@ async def query_library_(pyomop_fixture, vector_fixture):
         print(row)
     df = vector_fixture.df
     assert not df.empty, "Query library returned an empty DataFrame"
+    print("DataFrame from query library:")
     print(df.head())
