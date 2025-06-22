@@ -35,8 +35,11 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.inspection</span><span class="w"> </span><span class="kn">import</span> <span class="n">inspect</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">text</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.sqldict</span><span class="w"> </span><span class="kn">import</span> <span class="n">CDMSQL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">getLogger</span>
 
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># https://gist.github.com/dermatologist/f436cb461a3290732a27c4dc040229f9</span>
 <span class="c1"># Thank you! https://gist.github.com/garaud</span>
@@ -44,62 +47,44 @@
 <a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CdmVector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">result</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">df</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">create_df</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_df</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span>
-
-    <span class="nd">@result</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">value</span>
-
-<div class="viewcode-block" id="CdmVector.query_to_list">
-<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.query_to_list">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">query_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;List of result</span>
-<span class="sd">        Return: columns name, list of result</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">instance</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result</span><span class="p">:</span>
-            <span class="n">instance</span> <span class="o">=</span> <span class="n">inspect</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-            <span class="n">items</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">items</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[]</span>
-        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">attrs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">result_list</span></div>
-
-
-<div class="viewcode-block" id="CdmVector.create_df">
-<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.create_df">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">create_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">names</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">query_to_list</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">_names</span><span class="p">:</span>
-            <span class="n">names</span> <span class="o">=</span> <span class="n">_names</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">names</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="CdmVector.sql_df">
-<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.sql_df">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">sql_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">,</span> <span class="n">sqldict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+<div class="viewcode-block" id="CdmVector.execute">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.execute">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">,</span> <span class="n">sqldict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chunksize</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">sqldict</span><span class="p">:</span>
             <span class="n">query</span> <span class="o">=</span> <span class="n">CDMSQL</span><span class="p">[</span><span class="n">sqldict</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Query must be a non-empty string.&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Executing query: </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">cdm</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="n">query</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="n">result</span>
         <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="CdmVector.result_to_df">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.result_to_df">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result_to_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
+        <span class="n">list_of_dicts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">mappings</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert a list of dictionaries to a DataFrame.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">list_of_dicts</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">list_of_dicts</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CdmVector.query_library">
+<a class="viewcode-back" href="../../api/pyomop.html#pyomop.vector.CdmVector.query_library">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">query_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="s2">&quot;person&quot;</span><span class="p">,</span> <span class="n">query_name</span><span class="o">=</span> <span class="s2">&quot;PE02&quot;</span><span class="p">):</span>
+        <span class="c1"># Get the markdown from the query library repository: https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;https://raw.githubusercontent.com/OHDSI/QueryLibrary/master/inst/shinyApps/QueryLibrary/queries/</span><span class="si">{</span><span class="n">resource</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2">.md&quot;</span>
+        <span class="n">markdown</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">markdown</span><span class="o">.</span><span class="n">status_code</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query </span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2"> not found in the Query Library.&quot;</span><span class="p">)</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">markdown</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```sql&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;```&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="c1"># remove @cdm. and @vocab. references</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;@cdm.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;@vocab.&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">query</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query </span><span class="si">{</span><span class="n">query_name</span><span class="si">}</span><span class="s2"> is empty.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">)</span></div>
 </div>
 
 </pre></div>

@@ -31,26 +31,25 @@
           <div class="body" role="main">
             
   <h1>Source code for pyomop.vocabulary</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.cdm6_tables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Concept</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">asynccontextmanager</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert</span><span class="p">,</span> <span class="n">select</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AsyncSession</span><span class="p">,</span>
     <span class="n">async_scoped_session</span><span class="p">,</span>
+    <span class="n">async_sessionmaker</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">sessionmaker</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">insert</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.automap</span><span class="w"> </span><span class="kn">import</span> <span class="n">automap_base</span><span class="p">,</span> <span class="n">AutomapBase</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.automap</span><span class="w"> </span><span class="kn">import</span> <span class="n">AutomapBase</span><span class="p">,</span> <span class="n">automap_base</span>
 
 
 <div class="viewcode-block" id="CdmVocabulary">
 <a class="viewcode-back" href="../../api/pyomop.html#pyomop.vocabulary.CdmVocabulary">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CdmVocabulary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdm</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;cdm54&quot;</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_concept_id</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_concept_name</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_domain_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -59,8 +58,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_concept_code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cdm</span> <span class="o">=</span> <span class="n">cdm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="o">=</span> <span class="n">cdm</span><span class="o">.</span><span class="n">engine</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_maker</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="n">AsyncSession</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_maker</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="n">AsyncSession</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_scope</span> <span class="o">=</span> <span class="n">async_scoped_session</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_maker</span><span class="p">,</span> <span class="n">scopefunc</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">current_task</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">=</span> <span class="n">version</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">concept_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -95,6 +95,10 @@
 <div class="viewcode-block" id="CdmVocabulary.get_concept">
 <a class="viewcode-back" href="../../api/pyomop.html#pyomop.vocabulary.CdmVocabulary.get_concept">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_concept</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concept_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s2">&quot;cdm6&quot;</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.cdm6</span><span class="w"> </span><span class="kn">import</span> <span class="n">Concept</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.cdm54</span><span class="w"> </span><span class="kn">import</span> <span class="n">Concept</span>
         <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Concept</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Concept</span><span class="o">.</span><span class="n">concept_id</span> <span class="o">==</span> <span class="n">concept_id</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cdm</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">_concept</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
@@ -104,6 +108,10 @@
 <div class="viewcode-block" id="CdmVocabulary.get_concept_by_code">
 <a class="viewcode-back" href="../../api/pyomop.html#pyomop.vocabulary.CdmVocabulary.get_concept_by_code">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">get_concept_by_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concept_code</span><span class="p">,</span> <span class="n">vocabulary_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_version</span> <span class="o">==</span> <span class="s2">&quot;cdm6&quot;</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.cdm6</span><span class="w"> </span><span class="kn">import</span> <span class="n">Concept</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.cdm54</span><span class="w"> </span><span class="kn">import</span> <span class="n">Concept</span>
         <span class="n">stmt</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">select</span><span class="p">(</span><span class="n">Concept</span><span class="p">)</span>
             <span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Concept</span><span class="o">.</span><span class="n">concept_code</span> <span class="o">==</span> <span class="n">concept_code</span><span class="p">)</span>
@@ -125,8 +133,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">get_concept_by_code</span><span class="p">(</span><span class="n">concept_code</span><span class="p">,</span> <span class="n">vocabulary_id</span><span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">_concept</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_concept_by_code</span><span class="p">(</span><span class="n">concept_code</span><span class="p">))</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_vocabulary_id</span> <span class="o">=</span> <span class="n">_concept</span><span class="o">.</span><span class="n">vocabulary_id</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;vocabulary_id must be provided when setting concept by code.&quot;</span>
+                <span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_concept_name</span> <span class="o">=</span> <span class="n">_concept</span><span class="o">.</span><span class="n">concept_name</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_domain_id</span> <span class="o">=</span> <span class="n">_concept</span><span class="o">.</span><span class="n">domain_id</span>
@@ -149,11 +158,21 @@
                 <span class="n">nrows</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
                 <span class="n">on_bad_lines</span><span class="o">=</span><span class="s2">&quot;skip&quot;</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="c1"># convert valid_start_date and valid_end_date to datetime</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_start_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_start_date&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span>
+            <span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_end_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_end_date&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
             <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_vocab</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;drug_strength&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">))</span>
             <span class="c1"># df.to_sql(&#39;drug_strength&#39;, con=self._engine, if_exists = &#39;replace&#39;)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
                 <span class="n">folder</span> <span class="o">+</span> <span class="s2">&quot;/CONCEPT.csv&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">nrows</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span> <span class="n">on_bad_lines</span><span class="o">=</span><span class="s2">&quot;skip&quot;</span>
             <span class="p">)</span>
+            <span class="c1"># convert valid_start_date and valid_end_date to datetime</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_start_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_start_date&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span>
+            <span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_end_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_end_date&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
             <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_vocab</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;concept&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">))</span>
             <span class="c1"># df.to_sql(&#39;concept&#39;, con=self._engine, if_exists = &#39;replace&#39;)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
@@ -162,6 +181,11 @@
                 <span class="n">nrows</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
                 <span class="n">on_bad_lines</span><span class="o">=</span><span class="s2">&quot;skip&quot;</span><span class="p">,</span>
             <span class="p">)</span>
+            <span class="c1"># convert valid_start_date and valid_end_date to datetime</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_start_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_start_date&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span>
+            <span class="p">)</span>
+            <span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_end_date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;valid_end_date&quot;</span><span class="p">],</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;coerce&quot;</span><span class="p">)</span>
             <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">write_vocab</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s2">&quot;concept_relationship&quot;</span><span class="p">,</span> <span class="s2">&quot;replace&quot;</span><span class="p">))</span>
             <span class="c1"># df.to_sql(&#39;concept_relationship&#39;, con=self._engine, if_exists = &#39;replace&#39;)</span>
             <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
@@ -224,9 +248,11 @@
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
             <span class="n">conn</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">connection</span><span class="p">()</span>
             <span class="n">automap</span><span class="p">:</span> <span class="n">AutomapBase</span> <span class="o">=</span> <span class="n">automap_base</span><span class="p">()</span>
-            <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span>
-                <span class="k">lambda</span> <span class="n">sync_conn</span><span class="p">:</span> <span class="n">automap</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">autoload_with</span><span class="o">=</span><span class="n">sync_conn</span><span class="p">)</span>
-            <span class="p">)</span>
+
+            <span class="k">def</span><span class="w"> </span><span class="nf">prepare_automap</span><span class="p">(</span><span class="n">sync_conn</span><span class="p">):</span>
+                <span class="n">automap</span><span class="o">.</span><span class="n">prepare</span><span class="p">(</span><span class="n">autoload_with</span><span class="o">=</span><span class="n">sync_conn</span><span class="p">)</span>
+
+            <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">prepare_automap</span><span class="p">)</span>
             <span class="n">mapper</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">automap</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
             <span class="n">stmt</span> <span class="o">=</span> <span class="n">insert</span><span class="p">(</span><span class="n">mapper</span><span class="p">)</span>
 

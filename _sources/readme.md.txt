@@ -4,169 +4,143 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 [![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
 [![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
+[![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/pyomop/)
 
-### [Documentation](https://dermatologist.github.io/pyomop/)
+## ✨ Overview
 
-## UPDATE
-Recently added support for **LLM based natural language queries** of OMOP CDM databases using [llama-index](examples/llm_example.py). Please install the llm extras as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. [See usage](examples/llm_example.py)!
+**pyomop** is a Python library for working with [OHDSI](https://www.ohdsi.org/) OMOP Common Data Model (CDM) v5.4 or v6 compliant databases using SQLAlchemy as the ORM. It supports converting query results to pandas DataFrames for machine learning pipelines and provides utilities for working with OMOP vocabularies. Table definitions are based on the [omop-cdm](https://github.com/thehyve/omop-cdm) library. Pyomop is designed to be a lightweight, easy-to-use library for researchers and developers experimenting and testing with OMOP CDM databases.
 
-```
-pip install pyomop[llm]
-```
-[See usage](examples/llm_example.py).
+- Supports SQLite, PostgreSQL, and MySQL. (All tables are in the default schema) (See usage below for more details)
+- LLM-based natural language queries via llama-index. [Usage](examples/llm_example.py).
+- Execute [QueryLibrary](https://github.com/OHDSI/QueryLibrary). (See usage below for more details)
 
-## Description
+## Installation
 
-The [OHSDI](https://www.ohdsi.org/) OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. **pyomop** also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful [SQL Queries here.](https://github.com/OHDSI/QueryLibrary)
-
-## Installation (stable)
-
+**Stable release:**
 ```
 pip install pyomop
-
 ```
 
-## Installation (current)
-
-* git clone this repository and:
+**Development version:**
 ```
+git clone https://github.com/dermatologist/pyomop.git
+cd pyomop
 pip install -e .
 ```
 
-## Usage >= 4.0.0 (Async) Example
+**LLM support:**
 ```
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
+pip install pyomop[llm]
+```
+See [llm_example.py](examples/llm_example.py) for usage.
+
+## 🔧 Usage
+
+
+```python
+from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
+# cdm6 and cdm54 are supported
+from pyomop.cdm54 import Person, Cohort, Vocabulary, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
 
 async def main():
-    cdm = CdmEngineFactory()  # Creates SQLite database by default
-    # Postgres example (db='mysql' also supported)
+    cdm = CdmEngineFactory() # Creates SQLite database by default for fast testing
     # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
     #                       user='', pw='',
-    #                       name='', schema='cdm6')
-
+    #                       name='', schema='default')
+    # cdm = CdmEngineFactory(db='mysql', host='', port=3306,
+    #                       user='', pw='',
+    #                       name='')
     engine = cdm.engine
-    # Create Tables if required
-    await cdm.init_models(metadata)
-    # Create vocabulary if required
-    vocab = CdmVocabulary(cdm)
-    # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
-
-    # Add a cohort
+    # Comment the following line if using an existing database. Both cdm6 and cdm54 are supported, see the import statements above
+    await cdm.init_models(Base.metadata) # Initializes the database with the OMOP CDM tables
+    vocab = CdmVocabulary(cdm, version='cdm54') # or 'cdm6' for v6
+    # Uncomment the following line to create a new vocabulary from CSV files
+    # vocab.create_vocab('/path/to/csv/files')
     async with cdm.session() as session:
         async with session.begin():
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
                 cohort_end_date=datetime.datetime.now(),
                 cohort_start_date=datetime.datetime.now()))
+            session.add(
+                Person(
+                    person_id=100,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                )
+            )
         await session.commit()
 
-    # Query the cohort
-    stmt = select(Cohort).where(Cohort.subject_id == 100)
-    result = await session.execute(stmt)
-    for row in result.scalars():
-        print(row)
-        assert row.subject_id == 100
+        stmt = select(Cohort).where(Cohort.subject_id == 100)
+        result = await session.execute(stmt)
+        for row in result.scalars():
+            print(row)
 
-    # Query the cohort pattern 2
-    cohort = await session.get(Cohort, 1)
-    print(cohort)
-    assert cohort.subject_id == 100
+        cohort = await session.get(Cohort, 1)
+        print(cohort)
 
-    # Convert result to a pandas dataframe
-    vec = CdmVector()
-    vec.result = result
-    print(vec.df.dtypes)
+        vec = CdmVector()
 
-    result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
-    for row in result:
-        print(row)
+        # supports QueryLibrary queries
+        # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
+        result = await vec.query_library(cdm, resource='person', query_name='PE02')
+        df = vec.result_to_df(result)
+        print("DataFrame from result:")
+        print(df.head())
 
-    result = await vec.sql_df(cdm, query='SELECT * from cohort')
-    for row in result:
-        print(row)
+        result = await vec.execute(cdm, query='SELECT * from cohort;')
+        print("Executing custom query:")
+        df = vec.result_to_df(result)
+        print("DataFrame from result:")
+        print(df.head())
+
+        # access sqlalchemy result directly
+        for row in result:
+            print(row)
 
 
-    # Close session
     await session.close()
     await engine.dispose()
 
-# Run the main function
 asyncio.run(main())
 ```
 
-## Usage <=3.2.0
 
-```
-
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
-from sqlalchemy.sql import select
-import datetime
-
-cdm = CdmEngineFactory()  # Creates SQLite database by default
-
-# Postgres example (db='mysql' also supported)
-# cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
-#                       user='', pw='',
-#                       name='', schema='cdm6')
-
-
-engine = cdm.engine
-# Create Tables if required
-metadata.create_all(engine)
-# Create vocabulary if required
-vocab = CdmVocabulary(cdm)
-# vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
-
-# Create a Cohort (SQLAlchemy as ORM)
-session =  cdm.session
-session.add(Cohort(cohort_definition_id=2, subject_id=100,
-            cohort_end_date=datetime.datetime.now(),
-            cohort_start_date=datetime.datetime.now()))
-session.commit()
-
-result = session.query(Cohort).all()
-for row in result:
-    print(row)
-
-# Convert result to a pandas dataframe
-vec = CdmVector()
-vec.result = result
-print(vec.df.dtypes)
-
-# Execute a query and convert it to dataframe
-vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
-print(vec.df.dtypes) # vec.df is a pandas dataframe
-# OR
-vec.sql_df(cdm, query='SELECT * from cohort')
-print(vec.df.dtypes) # vec.df is a pandas dataframe
-
-
-```
-
-## command-line usage
+### Command-line
 
 ```
 pyomop -help
 ```
 
-## Other utils
+## Additional Tools
 
-**Want to convert FHIR to pandas data frame? Try [fhiry](https://github.com/dermatologist/fhiry)**
+- **Convert FHIR to pandas DataFrame:** [fhiry](https://github.com/dermatologist/fhiry)
+- **.NET and Golang OMOP CDM:** [.NET](https://github.com/dermatologist/omopcdm-dot-net), [Golang](https://github.com/E-Health/gocdm)
 
-**Use the same functions in [.NET](https://github.com/dermatologist/omopcdm-dot-net) and [Golang](https://github.com/E-Health/gocdm)!**
+## Supported Databases
 
-### Support
-* Postgres
-* MySQL
-* SqLite
-* More to follow..
+- PostgreSQL
+- MySQL
+- SQLite
 
-## Give us a star ⭐️
-If you find this project useful, give us a star. It helps others discover the project.
+## Contributing
+
+Pull requests are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Contributors
 
-* [Bell Eapen](https://nuchange.ca) | [![Twitter Follow](https://img.shields.io/twitter/follow/beapen?style=social)](https://twitter.com/beapen)
-* PRs welcome. See CONTRIBUTING.md
+- [Bell Eapen](https://nuchange.ca) [![Twitter Follow](https://img.shields.io/twitter/follow/beapen?style=social)](https://twitter.com/beapen)
+
+---
+
+⭐️ If you find this project useful!

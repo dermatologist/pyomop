@@ -1,16 +1,17 @@
 pyomop package
 ==============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   pyomop.cdm54
+   pyomop.cdm6
+
 Submodules
 ----------
-
-pyomop.cdm6\_tables module
---------------------------
-
-.. automodule:: pyomop.cdm6_tables
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 pyomop.engine\_factory module
 -----------------------------

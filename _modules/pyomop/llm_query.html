@@ -31,7 +31,7 @@
           <div class="body" role="main">
             
   <h1>Source code for pyomop.llm_query</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">llama_index.core.indices.struct_store.sql_query</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SQLTableRetrieverQueryEngine</span><span class="p">,</span>
 <span class="p">)</span>
@@ -86,24 +86,27 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_object_index</span> <span class="o">=</span> <span class="n">ObjectIndex</span><span class="o">.</span><span class="n">from_objects</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_table_schema_objs</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_table_node_mapping</span><span class="p">,</span>
-            <span class="n">VectorStoreIndex</span><span class="p">,</span>
+            <span class="n">VectorStoreIndex</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
         <span class="p">)</span>
-
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_query_engine</span> <span class="o">=</span> <span class="n">SQLTableRetrieverQueryEngine</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sql_database</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_index</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span><span class="n">similarity_top_k</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">sql_only</span><span class="o">=</span><span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sql_database</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_object_index</span><span class="o">.</span><span class="n">as_retriever</span><span class="p">(</span><span class="n">similarity_top_k</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+            <span class="n">sql_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">table_node_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SQLTableNodeMapping</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_node_mapping</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">table_schema_objs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SQLTableSchema</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_table_schema_objs</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">object_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ObjectIndex</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_object_index</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">query_engine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SQLTableRetrieverQueryEngine</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query_engine</span></div>

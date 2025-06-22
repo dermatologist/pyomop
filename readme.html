@@ -38,179 +38,147 @@
 <p><img alt="Libraries.io SourceRank" src="https://img.shields.io/librariesio/sourcerank/pypi/pyomop" />
 <a class="reference external" href="https://www.python.org/"><img alt="forthebadge made-with-python" src="http://ForTheBadge.com/images/badges/made-with-python.svg" /></a>
 <a class="reference external" href="https://pypi.python.org/pypi/pyomop/"><img alt="PyPI download total" src="https://img.shields.io/pypi/dm/pyomop.svg" /></a>
-<a class="reference external" href="https://nuchange.ca"><img alt="Build" src="https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg" /></a></p>
-<section id="documentation">
-<h2><a class="reference external" href="https://dermatologist.github.io/pyomop/">Documentation</a><a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<a class="reference external" href="https://nuchange.ca"><img alt="Build" src="https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg" /></a>
+<a class="reference external" href="https://dermatologist.github.io/pyomop/"><img alt="Documentation" src="https://badgen.net/badge/icon/documentation?icon=libraries&amp;label" /></a></p>
+<section id="overview">
+<h2>✨ Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p><strong>pyomop</strong> is a Python library for working with <a class="reference external" href="https://www.ohdsi.org/">OHDSI</a> OMOP Common Data Model (CDM) v5.4 or v6 compliant databases using SQLAlchemy as the ORM. It supports converting query results to pandas DataFrames for machine learning pipelines and provides utilities for working with OMOP vocabularies. Table definitions are based on the <a class="reference external" href="https://github.com/thehyve/omop-cdm">omop-cdm</a> library. Pyomop is designed to be a lightweight, easy-to-use library for researchers and developers experimenting and testing with OMOP CDM databases.</p>
+<ul class="simple">
+<li><p>Supports SQLite, PostgreSQL, and MySQL. (All tables are in the default schema) (See usage below for more details)</p></li>
+<li><p>LLM-based natural language queries via llama-index. <a class="reference external" href="examples/llm_example.py">Usage</a>.</p></li>
+<li><p>Execute <a class="reference external" href="https://github.com/OHDSI/QueryLibrary">QueryLibrary</a>. (See usage below for more details)</p></li>
+</ul>
 </section>
-<section id="update">
-<h2>UPDATE<a class="headerlink" href="#update" title="Link to this heading">¶</a></h2>
-<p>Recently added support for <strong>LLM based natural language queries</strong> of OMOP CDM databases using <a class="reference external" href="examples/llm_example.py">llama-index</a>. Please install the llm extras as follows. Please be cognizant of the privacy issues with publically hosted LLMs. Any feedback will be highly appreciated. <a class="reference external" href="examples/llm_example.py">See usage</a>!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyomop</span><span class="p">[</span><span class="n">llm</span><span class="p">]</span>
-</pre></div>
-</div>
-<p><a class="reference external" href="examples/llm_example.py">See usage</a>.</p>
-</section>
-<section id="description">
-<h2>Description<a class="headerlink" href="#description" title="Link to this heading">¶</a></h2>
-<p>The <a class="reference external" href="https://www.ohdsi.org/">OHSDI</a> OMOP Common Data Model allows for the systematic analysis of healthcare observational databases. This is a python library to use the CDM v6 compliant databases using SQLAlchemy as the ORM. <strong>pyomop</strong> also supports converting query results to a pandas dataframe (see below) for use in machine learning pipelines. See some useful <a class="reference external" href="https://github.com/OHDSI/QueryLibrary">SQL Queries here.</a></p>
-</section>
-<section id="installation-stable">
-<h2>Installation (stable)<a class="headerlink" href="#installation-stable" title="Link to this heading">¶</a></h2>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p><strong>Stable release:</strong></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyomop</span>
 </pre></div>
 </div>
-</section>
-<section id="installation-current">
-<h2>Installation (current)<a class="headerlink" href="#installation-current" title="Link to this heading">¶</a></h2>
-<ul class="simple">
-<li><p>git clone this repository and:</p></li>
-</ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
+<p><strong>Development version:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dermatologist</span><span class="o">/</span><span class="n">pyomop</span><span class="o">.</span><span class="n">git</span>
+<span class="n">cd</span> <span class="n">pyomop</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span>
 </pre></div>
 </div>
+<p><strong>LLM support:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">pyomop</span><span class="p">[</span><span class="n">llm</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>See <a class="reference external" href="examples/llm_example.py">llm_example.py</a> for usage.</p>
 </section>
-<section id="usage-4-0-0-async-example">
-<h2>Usage &gt;= 4.0.0 (Async) Example<a class="headerlink" href="#usage-4-0-0-async-example" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyomop</span><span class="w"> </span><span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
+<section id="usage">
+<h2>🔧 Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyomop</span><span class="w"> </span><span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span>
+<span class="c1"># cdm6 and cdm54 are supported</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyomop.cdm54</span><span class="w"> </span><span class="kn">import</span> <span class="n">Person</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">Base</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.future</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 
 <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
-    <span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">()</span>  <span class="c1"># Creates SQLite database by default</span>
-    <span class="c1"># Postgres example (db=&#39;mysql&#39; also supported)</span>
+    <span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">()</span> <span class="c1"># Creates SQLite database by default for fast testing</span>
     <span class="c1"># cdm = CdmEngineFactory(db=&#39;pgsql&#39;, host=&#39;&#39;, port=5432,</span>
     <span class="c1">#                       user=&#39;&#39;, pw=&#39;&#39;,</span>
-    <span class="c1">#                       name=&#39;&#39;, schema=&#39;cdm6&#39;)</span>
-
+    <span class="c1">#                       name=&#39;&#39;, schema=&#39;default&#39;)</span>
+    <span class="c1"># cdm = CdmEngineFactory(db=&#39;mysql&#39;, host=&#39;&#39;, port=3306,</span>
+    <span class="c1">#                       user=&#39;&#39;, pw=&#39;&#39;,</span>
+    <span class="c1">#                       name=&#39;&#39;)</span>
     <span class="n">engine</span> <span class="o">=</span> <span class="n">cdm</span><span class="o">.</span><span class="n">engine</span>
-    <span class="c1"># Create Tables if required</span>
-    <span class="k">await</span> <span class="n">cdm</span><span class="o">.</span><span class="n">init_models</span><span class="p">(</span><span class="n">metadata</span><span class="p">)</span>
-    <span class="c1"># Create vocabulary if required</span>
-    <span class="n">vocab</span> <span class="o">=</span> <span class="n">CdmVocabulary</span><span class="p">(</span><span class="n">cdm</span><span class="p">)</span>
-    <span class="c1"># vocab.create_vocab(&#39;/path/to/csv/files&#39;)  # Uncomment to load vocabulary csv files</span>
-
-    <span class="c1"># Add a cohort</span>
+    <span class="c1"># Comment the following line if using an existing database. Both cdm6 and cdm54 are supported, see the import statements above</span>
+    <span class="k">await</span> <span class="n">cdm</span><span class="o">.</span><span class="n">init_models</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="c1"># Initializes the database with the OMOP CDM tables</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="n">CdmVocabulary</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s1">&#39;cdm54&#39;</span><span class="p">)</span> <span class="c1"># or &#39;cdm6&#39; for v6</span>
+    <span class="c1"># Uncomment the following line to create a new vocabulary from CSV files</span>
+    <span class="c1"># vocab.create_vocab(&#39;/path/to/csv/files&#39;)</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">cdm</span><span class="o">.</span><span class="n">session</span><span class="p">()</span> <span class="k">as</span> <span class="n">session</span><span class="p">:</span>
         <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
             <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cohort</span><span class="p">(</span><span class="n">cohort_definition_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">subject_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
                 <span class="n">cohort_end_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                 <span class="n">cohort_start_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span>
+                <span class="n">Person</span><span class="p">(</span>
+                    <span class="n">person_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                    <span class="n">gender_concept_id</span><span class="o">=</span><span class="mi">8532</span><span class="p">,</span>
+                    <span class="n">gender_source_concept_id</span><span class="o">=</span><span class="mi">8512</span><span class="p">,</span>
+                    <span class="n">year_of_birth</span><span class="o">=</span><span class="mi">1980</span><span class="p">,</span>
+                    <span class="n">month_of_birth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">day_of_birth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                    <span class="n">birth_datetime</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1980</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">race_concept_id</span><span class="o">=</span><span class="mi">8552</span><span class="p">,</span>
+                    <span class="n">race_source_concept_id</span><span class="o">=</span><span class="mi">8552</span><span class="p">,</span>
+                    <span class="n">ethnicity_concept_id</span><span class="o">=</span><span class="mi">38003564</span><span class="p">,</span>
+                    <span class="n">ethnicity_source_concept_id</span><span class="o">=</span><span class="mi">38003564</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
 
-    <span class="c1"># Query the cohort</span>
-    <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Cohort</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Cohort</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">():</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">row</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span>
+        <span class="n">stmt</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">Cohort</span><span class="p">)</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Cohort</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="o">.</span><span class="n">scalars</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
-    <span class="c1"># Query the cohort pattern 2</span>
-    <span class="n">cohort</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Cohort</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="n">cohort</span><span class="o">.</span><span class="n">subject_id</span> <span class="o">==</span> <span class="mi">100</span>
+        <span class="n">cohort</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Cohort</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">cohort</span><span class="p">)</span>
 
-    <span class="c1"># Convert result to a pandas dataframe</span>
-    <span class="n">vec</span> <span class="o">=</span> <span class="n">CdmVector</span><span class="p">()</span>
-    <span class="n">vec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">CdmVector</span><span class="p">()</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vec</span><span class="o">.</span><span class="n">sql_df</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="s1">&#39;TEST&#39;</span><span class="p">)</span> <span class="c1"># TEST is defined in sqldict.py</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="c1"># supports QueryLibrary queries</span>
+        <span class="c1"># https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vec</span><span class="o">.</span><span class="n">query_library</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="s1">&#39;person&#39;</span><span class="p">,</span> <span class="n">query_name</span><span class="o">=</span><span class="s1">&#39;PE02&#39;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">result_to_df</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DataFrame from result:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vec</span><span class="o">.</span><span class="n">sql_df</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;SELECT * from cohort&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vec</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;SELECT * from cohort;&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Executing custom query:&quot;</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">result_to_df</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;DataFrame from result:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+        <span class="c1"># access sqlalchemy result directly</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
 
 
-    <span class="c1"># Close session</span>
     <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">await</span> <span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
 
-<span class="c1"># Run the main function</span>
 <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </pre></div>
 </div>
-</section>
-<section id="usage-3-2-0">
-<h2>Usage &lt;=3.2.0<a class="headerlink" href="#usage-3-2-0" title="Link to this heading">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyomop</span><span class="w"> </span><span class="kn">import</span> <span class="n">CdmEngineFactory</span><span class="p">,</span> <span class="n">CdmVocabulary</span><span class="p">,</span> <span class="n">CdmVector</span><span class="p">,</span> <span class="n">Cohort</span><span class="p">,</span> <span class="n">Vocabulary</span><span class="p">,</span> <span class="n">metadata</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.sql</span><span class="w"> </span><span class="kn">import</span> <span class="n">select</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
-
-<span class="n">cdm</span> <span class="o">=</span> <span class="n">CdmEngineFactory</span><span class="p">()</span>  <span class="c1"># Creates SQLite database by default</span>
-
-<span class="c1"># Postgres example (db=&#39;mysql&#39; also supported)</span>
-<span class="c1"># cdm = CdmEngineFactory(db=&#39;pgsql&#39;, host=&#39;&#39;, port=5432,</span>
-<span class="c1">#                       user=&#39;&#39;, pw=&#39;&#39;,</span>
-<span class="c1">#                       name=&#39;&#39;, schema=&#39;cdm6&#39;)</span>
-
-
-<span class="n">engine</span> <span class="o">=</span> <span class="n">cdm</span><span class="o">.</span><span class="n">engine</span>
-<span class="c1"># Create Tables if required</span>
-<span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
-<span class="c1"># Create vocabulary if required</span>
-<span class="n">vocab</span> <span class="o">=</span> <span class="n">CdmVocabulary</span><span class="p">(</span><span class="n">cdm</span><span class="p">)</span>
-<span class="c1"># vocab.create_vocab(&#39;/path/to/csv/files&#39;)  # Uncomment to load vocabulary csv files</span>
-
-<span class="c1"># Create a Cohort (SQLAlchemy as ORM)</span>
-<span class="n">session</span> <span class="o">=</span>  <span class="n">cdm</span><span class="o">.</span><span class="n">session</span>
-<span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Cohort</span><span class="p">(</span><span class="n">cohort_definition_id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">subject_id</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-            <span class="n">cohort_end_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
-            <span class="n">cohort_start_date</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()))</span>
-<span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-<span class="n">result</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Cohort</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
-
-<span class="c1"># Convert result to a pandas dataframe</span>
-<span class="n">vec</span> <span class="o">=</span> <span class="n">CdmVector</span><span class="p">()</span>
-<span class="n">vec</span><span class="o">.</span><span class="n">result</span> <span class="o">=</span> <span class="n">result</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
-
-<span class="c1"># Execute a query and convert it to dataframe</span>
-<span class="n">vec</span><span class="o">.</span><span class="n">sql_df</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="s1">&#39;TEST&#39;</span><span class="p">)</span> <span class="c1"># TEST is defined in sqldict.py</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span> <span class="c1"># vec.df is a pandas dataframe</span>
-<span class="c1"># OR</span>
-<span class="n">vec</span><span class="o">.</span><span class="n">sql_df</span><span class="p">(</span><span class="n">cdm</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s1">&#39;SELECT * from cohort&#39;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">vec</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span> <span class="c1"># vec.df is a pandas dataframe</span>
-
-</pre></div>
-</div>
-</section>
-<section id="command-line-usage">
-<h2>command-line usage<a class="headerlink" href="#command-line-usage" title="Link to this heading">¶</a></h2>
+<section id="command-line">
+<h3>Command-line<a class="headerlink" href="#command-line" title="Link to this heading">¶</a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pyomop</span> <span class="o">-</span><span class="n">help</span>
 </pre></div>
 </div>
 </section>
-<section id="other-utils">
-<h2>Other utils<a class="headerlink" href="#other-utils" title="Link to this heading">¶</a></h2>
-<p><strong>Want to convert FHIR to pandas data frame? Try <a class="reference external" href="https://github.com/dermatologist/fhiry">fhiry</a></strong></p>
-<p><strong>Use the same functions in <a class="reference external" href="https://github.com/dermatologist/omopcdm-dot-net">.NET</a> and <a class="reference external" href="https://github.com/E-Health/gocdm">Golang</a>!</strong></p>
-<section id="support">
-<h3>Support<a class="headerlink" href="#support" title="Link to this heading">¶</a></h3>
+</section>
+<section id="additional-tools">
+<h2>Additional Tools<a class="headerlink" href="#additional-tools" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Postgres</p></li>
-<li><p>MySQL</p></li>
-<li><p>SqLite</p></li>
-<li><p>More to follow..</p></li>
+<li><p><strong>Convert FHIR to pandas DataFrame:</strong> <a class="reference external" href="https://github.com/dermatologist/fhiry">fhiry</a></p></li>
+<li><p><strong>.NET and Golang OMOP CDM:</strong> <a class="reference external" href="https://github.com/dermatologist/omopcdm-dot-net">.NET</a>, <a class="reference external" href="https://github.com/E-Health/gocdm">Golang</a></p></li>
 </ul>
 </section>
+<section id="supported-databases">
+<h2>Supported Databases<a class="headerlink" href="#supported-databases" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>PostgreSQL</p></li>
+<li><p>MySQL</p></li>
+<li><p>SQLite</p></li>
+</ul>
 </section>
-<section id="give-us-a-star">
-<h2>Give us a star ⭐️<a class="headerlink" href="#give-us-a-star" title="Link to this heading">¶</a></h2>
-<p>If you find this project useful, give us a star. It helps others discover the project.</p>
+<section id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Link to this heading">¶</a></h2>
+<p>Pull requests are welcome! See <a class="reference external" href="https://scikit-learn.org/stable/developers/contributing.html#contributing" title="(in scikit-learn v1.7)"><a class="reference external" href="CONTRIBUTING">CONTRIBUTING.md</a></a>.</p>
 </section>
 <section id="contributors">
 <h2>Contributors<a class="headerlink" href="#contributors" title="Link to this heading">¶</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://nuchange.ca">Bell Eapen</a> | <a class="reference external" href="https://twitter.com/beapen"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/beapen?style=social" /></a></p></li>
-<li><p>PRs welcome. See CONTRIBUTING.md</p></li>
+<li><p><a class="reference external" href="https://nuchange.ca">Bell Eapen</a> <a class="reference external" href="https://twitter.com/beapen"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/beapen?style=social" /></a></p></li>
 </ul>
+<hr class="docutils" />
+<p>⭐️ If you find this project useful!</p>
 </section>
 </section>
 
@@ -242,16 +210,12 @@
 <script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#update">UPDATE</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#description">Description</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation-stable">Installation (stable)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation-current">Installation (current)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage-4-0-0-async-example">Usage &gt;= 4.0.0 (Async) Example</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#usage-3-2-0">Usage &lt;=3.2.0</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-usage">command-line usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#other-utils">Other utils</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#give-us-a-star">Give us a star ⭐️</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#overview">✨ Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#usage">🔧 Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#additional-tools">Additional Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-databases">Supported Databases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#contributors">Contributors</a></li>
 </ul>
 </li>

@@ -35,10 +35,8 @@
 <span class="c1"># from sqlalchemy.orm import Session</span>
 <span class="c1"># from sqlalchemy.ext.automap import automap_base</span>
 
-<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_async_engine</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">sessionmaker</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.asyncio</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">async_sessionmaker</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.ext.automap</span><span class="w"> </span><span class="kn">import</span> <span class="n">automap_base</span>
 
 
@@ -53,7 +51,7 @@
         <span class="n">port</span><span class="o">=</span><span class="mi">5432</span><span class="p">,</span>
         <span class="n">user</span><span class="o">=</span><span class="s2">&quot;root&quot;</span><span class="p">,</span>
         <span class="n">pw</span><span class="o">=</span><span class="s2">&quot;pass&quot;</span><span class="p">,</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cdm6.sqlite&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cdm.sqlite&quot;</span><span class="p">,</span>
         <span class="n">schema</span><span class="o">=</span><span class="s2">&quot;public&quot;</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_db</span> <span class="o">=</span> <span class="n">db</span>
@@ -69,6 +67,8 @@
 <div class="viewcode-block" id="CdmEngineFactory.init_models">
 <a class="viewcode-back" href="../../api/pyomop.html#pyomop.engine_factory.CdmEngineFactory.init_models">[docs]</a>
     <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">init_models</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Database engine is not initialized.&quot;</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span></div>
@@ -101,10 +101,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">schema</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_schema</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">engine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">engine</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">base</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -142,7 +138,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">async_session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span>
+            <span class="n">async_session</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="n">AsyncSession</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">async_session</span>
@@ -151,7 +147,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">async_session</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">async_session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span>
+            <span class="n">async_session</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_engine</span><span class="p">,</span> <span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="n">AsyncSession</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">async_session</span>

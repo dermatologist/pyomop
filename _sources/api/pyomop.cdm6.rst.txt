@@ -1,0 +1,21 @@
+pyomop.cdm6 package
+===================
+
+Submodules
+----------
+
+pyomop.cdm6.cdm6\_tables module
+-------------------------------
+
+.. automodule:: pyomop.cdm6.cdm6_tables
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+Module contents
+---------------
+
+.. automodule:: pyomop.cdm6
+   :members:
+   :show-inheritance:
+   :undoc-members:
