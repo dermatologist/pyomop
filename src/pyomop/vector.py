@@ -12,10 +12,6 @@ logger = getLogger(__name__)
 # Thank you! https://gist.github.com/garaud
 class CdmVector(object):
 
-    def __init__(self):
-        pass
-
-
     async def execute(self, cdm, sqldict=None, query=None, chunksize=1000):
         if sqldict:
             query = CDMSQL[sqldict]
@@ -24,7 +20,6 @@ class CdmVector(object):
         logger.info(f"Executing query: {query}")
         async with cdm.session() as session:
             result = await session.execute(text(query))
-        self._result = result
         await session.close()
         return result
 

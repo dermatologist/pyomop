@@ -1,5 +1,5 @@
 from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
-from src.pyomop.cdm54 import Cohort, Base
+from src.pyomop.cdm54 import Person, Cohort, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
@@ -24,6 +24,36 @@ async def main():
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
                 cohort_end_date=datetime.datetime.now(),
                 cohort_start_date=datetime.datetime.now()))
+            session.add(
+                Person(
+                    person_id=100,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                )
+            )
+            session.add(
+                Person(
+                    person_id=101,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                    )
+                )
         await session.commit()
 
     # Query the cohort
@@ -40,20 +70,22 @@ async def main():
 
     # Convert result to a pandas dataframe
     vec = CdmVector()
-    vec.result = result
-    print(vec.df.dtypes) # type: ignore
 
-    result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
-    print("Executing TEST query:")
-    for row in result:
-        print(row)
+    # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
+    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    df = vec.result_to_df(result)
+    print("DataFrame from result:")
+    print(df.head())
 
-    result = await vec.sql_df(cdm, query='SELECT * from cohort')
+    result = await vec.execute(cdm, query='SELECT * from cohort;')
     print("Executing custom query:")
+    df = vec.result_to_df(result)
+    print("DataFrame from result:")
+    print(df.head())
+
+    # access sqlalchemy result directly
     for row in result:
         print(row)
-
-    print(vec.df.head())
 
     # Close session
     await session.close()
