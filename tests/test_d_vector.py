@@ -82,11 +82,8 @@ async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
     stmt = select(Cohort).where(Cohort.subject_id == 100)
     result = await session.execute(stmt)
 
-    vector_fixture.result = result.scalars()
-    print(vector_fixture.df.dtypes)
-    assert vector_fixture.df.empty is False
 
-    result2 = await vector_fixture.sql_df(pyomop_fixture, "TEST")
+    result2 = await vector_fixture.execute(pyomop_fixture, "TEST")
     found = False
     for row in result2:
         print(row)
@@ -120,11 +117,8 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
     stmt = select(Cohort).where(Cohort.subject_id == 100)
     result = await session.execute(stmt)
 
-    vector_fixture.result = result.scalars()
-    print(vector_fixture.df.dtypes)
-    assert vector_fixture.df.empty is False
 
-    result2 = await vector_fixture.sql_df(pyomop_fixture, "TEST")
+    result2 = await vector_fixture.execute(pyomop_fixture, "TEST")
     found = False
     for row in result2:
         print(row)
@@ -136,16 +130,16 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
     await engine.dispose()
 
 async def query_library_(pyomop_fixture, vector_fixture):
-    # result = await vector_fixture.sql_df(pyomop_fixture, "TEST")
-    # print("Executing TEST query:")
-    # for row in result:
-    #     print(row)
+    result = await vector_fixture.execute(pyomop_fixture, "TEST")
+    print("Executing TEST query:")
+    assert result is not None
+    df = vector_fixture.result_to_df(result)
+    print(df.head())
     result = await vector_fixture.query_library(
         pyomop_fixture)
     assert result is not None
     print("Executing query library:")
-    # convert # result to a python dictionary
-    df = vector_fixture.list_of_dicts_to_df(result)
+    df = vector_fixture.result_to_df(result)
     print(df.head())
 
 
