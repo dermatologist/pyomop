@@ -8,7 +8,7 @@ description = "OMOP CDM utils in Python"
 license = "GPL-3.0"
 classifiers = [ "Intended Audience :: Science/Research", "Development Status :: 4 - Beta", "Operating System :: OS Independent", "Programming Language :: Python", "Programming Language :: Python :: 3.11", "Topic :: Scientific/Engineering :: Information Analysis",]
 requires-python = ">=3.11, <3.12"
-dependencies = [ "importlib-metadata; python_version<\"3.8\"", "sqlalchemy>=1.4", "click", "pandas", "aiosqlite",]
+dependencies = [ "importlib-metadata; python_version<\"3.8\"", "sqlalchemy>=1.4", "click", "pandas", "aiosqlite", "requests",]
 dynamic = [ "version",]
 
 [[project.authors]]
@@ -25,11 +25,12 @@ Homepage = "https://github.com/dermatologist/pyomop"
 Documentation = "https://dermatologist.github.io/pyomop/"
 
 [project.optional-dependencies]
-llm = [ "llama-index", "llama-index-experimental", "langchain", "langchain-community", "langchain-huggingface", "llama-index-embeddings-langchain", "overrides", "llama-index-llms-google-genai",]
+llm = [ "llama-index", "llama-index-experimental", "langchain", "langchain-community", "langchain-huggingface", "llama-index-embeddings-langchain", "overrides", "llama-index-llms-google-genai", "llama-index-llms-langchain",]
 testing = [ "setuptools", "pytest", "pytest-cov",]
 dev = [
     "setuptools>=77.0.0",
     "packaging>=24.2",
+    "llama-index-llms-langchain",
     "setuptools_scm",
     "pytest",
     "pytest-cov",

@@ -1,21 +1,20 @@
-import pandas as pd
-from .cdm6_tables import Concept
 import asyncio
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
+
+import numpy as np
+import pandas as pd
+from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
+    async_sessionmaker,
 )
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import insert
-import numpy as np
-from sqlalchemy.ext.automap import automap_base, AutomapBase
-from sqlalchemy import select
+from sqlalchemy.ext.automap import AutomapBase, automap_base
 
 
 class CdmVocabulary(object):
-    def __init__(self, cdm):
+    def __init__(self, cdm, version="cdm54"):
         self._concept_id = 0
         self._concept_name = ""
         self._domain_id = ""
@@ -24,8 +23,9 @@ class CdmVocabulary(object):
         self._concept_code = ""
         self._cdm = cdm
         self._engine = cdm.engine
-        self._maker = sessionmaker(self._engine, class_=AsyncSession)
+        self._maker = async_sessionmaker(self._engine, class_=AsyncSession)
         self._scope = async_scoped_session(self._maker, scopefunc=asyncio.current_task)
+        self._version = version
 
     @property
     def concept_id(self):
@@ -58,12 +58,20 @@ class CdmVocabulary(object):
         self._concept_code = _concept.concept_code
 
     async def get_concept(self, concept_id):
+        if self._version == "cdm6":
+            from .cdm6 import Concept
+        else:
+            from .cdm54 import Concept
         stmt = select(Concept).where(Concept.concept_id == concept_id)
         async with self._cdm.session() as session:
             _concept = await session.execute(stmt)
         return _concept.scalar_one()
 
     async def get_concept_by_code(self, concept_code, vocabulary_id):
+        if self._version == "cdm6":
+            from .cdm6 import Concept
+        else:
+            from .cdm54 import Concept
         stmt = (
             select(Concept)
             .where(Concept.concept_code == concept_code)
@@ -82,8 +90,9 @@ class CdmVocabulary(object):
                     self.get_concept_by_code(concept_code, vocabulary_id)
                 )
             else:
-                _concept = asyncio.run(self.get_concept_by_code(concept_code))
-                self._vocabulary_id = _concept.vocabulary_id
+                raise ValueError(
+                    "vocabulary_id must be provided when setting concept by code."
+                )
 
             self._concept_name = _concept.concept_name
             self._domain_id = _concept.domain_id
@@ -103,11 +112,21 @@ class CdmVocabulary(object):
                 nrows=sample,
                 on_bad_lines="skip",
             )
+            # convert valid_start_date and valid_end_date to datetime
+            df["valid_start_date"] = pd.to_datetime(
+                df["valid_start_date"], errors="coerce"
+            )
+            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
             asyncio.run(self.write_vocab(df, "drug_strength", "replace"))
             # df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/CONCEPT.csv", sep="\t", nrows=sample, on_bad_lines="skip"
             )
+            # convert valid_start_date and valid_end_date to datetime
+            df["valid_start_date"] = pd.to_datetime(
+                df["valid_start_date"], errors="coerce"
+            )
+            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
             asyncio.run(self.write_vocab(df, "concept", "replace"))
             # df.to_sql('concept', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
@@ -116,6 +135,11 @@ class CdmVocabulary(object):
                 nrows=sample,
                 on_bad_lines="skip",
             )
+            # convert valid_start_date and valid_end_date to datetime
+            df["valid_start_date"] = pd.to_datetime(
+                df["valid_start_date"], errors="coerce"
+            )
+            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
             asyncio.run(self.write_vocab(df, "concept_relationship", "replace"))
             # df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
@@ -172,9 +196,11 @@ class CdmVocabulary(object):
         async with self.get_session() as session:
             conn = await session.connection()
             automap: AutomapBase = automap_base()
-            await conn.run_sync(
-                lambda sync_conn: automap.prepare(autoload_with=sync_conn)
-            )
+
+            def prepare_automap(sync_conn):
+                automap.prepare(autoload_with=sync_conn)
+
+            await conn.run_sync(prepare_automap)
             mapper = getattr(automap.classes, table)
             stmt = insert(mapper)
 

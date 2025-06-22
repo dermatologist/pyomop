@@ -48,4 +48,4 @@ MANIFEST
 
 # Per-project virtualenvs
 .venv*/
-cdm6.sqlite
+cdm.sqlite
