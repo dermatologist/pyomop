@@ -2,10 +2,8 @@
 # from sqlalchemy.orm import Session
 # from sqlalchemy.ext.automap import automap_base
 
-import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
 
@@ -18,7 +16,7 @@ class CdmEngineFactory(object):
         port=5432,
         user="root",
         pw="pass",
-        name="cdm6.sqlite",
+        name="cdm.sqlite",
         schema="public",
     ):
         self._db = db
@@ -32,6 +30,8 @@ class CdmEngineFactory(object):
         self._base = None
 
     async def init_models(self, metadata):
+        if self._engine is None:
+            raise ValueError("Database engine is not initialized.")
         async with self._engine.begin() as conn:
             await conn.run_sync(metadata.drop_all)
             await conn.run_sync(metadata.create_all)
@@ -63,10 +63,6 @@ class CdmEngineFactory(object):
     @property
     def schema(self):
         return self._schema
-
-    @property
-    def engine(self):
-        return self.engine
 
     @property
     def base(self):
@@ -104,7 +100,7 @@ class CdmEngineFactory(object):
     @property
     def session(self):
         if self._engine is not None:
-            async_session = sessionmaker(
+            async_session = async_sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )
             return async_session
@@ -113,7 +109,7 @@ class CdmEngineFactory(object):
     @property
     def async_session(self):
         if self._engine is not None:
-            async_session = sessionmaker(
+            async_session = async_sessionmaker(
                 self._engine, expire_on_commit=False, class_=AsyncSession
             )
             return async_session

@@ -1,4 +1,5 @@
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector, Cohort, Vocabulary, metadata
+from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
+from src.pyomop.cdm54 import Person, Cohort, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
@@ -12,17 +13,47 @@ async def main():
 
     engine = cdm.engine
     # Create Tables if required
-    await cdm.init_models(metadata)
+    await cdm.init_models(Base.metadata)
     # Create vocabulary if required
     vocab = CdmVocabulary(cdm)
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
     # Add a cohort
-    async with cdm.session() as session:
+    async with cdm.session() as session:  # type: ignore
         async with session.begin():
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
                 cohort_end_date=datetime.datetime.now(),
                 cohort_start_date=datetime.datetime.now()))
+            session.add(
+                Person(
+                    person_id=100,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                )
+            )
+            session.add(
+                Person(
+                    person_id=101,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                    )
+                )
         await session.commit()
 
     # Query the cohort
@@ -35,25 +66,30 @@ async def main():
     # Query the cohort pattern 2
     cohort = await session.get(Cohort, 1)
     print(cohort)
-    assert cohort.subject_id == 100
+    assert cohort.subject_id == 100 # type: ignore
 
     # Convert result to a pandas dataframe
     vec = CdmVector()
-    vec.result = result
-    print(vec.df.dtypes)
 
-    result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
+    # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
+    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    df = vec.result_to_df(result)
+    print("DataFrame from result:")
+    print(df.head())
+
+    result = await vec.execute(cdm, query='SELECT * from cohort;')
+    print("Executing custom query:")
+    df = vec.result_to_df(result)
+    print("DataFrame from result:")
+    print(df.head())
+
+    # access sqlalchemy result directly
     for row in result:
         print(row)
-
-    result = await vec.sql_df(cdm, query='SELECT * from cohort')
-    for row in result:
-        print(row)
-
 
     # Close session
     await session.close()
-    await engine.dispose()
+    await engine.dispose() # type: ignore
 
 # Run the main function
 asyncio.run(main())
