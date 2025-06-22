@@ -46,12 +46,19 @@ import datetime
 import asyncio
 
 async def main():
-    cdm = CdmEngineFactory()
+    cdm = CdmEngineFactory() # Creates SQLite database by default for fast testing
+    # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
+    #                       user='', pw='',
+    #                       name='', schema='default')
+    # cdm = CdmEngineFactory(db='mysql', host='', port=3306,
+    #                       user='', pw='',
+    #                       name='')
     engine = cdm.engine
-    await cdm.init_models(Base.metadata)
+    # Comment the following line if using an existing database. Both cdm6 and cdm54 are supported, see the import statements above
+    await cdm.init_models(Base.metadata) # Initializes the database with the OMOP CDM tables
     vocab = CdmVocabulary(cdm, version='cdm54') # or 'cdm6' for v6
+    # Uncomment the following line to create a new vocabulary from CSV files
     # vocab.create_vocab('/path/to/csv/files')
-
     async with cdm.session() as session:
         async with session.begin():
             session.add(Cohort(cohort_definition_id=2, subject_id=100,
