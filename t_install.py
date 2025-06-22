@@ -44,10 +44,12 @@ async def main():
     print(vec.df.dtypes) # type: ignore
 
     result = await vec.sql_df(cdm, 'TEST') # TEST is defined in sqldict.py
+    print("Executing TEST query:")
     for row in result:
         print(row)
 
     result = await vec.sql_df(cdm, query='SELECT * from cohort')
+    print("Executing custom query:")
     for row in result:
         print(row)
 

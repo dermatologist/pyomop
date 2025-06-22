@@ -14,6 +14,8 @@ def test_create_vector_cdm6(
     # create tables
     asyncio.run(pyomop_fixture.init_models(cdm6_metadata_fixture))
     asyncio.run(cdm6_create_vector(pyomop_fixture, vector_fixture, engine))
+    asyncio.run(query_library_(pyomop_fixture, vector_fixture))
+
 
 
 @staticmethod
@@ -103,3 +105,18 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
 
     await session.close()
     await engine.dispose()
+
+async def query_library_(pyomop_fixture, vector_fixture):
+    result = await vector_fixture.sql_df(pyomop_fixture, "TEST")
+    print("Executing TEST query:")
+    for row in result:
+        print(row)
+    result = await vector_fixture.query_library(
+        pyomop_fixture)
+    assert result is not None
+    print("Executing query library:")
+    for row in result:
+        print(row)
+    df = vector_fixture.df
+    assert not df.empty, "Query library returned an empty DataFrame"
+    print(df.head())
