@@ -4,7 +4,6 @@ import os
 import datetime
 
 
-@staticmethod
 def test_create_cohort_cdm54(pyomop_fixture, cdm54_metadata_fixture, capsys):
     engine = pyomop_fixture.engine
     # create tables
