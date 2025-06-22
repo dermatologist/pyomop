@@ -1,3 +1,22 @@
+"""
+Derivative based on the original work here: https://github.com/thehyve/omop-cdm/blob/main/src/omop_cdm/regular/cdm600/tables.py
+Modifications made to this file:
+- Removed support for schema.
+- Added new tables
+
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     https://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+"""
+
 """OMOP CDM 6.0.0 tables."""
 
 import datetime
@@ -11,12 +30,12 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    MetaData,
     Numeric,
     String,
     Text,
-    MetaData,
 )
-from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
 class Base(DeclarativeBase):
