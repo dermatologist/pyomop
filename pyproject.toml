@@ -25,11 +25,12 @@ Homepage = "https://github.com/dermatologist/pyomop"
 Documentation = "https://dermatologist.github.io/pyomop/"
 
 [project.optional-dependencies]
-llm = [ "llama-index", "llama-index-experimental", "langchain", "langchain-community", "langchain-huggingface", "llama-index-embeddings-langchain", "overrides", "llama-index-llms-google-genai",]
+llm = [ "llama-index", "llama-index-experimental", "langchain", "langchain-community", "langchain-huggingface", "llama-index-embeddings-langchain", "overrides", "llama-index-llms-google-genai", "llama-index-llms-langchain",]
 testing = [ "setuptools", "pytest", "pytest-cov",]
 dev = [
     "setuptools>=77.0.0",
     "packaging>=24.2",
+    "llama-index-llms-langchain",
     "setuptools_scm",
     "pytest",
     "pytest-cov",

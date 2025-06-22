@@ -2,10 +2,8 @@
 # from sqlalchemy.orm import Session
 # from sqlalchemy.ext.automap import automap_base
 
-import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.automap import automap_base
 
 
