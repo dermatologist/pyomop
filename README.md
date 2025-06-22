@@ -40,7 +40,7 @@ See [llm_example.py](examples/llm_example.py) for usage.
 ```python
 from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
 # cdm6 and cdm54 are supported
-from pyomop.cdm54 import Cohort, Vocabulary, Base
+from pyomop.cdm54 import Person, Cohort, Vocabulary, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
