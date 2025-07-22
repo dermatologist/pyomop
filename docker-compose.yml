@@ -11,7 +11,7 @@ services:
     volumes:
       - ohdsi_data:/var/lib/postgresql/data
     networks:
-      - ohdsi
+      - pyomop_ohdsi
 
   webapi:
     image: ohdsi/webapi:latest  # Or your preferred WebAPI version
@@ -29,7 +29,7 @@ services:
     depends_on:
       - omopdb
     networks:
-      - ohdsi
+      - pyomop_ohdsi
     # volumes:
     #   - ./webapi_logs:/usr/local/tomcat/logs # Optional: For persistent logs
 
