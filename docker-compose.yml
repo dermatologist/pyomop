@@ -37,6 +37,6 @@ volumes:
   ohdsi_data:
 
 networks:
-  ohdsi:
+  pyomop_ohdsi:
     driver: bridge
 
