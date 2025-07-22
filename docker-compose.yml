@@ -18,7 +18,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DATABASE_SERVER: postgres
+      DATABASE_SERVER: omopdb
       DATABASE_PORT: 5432
       DATABASE_USER: ohdsi
       DATABASE_PASSWORD: ohdsi
