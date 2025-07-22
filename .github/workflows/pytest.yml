@@ -1,6 +1,8 @@
 name: Python Test
 
 on:
+  schedule:
+    - cron: '1 1 2,16 * *'  # every 2nd and 16th at 01:01. To flag any dependency issues.
   push:
     branches:
       - develop
