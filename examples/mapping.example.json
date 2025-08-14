@@ -21,6 +21,9 @@
                 "ethnicity_concept_id": {
                     "const": 0
                 },
+                "year_of_birth": {
+                    "const": 0
+                },
                 "race_source_value": "extension",
                 "ethnicity_source_value": "extension",
                 "person_source_value": "patientId"
