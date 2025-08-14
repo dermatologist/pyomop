@@ -12,6 +12,10 @@ In the person table, replace 0 and null values in year_of_birth, month_of_birth 
 
 ##
 
+Write a function vocabulary_lookup that populates columns ending with _concept_id with concept_id values from the vocabulary table mapped based on the corresponding _source_value columns in the OMOP CDM.
+
+##
+
 loader.py
 Checked loader.py, 9 problems found
 

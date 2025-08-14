@@ -15,6 +15,7 @@ from sqlalchemy import (
     String,
     cast,
     insert,
+    or_,
     select,
     update,
 )
@@ -190,6 +191,9 @@ class CdmCsvLoader:
             # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
             await self.backfill_person_birth_fields(session, automap)
 
+            # Step 4: Populate *_concept_id columns from vocabulary by matching *_source_value to concept.concept_code
+            await self.vocabulary_lookup(session, automap)
+
             await session.commit()
             await session.close()
 
@@ -248,6 +252,105 @@ class CdmCsvLoader:
                     .values(person_id=pid)
                 )
                 await session.execute(stmt)
+
+    async def vocabulary_lookup(
+        self, session: AsyncSession, automap: AutomapBase
+    ) -> None:
+        """
+        Populate columns ending with `_concept_id` using values from the vocabulary
+        (concept) table by matching on the corresponding `_source_value` columns.
+
+        Strategy:
+        - For each table column X_concept_id, if X_source_value exists, find rows
+          where X_concept_id is NULL or 0 and X_source_value is not NULL.
+        - Look up concept.concept_id where concept.concept_code = X_source_value.
+          Prefer standard_concept = 'S' when multiple matches exist.
+        - Update rows to set X_concept_id accordingly.
+        """
+        # Resolve vocabulary concept table
+        try:
+            concept_cls = getattr(automap.classes, "concept")
+        except AttributeError:
+            return
+
+        concept_table = concept_cls.__table__
+
+        for table in automap.metadata.sorted_tables:
+            # Skip the vocabulary tables themselves
+            if table.name in {
+                concept_table.name,
+                "vocabulary",
+                "domain",
+                "concept_class",
+                "concept_relationship",
+                "concept_synonym",
+                "concept_ancestor",
+                "source_to_concept_map",
+            }:
+                continue
+
+            # Identify *_concept_id columns and their *_source_value companions
+            concept_cols = [c for c in table.c if c.name.endswith("_concept_id")]
+            if not concept_cols:
+                continue
+
+            for c_col in concept_cols:
+                base = c_col.name[: -len("_concept_id")]
+                src_col_name = f"{base}_source_value"
+                if src_col_name not in table.c:
+                    continue
+
+                src_col = table.c[src_col_name]
+                tgt_col = table.c[c_col.name]
+
+                # Find distinct source values needing mapping
+                res = await session.execute(
+                    select(src_col)
+                    .where(
+                        src_col.isnot(None),
+                        or_(tgt_col.is_(None), tgt_col == 0),
+                    )
+                    .distinct()
+                )
+                codes = [row[0] for row in res.fetchall() if row[0] is not None]
+                if not codes:
+                    continue
+
+                # Fetch concept rows for these codes
+                cres = await session.execute(
+                    select(
+                        concept_table.c.concept_code,
+                        concept_table.c.concept_id,
+                        concept_table.c.standard_concept,
+                    ).where(concept_table.c.concept_code.in_(codes))
+                )
+                crows = cres.fetchall()
+                if not crows:
+                    continue
+
+                # Build best concept per code (prefer standard_concept='S')
+                best: Dict[str, int] = {}
+                by_code: Dict[str, List[tuple]] = {}
+                for code, cid, std in crows:
+                    by_code.setdefault(code, []).append((cid, std))
+                for code, lst in by_code.items():
+                    std_first = sorted(
+                        lst,
+                        key=lambda t: (0 if (t[1] or "") == "S" else 1, t[0]),
+                    )
+                    best[code] = std_first[0][0]
+
+                # Apply updates per code
+                for code, cid in best.items():
+                    stmt = (
+                        update(table)
+                        .where(
+                            src_col == code,
+                            or_(tgt_col.is_(None), tgt_col == 0),
+                        )
+                        .values({tgt_col.name: cid})
+                    )
+                    await session.execute(stmt)
 
     async def backfill_person_birth_fields(
         self, session: AsyncSession, automap: AutomapBase
