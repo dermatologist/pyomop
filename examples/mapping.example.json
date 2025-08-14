@@ -1,0 +1,42 @@
+{
+    "tables": [
+        {
+            "name": "cohort",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Encounter"
+                }
+            ],
+            "columns": {
+                "cohort_definition_id": {
+                    "const": 1
+                },
+                "subject_id": "patientId",
+                "cohort_start_date": "period.start",
+                "cohort_end_date": "period.end"
+            }
+        },
+        {
+            "name": "note",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "DiagnosticReport"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "note_date": "issued",
+                "note_type_concept_id": {
+                    "const": 0
+                },
+                "note_class_concept_id": {
+                    "const": 0
+                },
+                "note_title": "code.text",
+                "note_text": "presentedForm"
+            }
+        }
+    ]
+}
