@@ -394,13 +394,21 @@ class CdmCsvLoader:
                     .distinct()
                 )
                 raw_values = [r[0] for r in res.fetchall() if r[0] is not None]
-                if not raw_values:
+                # Example raw values: ["['5803-2']", "['8867-4']", "['5794-3']", "['74006-8']", "['10834-0']", "['1191']", "['442571000124108']", "['102263004']"]
+                # Transform this into ['5803-2', '8867-4','5794-3', '10834-0', '1191', '442571000124108', '102263004']
+                _raw_values = []
+                for rv in raw_values:
+                    # remove [ ' ' ]
+                    rv = rv.strip("[]'\"")
+                    _raw_values.append(rv)
+
+                if not _raw_values:
                     continue
 
                 # Compute first codes and list unique
                 raw_to_first: Dict[str, Optional[str]] = {}
                 first_list: List[str] = []
-                for rv in raw_values:
+                for rv in _raw_values:
                     fc = first_code(rv)
                     raw_to_first[str(rv)] = fc
                     if fc:
