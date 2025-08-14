@@ -8,7 +8,15 @@ from pyomop.vocabulary import CdmVocabulary
 
 async def main():
     # Create a local SQLite CDM and initialize tables
-    cdm = CdmEngineFactory()
+    cdm = CdmEngineFactory(
+        # db="pgsql",
+        # host="10.0.0.211",
+        # port=5432,
+        # user="postgres",
+        # pw="pword",
+        # name="postgres",
+        # schema="public",
+    )
     engine = cdm.engine
     await cdm.init_models(Base.metadata)
 
