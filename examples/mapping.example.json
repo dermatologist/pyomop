@@ -269,5 +269,25 @@
                 "sig": "dosageInstruction"
             }
         }
+    ],
+    "concept": [
+        {
+            "table": "person",
+            "mappings": [
+                {
+                    "source": "gender_source_value",
+                    "target": "gender_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "observation",
+            "mappings": [
+                {
+                    "source": "code.coding.codes",
+                    "target": "observation_concept_id"
+                }
+            ]
+        }
     ]
 }

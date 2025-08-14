@@ -3,6 +3,9 @@ import asyncio
 from pyomop import CdmEngineFactory
 from pyomop.cdm54 import Base
 from pyomop.loader import CdmCsvLoader
+from pyomop.vocabulary import CdmVocabulary
+
+RESET_DB = False  # Set True to drop and recreate all tables (will delete existing data)
 
 
 async def main():
@@ -17,10 +20,11 @@ async def main():
         # schema="public"
     )
     engine = cdm.engine
-    await cdm.init_models(Base.metadata)
+    if RESET_DB:
+        await cdm.init_models(Base.metadata)
 
-    # Load CSV into OMOP tables using mapping
     loader = CdmCsvLoader(cdm)
+    # Load CSV into OMOP tables using mapping
     await loader.load(
         csv_path="tests/fhir_export.csv",
         mapping_path="examples/mapping.example.json",
