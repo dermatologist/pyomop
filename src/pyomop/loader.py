@@ -118,6 +118,9 @@ class CdmCsvLoader:
                 return Decimal(str(value))
         except Exception:
             return value
+        # Trim string values to 50 characters before insert
+        if isinstance(value, str):
+            return value[:50]
         return value
 
     async def load(
