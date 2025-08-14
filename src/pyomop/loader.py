@@ -194,6 +194,9 @@ class CdmCsvLoader:
             # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
             await self.backfill_person_birth_fields(session, automap)
 
+            # Step 4: Apply concept lookups defined in mapping["concept"]
+            await self.apply_concept_mappings(session, automap, mapping)
+
             await session.commit()
             await session.close()
 
@@ -252,7 +255,6 @@ class CdmCsvLoader:
                     .values(person_id=pid)
                 )
                 await session.execute(stmt)
-
 
     async def backfill_person_birth_fields(
         self, session: AsyncSession, automap: AutomapBase
@@ -319,3 +321,127 @@ class CdmCsvLoader:
                     )
                 )
                 await session.execute(stmt)
+
+    async def apply_concept_mappings(
+        self, session: AsyncSession, automap: AutomapBase, mapping: Dict[str, Any]
+    ) -> None:
+        """
+        Based on mapping["concept"], update target *_concept_id fields by looking up
+        concept.concept_id where concept.concept_code equals the source field value.
+        If the source is an array-like string, only the first element is used.
+        """
+        # Get vocabulary concept table
+        try:
+            concept_cls = getattr(automap.classes, "concept")
+        except AttributeError:
+            return
+        concept_table = concept_cls.__table__
+
+        concept_entries = mapping.get("concept") or []
+        if not concept_entries:
+            return
+
+        def first_code(val: Any) -> Optional[str]:
+            if val is None:
+                return None
+            if isinstance(val, (list, tuple)):
+                return None if not val else str(val[0]).strip()
+            if isinstance(val, str):
+                s = val.strip()
+                if not s:
+                    return None
+                # JSON array encoded as string
+                if s.startswith("[") and s.endswith("]"):
+                    try:
+                        arr = json.loads(s)
+                        if isinstance(arr, list) and arr:
+                            return str(arr[0]).strip()
+                    except Exception:
+                        pass
+                # Delimited list: try | then ,
+                for sep in ("|", ","):
+                    if sep in s:
+                        return s.split(sep)[0].strip()
+                return s
+            return str(val)
+
+        for entry in concept_entries:
+            table_name = entry.get("table")
+            mappings = entry.get("mappings") or []
+            if not table_name or not mappings:
+                continue
+            try:
+                tbl_cls = getattr(automap.classes, table_name)
+            except AttributeError:
+                continue
+            table = tbl_cls.__table__
+
+            for m in mappings:
+                src_col_name = m.get("source")
+                tgt_col_name = m.get("target")
+                if not src_col_name or not tgt_col_name:
+                    continue
+                if src_col_name not in table.c or tgt_col_name not in table.c:
+                    continue
+
+                src_col = table.c[src_col_name]
+                tgt_col = table.c[tgt_col_name]
+
+                # Get distinct source values needing mapping
+                res = await session.execute(
+                    select(src_col)
+                    .where(src_col.isnot(None), or_(tgt_col.is_(None), tgt_col == 0))
+                    .distinct()
+                )
+                raw_values = [r[0] for r in res.fetchall() if r[0] is not None]
+                if not raw_values:
+                    continue
+
+                # Compute first codes and list unique
+                raw_to_first: Dict[str, Optional[str]] = {}
+                first_list: List[str] = []
+                for rv in raw_values:
+                    fc = first_code(rv)
+                    raw_to_first[str(rv)] = fc
+                    if fc:
+                        first_list.append(fc)
+                if not first_list:
+                    continue
+
+                # Lookup concept ids for these codes
+                cres = await session.execute(
+                    select(
+                        concept_table.c.concept_code,
+                        concept_table.c.concept_id,
+                        concept_table.c.standard_concept,
+                    ).where(concept_table.c.concept_code.in_(list(set(first_list))))
+                )
+                rows = cres.fetchall()
+                if not rows:
+                    continue
+
+                # Choose best per code (prefer standard 'S')
+                by_code: Dict[str, List[tuple]] = {}
+                for code, cid, std in rows:
+                    by_code.setdefault(code, []).append((cid, std))
+                best_for_code: Dict[str, int] = {}
+                for code, lst in by_code.items():
+                    lst_sorted = sorted(
+                        lst, key=lambda t: (0 if (t[1] or "") == "S" else 1, t[0])
+                    )
+                    best_for_code[code] = lst_sorted[0][0]
+
+                # Map full raw value to chosen concept id via its first code
+                raw_to_cid: Dict[str, int] = {}
+                for rv, fc in raw_to_first.items():
+                    if fc and fc in best_for_code:
+                        raw_to_cid[rv] = best_for_code[fc]
+
+                # Apply updates
+                for rv, cid in raw_to_cid.items():
+                    stmt = (
+                        update(table)
+                        .where(src_col == rv, or_(tgt_col.is_(None), tgt_col == 0))
+                        .values({tgt_col.name: cid})
+                    )
+                    await session.execute(stmt)

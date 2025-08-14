@@ -272,20 +272,20 @@
     ],
     "concept": [
         {
-            "table": "person",
+            "table": "observation",
             "mappings": [
                 {
-                    "source": "gender_source_value",
-                    "target": "gender_concept_id"
+                    "source": "observation_source_value",
+                    "target": "observation_concept_id"
                 }
             ]
         },
         {
-            "table": "observation",
+            "table": "condition_occurrence",
             "mappings": [
                 {
-                    "source": "code.coding.codes",
-                    "target": "observation_concept_id"
+                    "source": "condition_source_value",
+                    "target": "condition_concept_id"
                 }
             ]
         }
