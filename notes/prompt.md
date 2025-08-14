@@ -4,6 +4,10 @@ The sample csv file is referenced.
 
 ##
 
+Write a function fix_person_id that updates all tables to replace the person_id foreign key with the person_id instead of person_source_value that it currently uses.
+
+##
+
 
 loader.py
 Checked loader.py, 9 problems found

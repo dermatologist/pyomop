@@ -6,7 +6,18 @@ from decimal import Decimal
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
 import pandas as pd
-from sqlalchemy import BigInteger, Date, DateTime, Integer, Numeric, insert
+from sqlalchemy import (
+    BigInteger,
+    Date,
+    DateTime,
+    Integer,
+    Numeric,
+    String,
+    cast,
+    insert,
+    select,
+    update,
+)
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -173,5 +184,64 @@ class CdmCsvLoader:
                     batch = records[i : i + chunk_size]
                     await session.execute(stmt, batch)
 
+            # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
+            await self.fix_person_id(session, automap)
+
             await session.commit()
             await session.close()
+
+    async def fix_person_id(self, session: AsyncSession, automap: AutomapBase) -> None:
+        """
+        Update all tables so that person_id foreign keys store the canonical
+        person.person_id (integer), replacing any rows where person_id currently
+        contains the person_source_value (string/UUID).
+
+        Approach:
+        - Build a mapping from person_source_value -> person_id from the person table.
+        - For each table (except person) having a person_id column, run updates:
+          SET person_id = person.person_id WHERE CAST(person_id AS TEXT) = person_source_value.
+        - This is safe for SQLite (used in examples). For stricter RDBMS, ensure types
+          are compatible or adjust as needed.
+        """
+        # Resolve person table from automap
+        try:
+            person_cls = getattr(automap.classes, "person")
+        except AttributeError:
+            return  # No person table; nothing to do
+
+        person_table = person_cls.__table__
+
+        # Build mapping of person_source_value -> person_id
+        res = await session.execute(
+            select(person_table.c.person_source_value, person_table.c.person_id).where(
+                person_table.c.person_source_value.isnot(None)
+            )
+        )
+        pairs = res.fetchall()
+        if not pairs:
+            return
+
+        psv_to_id: Dict[str, int] = {}
+        for psv, pid in pairs:
+            if psv is None or pid is None:
+                continue
+            psv_to_id[str(psv)] = int(pid)
+
+        if not psv_to_id:
+            return
+
+        # Iterate all tables and update person_id where it matches a known person_source_value
+        for table in automap.metadata.sorted_tables:
+            if table.name == person_table.name:
+                continue
+            if "person_id" not in table.c:
+                continue
+
+            # Run per-psv updates; small and explicit for clarity
+            for psv, pid in psv_to_id.items():
+                stmt = (
+                    update(table)
+                    .where(cast(table.c.person_id, String()) == psv)
+                    .values(person_id=pid)
+                )
+                await session.execute(stmt)
