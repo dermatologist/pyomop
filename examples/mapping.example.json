@@ -1,7 +1,8 @@
 {
+    "csv_key": "patientId",
     "tables": [
         {
-            "name": "cohort",
+            "name": "visit_occurrence",
             "filters": [
                 {
                     "column": "resourceType",
@@ -9,12 +10,235 @@
                 }
             ],
             "columns": {
-                "cohort_definition_id": {
-                    "const": 1
+                "person_id": "patientId",
+                "visit_start_date": "period.start",
+                "visit_start_datetime": "period.start",
+                "visit_end_date": "period.end",
+                "visit_end_datetime": "period.end",
+                "visit_concept_id": {
+                    "const": 0
                 },
-                "subject_id": "patientId",
-                "cohort_start_date": "period.start",
-                "cohort_end_date": "period.end"
+                "visit_type_concept_id": {
+                    "const": 0
+                },
+                "visit_source_value": "class.code",
+                "visit_source_concept_id": {
+                    "const": 0
+                },
+                "admitted_from_source_value": "",
+                "discharged_to_source_value": "hospitalization.dischargeDisposition.text",
+                "discharged_to_concept_id": {
+                    "const": 0
+                }
+            }
+        },
+        {
+            "name": "condition_occurrence",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Condition"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "condition_start_date": "onsetDateTime",
+                "condition_start_datetime": "onsetDateTime",
+                "condition_end_date": "abatementDateTime",
+                "condition_end_datetime": "abatementDateTime",
+                "condition_concept_id": {
+                    "const": 0
+                },
+                "condition_type_concept_id": {
+                    "const": 0
+                },
+                "condition_status_concept_id": {
+                    "const": 0
+                },
+                "condition_source_value": "code.coding.codes",
+                "condition_status_source_value": "clinicalStatus.coding.codes"
+            }
+        },
+        {
+            "name": "procedure_occurrence",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Procedure"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "procedure_date": "performedPeriod.start",
+                "procedure_datetime": "performedPeriod.start",
+                "procedure_end_date": "performedPeriod.end",
+                "procedure_end_datetime": "performedPeriod.end",
+                "procedure_concept_id": {
+                    "const": 0
+                },
+                "procedure_type_concept_id": {
+                    "const": 0
+                },
+                "procedure_source_value": "code.coding.codes",
+                "modifier_concept_id": {
+                    "const": 0
+                },
+                "modifier_source_value": ""
+            }
+        },
+        {
+            "name": "device_exposure",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Device"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "device_exposure_start_date": "manufactureDate",
+                "device_exposure_start_datetime": "manufactureDate",
+                "device_exposure_end_date": "expirationDate",
+                "device_exposure_end_datetime": "expirationDate",
+                "device_concept_id": {
+                    "const": 0
+                },
+                "device_type_concept_id": {
+                    "const": 0
+                },
+                "device_source_value": "type.coding.codes",
+                "unique_device_id": "udiCarrier",
+                "production_id": "distinctIdentifier",
+                "unit_source_value": "valueQuantity.unit",
+                "unit_concept_id": {
+                    "const": 0
+                }
+            }
+        },
+        {
+            "name": "measurement",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Observation"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "measurement_date": "effectiveDateTime",
+                "measurement_datetime": "issued",
+                "measurement_concept_id": {
+                    "const": 0
+                },
+                "measurement_type_concept_id": {
+                    "const": 0
+                },
+                "measurement_source_value": "code.coding.codes",
+                "value_as_number": "valueQuantity.value",
+                "unit_source_value": "valueQuantity.unit",
+                "unit_concept_id": {
+                    "const": 0
+                },
+                "value_source_value": "valueCodeableConcept.text"
+            }
+        },
+        {
+            "name": "observation",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Observation"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "observation_date": "effectiveDateTime",
+                "observation_datetime": "issued",
+                "observation_concept_id": {
+                    "const": 0
+                },
+                "observation_type_concept_id": {
+                    "const": 0
+                },
+                "observation_source_value": "code.coding.codes",
+                "value_as_number": "valueQuantity.value",
+                "unit_source_value": "valueQuantity.unit",
+                "unit_concept_id": {
+                    "const": 0
+                },
+                "value_source_value": "valueCodeableConcept.text",
+                "value_as_string": "valueString"
+            }
+        },
+        {
+            "name": "observation",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "AllergyIntolerance"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "observation_date": "recordedDate",
+                "observation_datetime": "recordedDate",
+                "observation_concept_id": {
+                    "const": 0
+                },
+                "observation_type_concept_id": {
+                    "const": 0
+                },
+                "observation_source_value": "code.coding.codes",
+                "value_as_string": "reaction"
+            }
+        },
+        {
+            "name": "drug_exposure",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Immunization"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "drug_exposure_start_date": "occurrenceDateTime",
+                "drug_exposure_start_datetime": "occurrenceDateTime",
+                "drug_exposure_end_date": "occurrenceDateTime",
+                "drug_exposure_end_datetime": "occurrenceDateTime",
+                "drug_concept_id": {
+                    "const": 0
+                },
+                "drug_type_concept_id": {
+                    "const": 0
+                },
+                "drug_source_value": "vaccineCode.coding.codes",
+                "route_source_value": "",
+                "sig": ""
+            }
+        },
+        {
+            "name": "drug_exposure",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "MedicationRequest"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "drug_exposure_start_date": "authoredOn",
+                "drug_exposure_start_datetime": "authoredOn",
+                "drug_exposure_end_date": "authoredOn",
+                "drug_exposure_end_datetime": "authoredOn",
+                "drug_concept_id": {
+                    "const": 0
+                },
+                "drug_type_concept_id": {
+                    "const": 0
+                },
+                "drug_source_value": "medicationCodeableConcept.coding.codes",
+                "sig": "dosageInstruction"
             }
         },
         {
@@ -28,14 +252,49 @@
             "columns": {
                 "person_id": "patientId",
                 "note_date": "issued",
+                "note_datetime": "issued",
+                "note_title": "code.text",
+                "note_text": "presentedForm",
                 "note_type_concept_id": {
                     "const": 0
                 },
                 "note_class_concept_id": {
                     "const": 0
                 },
-                "note_title": "code.text",
-                "note_text": "presentedForm"
+                "encoding_concept_id": {
+                    "const": 0
+                },
+                "language_concept_id": {
+                    "const": 0
+                }
+            }
+        },
+        {
+            "name": "note",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "DocumentReference"
+                }
+            ],
+            "columns": {
+                "person_id": "patientId",
+                "note_date": "date",
+                "note_datetime": "date",
+                "note_title": "type",
+                "note_text": "content",
+                "note_type_concept_id": {
+                    "const": 0
+                },
+                "note_class_concept_id": {
+                    "const": 0
+                },
+                "encoding_concept_id": {
+                    "const": 0
+                },
+                "language_concept_id": {
+                    "const": 0
+                }
             }
         }
     ]

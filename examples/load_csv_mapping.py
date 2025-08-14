@@ -14,7 +14,7 @@ async def main():
     # Load CSV into OMOP tables using mapping
     loader = CdmCsvLoader(cdm)
     await loader.load(
-        csv_path="tests/patient3.csv",
+        csv_path="tests/fhir_export.csv",
         mapping_path="examples/mapping.example.json",
         chunk_size=500,
     )
