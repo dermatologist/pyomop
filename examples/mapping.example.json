@@ -2,6 +2,31 @@
     "csv_key": "patientId",
     "tables": [
         {
+            "name": "person",
+            "filters": [
+                {
+                    "column": "resourceType",
+                    "equals": "Patient"
+                }
+            ],
+            "columns": {
+                "gender_concept_id": {
+                    "const": 0
+                },
+                "gender_source_value": "gender",
+                "birth_datetime": "birthDate",
+                "race_concept_id": {
+                    "const": 0
+                },
+                "ethnicity_concept_id": {
+                    "const": 0
+                },
+                "race_source_value": "extension",
+                "ethnicity_source_value": "extension",
+                "person_source_value": "patientId"
+            }
+        },
+        {
             "name": "visit_occurrence",
             "filters": [
                 {
