@@ -21,6 +21,7 @@ dependencies = [
     "click",
     "pandas",
     "aiosqlite",
+    "asyncpg",
     "requests",
     "greenlet"
 ]

@@ -268,62 +268,6 @@
                 "drug_source_value": "medicationCodeableConcept.coding.codes",
                 "sig": "dosageInstruction"
             }
-        },
-        {
-            "name": "note",
-            "filters": [
-                {
-                    "column": "resourceType",
-                    "equals": "DiagnosticReport"
-                }
-            ],
-            "columns": {
-                "person_id": "patientId",
-                "note_date": "issued",
-                "note_datetime": "issued",
-                "note_title": "code.text",
-                "note_text": "presentedForm",
-                "note_type_concept_id": {
-                    "const": 0
-                },
-                "note_class_concept_id": {
-                    "const": 0
-                },
-                "encoding_concept_id": {
-                    "const": 0
-                },
-                "language_concept_id": {
-                    "const": 0
-                }
-            }
-        },
-        {
-            "name": "note",
-            "filters": [
-                {
-                    "column": "resourceType",
-                    "equals": "DocumentReference"
-                }
-            ],
-            "columns": {
-                "person_id": "patientId",
-                "note_date": "date",
-                "note_datetime": "date",
-                "note_title": "type",
-                "note_text": "content",
-                "note_type_concept_id": {
-                    "const": 0
-                },
-                "note_class_concept_id": {
-                    "const": 0
-                },
-                "encoding_concept_id": {
-                    "const": 0
-                },
-                "language_concept_id": {
-                    "const": 0
-                }
-            }
         }
     ]
 }
