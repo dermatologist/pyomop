@@ -1,5 +1,6 @@
 import asyncio
 from contextlib import asynccontextmanager
+from datetime import date, datetime
 from typing import AsyncGenerator
 
 import numpy as np
@@ -104,7 +105,7 @@ class CdmVocabulary(object):
             self._vocabulary_id = 0
             self._concept_id = 0
 
-    def create_vocab(self, folder, sample=None):
+    async def create_vocab(self, folder, sample=None):
         try:
             df = pd.read_csv(
                 folder + "/DRUG_STRENGTH.csv",
@@ -117,7 +118,7 @@ class CdmVocabulary(object):
                 df["valid_start_date"], errors="coerce"
             )
             df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
-            asyncio.run(self.write_vocab(df, "drug_strength", "replace"))
+            await self.write_vocab(df, "drug_strength", "replace")
             # df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/CONCEPT.csv", sep="\t", nrows=sample, on_bad_lines="skip"
@@ -127,7 +128,7 @@ class CdmVocabulary(object):
                 df["valid_start_date"], errors="coerce"
             )
             df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
-            asyncio.run(self.write_vocab(df, "concept", "replace"))
+            await self.write_vocab(df, "concept", "replace")
             # df.to_sql('concept', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/CONCEPT_RELATIONSHIP.csv",
@@ -140,7 +141,7 @@ class CdmVocabulary(object):
                 df["valid_start_date"], errors="coerce"
             )
             df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
-            asyncio.run(self.write_vocab(df, "concept_relationship", "replace"))
+            await self.write_vocab(df, "concept_relationship", "replace")
             # df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/CONCEPT_ANCESTOR.csv",
@@ -148,7 +149,7 @@ class CdmVocabulary(object):
                 nrows=sample,
                 on_bad_lines="skip",
             )
-            asyncio.run(self.write_vocab(df, "concept_ancestor", "replace"))
+            await self.write_vocab(df, "concept_ancestor", "replace")
             # df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/CONCEPT_SYNONYM.csv",
@@ -156,12 +157,12 @@ class CdmVocabulary(object):
                 nrows=sample,
                 on_bad_lines="skip",
             )
-            asyncio.run(self.write_vocab(df, "concept_synonym", "replace"))
+            await self.write_vocab(df, "concept_synonym", "replace")
             # df.to_sql('concept_synonym', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/VOCABULARY.csv", sep="\t", nrows=sample, on_bad_lines="skip"
             )
-            asyncio.run(self.write_vocab(df, "vocabulary", "replace"))
+            await self.write_vocab(df, "vocabulary", "replace")
             # df.to_sql('vocabulary', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/RELATIONSHIP.csv",
@@ -169,7 +170,7 @@ class CdmVocabulary(object):
                 nrows=sample,
                 on_bad_lines="skip",
             )
-            asyncio.run(self.write_vocab(df, "relationship", "replace"))
+            await self.write_vocab(df, "relationship", "replace")
             # df.to_sql('relationship', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/CONCEPT_CLASS.csv",
@@ -177,12 +178,12 @@ class CdmVocabulary(object):
                 nrows=sample,
                 on_bad_lines="skip",
             )
-            asyncio.run(self.write_vocab(df, "concept_class", "replace"))
+            await self.write_vocab(df, "concept_class", "replace")
             # df.to_sql('concept_class', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
                 folder + "/DOMAIN.csv", sep="\t", nrows=sample, on_bad_lines="skip"
             )
-            asyncio.run(self.write_vocab(df, "domain", "replace"))
+            await self.write_vocab(df, "domain", "replace")
             # df.to_sql('domain', con=self._engine, if_exists = 'replace')
         except Exception as e:
             print(f"An error occurred while creating the vocabulary: {e}")
@@ -202,9 +203,77 @@ class CdmVocabulary(object):
 
             await conn.run_sync(prepare_automap)
             mapper = getattr(automap.classes, table)
+
+            # Build defaults for non-nullable columns based on SQL types
+            sa_cols = {c.name: c for c in mapper.__table__.columns}
+
+            def default_for(col):
+                from sqlalchemy import (
+                    BigInteger,
+                    Date,
+                    DateTime,
+                    Integer,
+                    Numeric,
+                    String,
+                    Text,
+                )
+
+                t = col.type
+                if isinstance(t, (Integer, BigInteger)):
+                    return 0
+                if isinstance(t, Numeric):
+                    return 0
+                if isinstance(t, (String, Text)):
+                    return "UNKNOWN"
+                if isinstance(t, Date):
+                    return date(1970, 1, 1)
+                if isinstance(t, DateTime):
+                    return datetime(1970, 1, 1)
+                return None
+
+            # Work on a copy so we can normalize types and fill required fields
+            df2 = df.copy()
+
+            for name, col in sa_cols.items():
+                if col.nullable:
+                    continue
+                # Ensure column exists
+                if name not in df2.columns:
+                    df2[name] = default_for(col)
+                    continue
+
+                # Coerce types and fill missing
+                if str(df2[name].dtype) == "object":
+                    # Treat empty strings as missing for required fields
+                    df2[name] = df2[name].replace("", np.nan)
+
+                from sqlalchemy import BigInteger
+                from sqlalchemy import Date as SA_Date
+                from sqlalchemy import DateTime as SA_DateTime
+                from sqlalchemy import Integer, Numeric, String, Text
+
+                t = col.type
+                if isinstance(t, SA_Date):
+                    df2[name] = pd.to_datetime(df2[name], errors="coerce").dt.date
+                elif isinstance(t, SA_DateTime):
+                    df2[name] = pd.to_datetime(df2[name], errors="coerce")
+                elif isinstance(t, (Integer, BigInteger)):
+                    # Convert to numeric then to Int64 to allow NaNs, fill later
+                    df2[name] = pd.to_numeric(df2[name], errors="coerce")
+                elif isinstance(t, Numeric):
+                    df2[name] = pd.to_numeric(df2[name], errors="coerce")
+                elif isinstance(t, (String, Text)):
+                    # Trim to 255 to be safe for vocab tables
+                    df2[name] = df2[name].astype(str).str.slice(0, 255)
+
+                # Fill missing with defaults for required columns
+                df2[name] = df2[name].fillna(default_for(col))
+
             stmt = insert(mapper)
 
-            for _, group in df.groupby(np.arange(df.shape[0], dtype=int) // chunk_size):
+            for _, group in df2.groupby(
+                np.arange(df2.shape[0], dtype=int) // chunk_size
+            ):
                 await session.execute(stmt, group.to_dict("records"))
             await session.commit()
             await session.close()
