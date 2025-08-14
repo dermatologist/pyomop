@@ -1,5 +1,6 @@
 import asyncio
 import json
+from ast import stmt
 from contextlib import asynccontextmanager
 from datetime import date, datetime
 from decimal import Decimal
@@ -428,28 +429,14 @@ class CdmCsvLoader:
                 if not rows:
                     continue
 
-                # Choose best per code (prefer standard 'S')
-                by_code: Dict[str, List[tuple]] = {}
-                for code, cid, std in rows:
-                    by_code.setdefault(code, []).append((cid, std))
-                best_for_code: Dict[str, int] = {}
-                for code, lst in by_code.items():
-                    lst_sorted = sorted(
-                        lst, key=lambda t: (0 if (t[1] or "") == "S" else 1, t[0])
-                    )
-                    best_for_code[code] = lst_sorted[0][0]
-
-                # Map full raw value to chosen concept id via its first code
-                raw_to_cid: Dict[str, int] = {}
-                for rv, fc in raw_to_first.items():
-                    if fc and fc in best_for_code:
-                        raw_to_cid[rv] = best_for_code[fc]
-
-                # Apply updates
-                for rv, cid in raw_to_cid.items():
+                for row in rows:
+                    (source, dest, _) = row
+                    print(f"Source: {source}, Dest: {dest}")
+                    # update table's tgt_col with dest where src_col = source
                     stmt = (
                         update(table)
-                        .where(src_col == rv, or_(tgt_col.is_(None), tgt_col == 0))
-                        .values({tgt_col.name: cid})
+                        .where(src_col == source)
+                        .values({tgt_col_name: dest})
                     )
+                    print(f"Executing: {stmt}")
                     await session.execute(stmt)
