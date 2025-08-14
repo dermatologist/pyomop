@@ -88,12 +88,12 @@ class CdmEngineFactory(object):
             # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
             dbschema = "{},public"  # Searches left-to-right
             dbschema = dbschema.format(self._schema)
-            pgsql_url = "postgresql+psycopg2://{}:{}@{}:{}/{}"
+            pgsql_url = "postgresql+asyncpg://{}:{}@{}:{}/{}"
             pgsql_url = pgsql_url.format(
                 self._user, self._pw, self._host, self._port, self._name
             )
             self._engine = create_async_engine(
-                pgsql_url, connect_args={"options": "-csearch_path={}".format(dbschema)}
+                pgsql_url, connect_args={}
             )
         return self._engine
 
