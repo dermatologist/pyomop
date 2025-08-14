@@ -6,10 +6,25 @@ build-backend = "setuptools.build_meta"
 name = "pyomop"
 description = "OMOP CDM utils in Python"
 license = "GPL-3.0"
-classifiers = [ "Intended Audience :: Science/Research", "Development Status :: 4 - Beta", "Operating System :: OS Independent", "Programming Language :: Python", "Programming Language :: Python :: 3.11", "Topic :: Scientific/Engineering :: Information Analysis",]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Development Status :: 4 - Beta",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
 requires-python = ">=3.11, <3.12"
-dependencies = [ "importlib-metadata; python_version<\"3.8\"", "sqlalchemy>=1.4", "click", "pandas", "aiosqlite", "requests",]
-dynamic = [ "version",]
+dependencies = [
+    "importlib-metadata; python_version<\"3.8\"",
+    "sqlalchemy>=1.4",
+    "click",
+    "pandas",
+    "aiosqlite",
+    "requests",
+    "greenlet"
+]
+dynamic = ["version"]
 
 [[project.authors]]
 name = "Bell Eapen"
@@ -25,8 +40,18 @@ Homepage = "https://github.com/dermatologist/pyomop"
 Documentation = "https://dermatologist.github.io/pyomop/"
 
 [project.optional-dependencies]
-llm = [ "llama-index", "llama-index-experimental", "langchain", "langchain-community", "langchain-huggingface", "llama-index-embeddings-langchain", "overrides", "llama-index-llms-google-genai", "llama-index-llms-langchain",]
-testing = [ "setuptools", "pytest", "pytest-cov",]
+llm = [
+    "llama-index",
+    "llama-index-experimental",
+    "langchain",
+    "langchain-community",
+    "langchain-huggingface",
+    "llama-index-embeddings-langchain",
+    "overrides",
+    "llama-index-llms-google-genai",
+    "llama-index-llms-langchain",
+]
+testing = ["setuptools", "pytest", "pytest-cov"]
 dev = [
     "setuptools>=77.0.0",
     "packaging>=24.2",
@@ -49,7 +74,7 @@ pyomop = "pyomop.main:main_routine"
 [tool.setuptools]
 zip-safe = false
 include-package-data = true
-platforms = [ "any",]
+platforms = ["any"]
 
 [tool.test]
 extras = "True"
@@ -70,8 +95,8 @@ extensions = "\ntravis\ntox\nmarkdown"
 
 [tool.pytest.ini_options]
 addopts = "\n--verbose"
-norecursedirs = [ "dist", "build", ".tox",]
-testpaths = [ "tests",]
+norecursedirs = ["dist", "build", ".tox"]
+testpaths = ["tests"]
 
 [tool.distutils.bdist_wheel]
 universal = 0
@@ -85,6 +110,6 @@ no-vcs = "1"
 formats = "bdist_wheel"
 
 [tool.setuptools.packages.find]
-where = [ "src"]
-exclude = [ "tests", "notes", "docs", "examples", "notebooks",]
+where = ["src"]
+exclude = ["tests", "notes", "docs", "examples", "notebooks"]
 namespaces = true

@@ -1,13 +1,14 @@
 import asyncio
 
-from src.pyomop import CdmEngineFactory
-from src.pyomop.cdm54 import Base
-from src.pyomop.loader import CdmCsvLoader
+from pyomop import CdmEngineFactory
+from pyomop.cdm54 import Base
+from pyomop.loader import CdmCsvLoader
 
 
 async def main():
     # Create a local SQLite CDM and initialize tables
-    cdm = CdmEngineFactory(db="sqlite", name="cdm_example.sqlite")
+    cdm = CdmEngineFactory()
+    engine = cdm.engine
     await cdm.init_models(Base.metadata)
 
     # Load CSV into OMOP tables using mapping
