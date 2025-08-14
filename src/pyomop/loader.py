@@ -187,6 +187,9 @@ class CdmCsvLoader:
             # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
             await self.fix_person_id(session, automap)
 
+            # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
+            await self.backfill_person_birth_fields(session, automap)
+
             await session.commit()
             await session.close()
 
@@ -243,5 +246,71 @@ class CdmCsvLoader:
                     update(table)
                     .where(cast(table.c.person_id, String()) == psv)
                     .values(person_id=pid)
+                )
+                await session.execute(stmt)
+
+    async def backfill_person_birth_fields(
+        self, session: AsyncSession, automap: AutomapBase
+    ) -> None:
+        """
+        In the person table, replace 0 or NULL values in year_of_birth, month_of_birth,
+        and day_of_birth with values derived from birth_datetime.
+
+        This runs in Python for portability across backends.
+        """
+        # Resolve person table from automap
+        try:
+            person_cls = getattr(automap.classes, "person")
+        except AttributeError:
+            return
+
+        person_table = person_cls.__table__
+
+        # Fetch necessary columns
+        res = await session.execute(
+            select(
+                person_table.c.person_id,
+                person_table.c.birth_datetime,
+                person_table.c.year_of_birth,
+                person_table.c.month_of_birth,
+                person_table.c.day_of_birth,
+            ).where(person_table.c.birth_datetime.isnot(None))
+        )
+
+        rows = res.fetchall()
+        if not rows:
+            return
+
+        for pid, birth_dt, y, m, d in rows:
+            # Parse birth_dt to a datetime if needed
+            bd: Optional[datetime]
+            if isinstance(birth_dt, datetime):
+                bd = birth_dt
+            elif isinstance(birth_dt, date):
+                bd = datetime(birth_dt.year, birth_dt.month, birth_dt.day)
+            else:
+                try:
+                    tmp = pd.to_datetime(birth_dt, errors="coerce")
+                    bd = None if pd.isna(tmp) else tmp.to_pydatetime()
+                except Exception:
+                    bd = None
+
+            if bd is None:
+                continue
+
+            new_y = y if (y is not None and int(y or 0) != 0) else bd.year
+            new_m = m if (m is not None and int(m or 0) != 0) else bd.month
+            new_d = d if (d is not None and int(d or 0) != 0) else bd.day
+
+            # Only update when something changes
+            if new_y != y or new_m != m or new_d != d:
+                stmt = (
+                    update(person_table)
+                    .where(person_table.c.person_id == pid)
+                    .values(
+                        year_of_birth=new_y,
+                        month_of_birth=new_m,
+                        day_of_birth=new_d,
+                    )
                 )
                 await session.execute(stmt)

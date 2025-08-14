@@ -8,6 +8,9 @@ Write a function fix_person_id that updates all tables to replace the person_id 
 
 ##
 
+In the person table, replace 0 and null values in year_of_birth, month_of_birth and day_of_birth with the values from birth_datetime.
+
+##
 
 loader.py
 Checked loader.py, 9 problems found
