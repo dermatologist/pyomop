@@ -1,3 +1,11 @@
+"""CSV-to-OMOP loader.
+
+This module implements a flexible CSV loader that can populate multiple OMOP
+CDM tables according to a JSON mapping file. It also performs helpful cleanup
+operations like foreign key normalization, birthdate backfilling, gender
+mapping, and concept code lookups.
+"""
+
 import asyncio
 import json
 
@@ -68,6 +76,12 @@ class CdmCsvLoader:
     """
 
     def __init__(self, cdm_engine_factory, version: str = "cdm54") -> None:
+        """Create a loader bound to a specific database engine.
+
+        Args:
+            cdm_engine_factory: An initialized ``CdmEngineFactory``.
+            version: OMOP CDM version label ("cdm54" or "cdm6").
+        """
         self._cdm = cdm_engine_factory
         self._engine = cdm_engine_factory.engine
         self._maker = async_sessionmaker(self._engine, class_=AsyncSession)
@@ -76,10 +90,12 @@ class CdmCsvLoader:
 
     @asynccontextmanager
     async def _get_session(self) -> AsyncGenerator[AsyncSession, None]:
+        """Yield a scoped async session bound to the engine."""
         async with self._scope() as session:
             yield session
 
     async def _prepare_automap(self, conn: AsyncConnection) -> AutomapBase:
+        """Reflect the database and return an automapped base."""
         automap: AutomapBase = automap_base()
 
         def _prepare(sync_conn):
@@ -89,10 +105,12 @@ class CdmCsvLoader:
         return automap
 
     def _load_mapping(self, mapping_path: str) -> Dict[str, Any]:
+        """Load a JSON mapping file from disk."""
         with open(mapping_path, "r", encoding="utf-8") as f:
             return json.load(f)
 
     def _apply_filters(self, df: pd.DataFrame, filters: Optional[List[Dict[str, Any]]]):
+        """Apply optional row filters to a DataFrame prior to mapping."""
         if not filters:
             return df
         mask = pd.Series([True] * len(df), index=df.index)
@@ -110,6 +128,10 @@ class CdmCsvLoader:
         return result
 
     def _convert_value(self, sa_type: Any, value: Any) -> Any:
+        """Coerce a CSV value into an appropriate Python type for insert.
+
+        The conversion is guided by the SQLAlchemy column type.
+        """
         if pd.isna(value) or value == "":
             return None
         try:
@@ -134,12 +156,12 @@ class CdmCsvLoader:
     async def load(
         self, csv_path: str, mapping_path: str | None = None, chunk_size: int = 1000
     ) -> None:
-        """
-        Load a CSV into multiple OMOP tables based on a mapping file.
+        """Load a CSV into multiple OMOP tables based on a mapping file.
 
         Args:
             csv_path: Path to the input CSV file.
-            mapping_path: Path to the JSON mapping file.
+            mapping_path: Path to the JSON mapping file. Defaults to the
+                package's ``mapping.default.json`` when not provided.
             chunk_size: Batch size for INSERT statements.
         """
         # If mapping path is None, load mapping.default.json from the current directory
@@ -228,9 +250,9 @@ class CdmCsvLoader:
         Approach:
         - Build a mapping from person_source_value -> person_id from the person table.
         - For each table (except person) having a person_id column, run updates:
-          SET person_id = person.person_id WHERE CAST(person_id AS TEXT) = person_source_value.
-        - This is safe for SQLite (used in examples). For stricter RDBMS, ensure types
-          are compatible or adjust as needed.
+                    SET person_id = person.person_id WHERE CAST(person_id AS TEXT) = person_source_value.
+                - This is safe for SQLite (used in examples). For stricter RDBMS, ensure types
+                    are compatible or adjust as needed.
         """
         # Resolve person table from automap
         try:
@@ -279,10 +301,10 @@ class CdmCsvLoader:
         self, session: AsyncSession, automap: AutomapBase
     ) -> None:
         """
-        Update person.gender_concept_id from person.gender_source_value using static mapping:
-        - male (or 'm')   -> 8507
-        - female (or 'f') -> 8532
-        - anything else   -> 0 (unknown)
+            Update person.gender_concept_id from person.gender_source_value using static mapping:
+            - male (or 'm')   -> 8507
+            - female (or 'f') -> 8532
+            - anything else   -> 0 (unknown)
 
         Only updates rows where the computed value differs from the current value
         or where gender_concept_id is NULL.
@@ -333,8 +355,8 @@ class CdmCsvLoader:
         self, session: AsyncSession, automap: AutomapBase
     ) -> None:
         """
-        In the person table, replace 0 or NULL values in year_of_birth, month_of_birth,
-        and day_of_birth with values derived from birth_datetime.
+            In the person table, replace 0 or NULL values in year_of_birth, month_of_birth,
+            and day_of_birth with values derived from birth_datetime.
 
         This runs in Python for portability across backends.
         """
@@ -402,10 +424,10 @@ class CdmCsvLoader:
         mapping: Dict[str, Any],
     ) -> None:
         """
-        Based on the "concept" key in the mapping JSON, populate target *_concept_id columns
-        by looking up concept.concept_id using codes found in the specified source column.
+            Based on the "concept" key in the mapping JSON, populate target *_concept_id columns
+            by looking up concept.concept_id using codes found in the specified source column.
 
-        Rules:
+            Rules:
         - If the source value is a comma-separated string, use only the first element for lookup.
         - Find by equality on concept.concept_code.
         - Update the target column with the matching concept.concept_id.

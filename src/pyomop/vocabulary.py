@@ -1,3 +1,9 @@
+"""Vocabulary utilities for loading and querying OMOP vocab tables.
+
+Provides helpers to import vocabulary CSVs into the database and to look up
+concepts by id or code. Uses async SQLAlchemy sessions.
+"""
+
 import asyncio
 from contextlib import asynccontextmanager
 from datetime import date, datetime
@@ -15,6 +21,13 @@ from sqlalchemy.ext.automap import AutomapBase, automap_base
 
 
 class CdmVocabulary(object):
+    """Helpers for OMOP Vocabulary management and lookups.
+
+    Args:
+        cdm: An initialized ``CdmEngineFactory`` instance.
+        version: CDM version string ("cdm54" or "cdm6"). Defaults to "cdm54".
+    """
+
     def __init__(self, cdm, version="cdm54"):
         self._concept_id = 0
         self._concept_name = ""
@@ -30,26 +43,39 @@ class CdmVocabulary(object):
 
     @property
     def concept_id(self):
+        """Current concept_id for this helper (if set)."""
         return self._concept_id
 
     @property
     def concept_code(self):
+        """Current concept_code for this helper (if set)."""
         return self._concept_code
 
     @property
     def concept_name(self):
+        """Current concept_name for this helper (if set)."""
         return self._concept_name
 
     @property
     def vocabulary_id(self):
+        """Current vocabulary_id for this helper (if set)."""
         return self._vocabulary_id
 
     @property
     def domain_id(self):
+        """Current domain_id for this helper (if set)."""
         return self._domain_id
 
     @concept_id.setter
     def concept_id(self, concept_id):
+        """Set the active concept context by concept_id.
+
+        Side effects: populates concept name, domain, vocabulary, class, and code
+        on this helper instance for convenience.
+
+        Args:
+            concept_id: The concept_id to fetch and set.
+        """
         self._concept_id = concept_id
         _concept = asyncio.run(self.get_concept(concept_id))
         self._concept_name = _concept.concept_name
@@ -59,6 +85,14 @@ class CdmVocabulary(object):
         self._concept_code = _concept.concept_code
 
     async def get_concept(self, concept_id):
+        """Fetch a concept row by id.
+
+        Args:
+            concept_id: Concept identifier.
+
+        Returns:
+            The ORM Concept instance.
+        """
         if self._version == "cdm6":
             from .cdm6 import Concept
         else:
@@ -69,6 +103,15 @@ class CdmVocabulary(object):
         return _concept.scalar_one()
 
     async def get_concept_by_code(self, concept_code, vocabulary_id):
+        """Fetch a concept by code within a vocabulary.
+
+        Args:
+            concept_code: The vocabulary-specific code string.
+            vocabulary_id: Vocabulary identifier (e.g., 'SNOMED', 'LOINC').
+
+        Returns:
+            The ORM Concept instance.
+        """
         if self._version == "cdm6":
             from .cdm6 import Concept
         else:
@@ -83,6 +126,16 @@ class CdmVocabulary(object):
         return _concept.scalar_one()
 
     def set_concept(self, concept_code, vocabulary_id=None):
+        """Set the active concept context by code and vocabulary.
+
+        Args:
+            concept_code: The concept code string to resolve.
+            vocabulary_id: Vocabulary identifier. Required.
+
+        Notes:
+            On success, populates concept fields on this instance. On failure,
+            sets ``_vocabulary_id`` and ``_concept_id`` to 0.
+        """
         self._concept_code = concept_code
         try:
             if vocabulary_id is not None:
@@ -106,6 +159,16 @@ class CdmVocabulary(object):
             self._concept_id = 0
 
     async def create_vocab(self, folder, sample=None):
+        """Load vocabulary CSV files from a folder into the database.
+
+        This imports the standard OMOP vocab tables (drug_strength, concept,
+        concept_relationship, concept_ancestor, concept_synonym, vocabulary,
+        relationship, concept_class, domain).
+
+        Args:
+            folder: Path to the folder containing OMOP vocabulary CSVs.
+            sample: Optional number of rows to limit per file during import.
+        """
         try:
             df = pd.read_csv(
                 folder + "/DRUG_STRENGTH.csv",
@@ -190,10 +253,26 @@ class CdmVocabulary(object):
 
     @asynccontextmanager
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
+        """Yield an async session bound to the current engine.
+
+        Yields:
+            AsyncSession: An async SQLAlchemy session.
+        """
         async with self._scope() as session:
             yield session
 
     async def write_vocab(self, df, table, if_exists="replace", chunk_size=1000):
+        """Write a DataFrame to a vocabulary table with type-safe defaults.
+
+        Ensures required columns exist with reasonable defaults, coerces types,
+        and performs chunked inserts via SQLAlchemy core for performance.
+
+        Args:
+            df: Pandas DataFrame with data to insert.
+            table: Target table name (e.g., 'concept').
+            if_exists: Compatibility only. This method always inserts.
+            chunk_size: Number of rows per batch insert.
+        """
         async with self.get_session() as session:
             conn = await session.connection()
             automap: AutomapBase = automap_base()

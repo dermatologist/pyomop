@@ -1,8 +1,16 @@
-import click
+"""Command-line interface for pyomop.
+
+Provides commands to create CDM tables, load vocabulary CSVs, and import FHIR
+Bulk Export data into an OMOP database.
+"""
+
 import asyncio
-from . import CdmEngineFactory
-from . import CdmVocabulary
+
+import click
+
 from . import __version__
+from .engine_factory import CdmEngineFactory
+from .vocabulary import CdmVocabulary
 
 
 @click.command()
@@ -50,6 +58,21 @@ from . import __version__
     help="Input folder with FHIR bundles or ndjson files.",
 )
 def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path):
+    """pyomop CLI entrypoint.
+
+    Args:
+        version: CDM version ("cdm54" or "cdm6").
+        create: If True, (re)create CDM tables.
+        dbtype: Database type ("sqlite", "mysql", "pgsql").
+        host: Database host.
+        port: Database port.
+        user: Database user.
+        pw: Database password.
+        name: Database name or SQLite filename.
+        schema: Database schema (PostgreSQL).
+        vocab: Folder with vocabulary CSV files to import.
+        input_path: Folder with FHIR bundles or ndjson files to import.
+    """
     if create:
         click.echo(f"Creating CDM {version} tables in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
@@ -57,9 +80,11 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
         engine = cdm.engine
         if version == "cdm54":
             from .cdm54 import Base
+
             asyncio.run(cdm.init_models(Base.metadata))
         else:  # default cdm6
             from .cdm6 import Base
+
             asyncio.run(cdm.init_models(Base.metadata))
         click.echo("Done")
     if vocab != "":
@@ -71,11 +96,13 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
 
     if input_path:
         click.echo(f"Loading FHIR data from {input_path} into {dbtype} database {name}")
-        import fhiry.parallel as fp
         import json
         import sys
-        from pathlib import Path
         import tempfile
+        from pathlib import Path
+
+        import fhiry.parallel as fp
+
         from pyomop.loader import CdmCsvLoader
 
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
@@ -85,7 +112,7 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
         # read config file to config_json
         config = {"REMOVE": ["text.div", "meta"], "RENAME": {}}
         config_json = json.dumps(config)
-        config_file = None # TODO: Fix
+        config_file = None  # TODO: Fix
         if config_file:
             try:
                 with open(config_file, "r") as f:
@@ -109,13 +136,17 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
                 click.echo(f"Data written to temporary file: {temp_file.name}")
         # Load CSV into OMOP tables using mapping
         loader = CdmCsvLoader(cdm)
-        asyncio.run(loader.load(
-            csv_path=temp_file.name,
-            chunk_size=500,
-        ))
+        asyncio.run(
+            loader.load(
+                csv_path=temp_file.name,
+                chunk_size=500,
+            )
+        )
         click.echo("Done")
 
+
 def main_routine():
+    """Top-level runner used by ``python -m pyomop``."""
     click.echo("_________________________________________")
     click.echo("Pyomop v" + __version__ + " working:.....")
     cli()  # run the main function
