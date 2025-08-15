@@ -5,7 +5,7 @@ description = "OMOP CDM utils in Python"
 authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
 readme = "README.md"
 keywords = ['python']
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11,<4.0"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Healthcare Industry",
