@@ -17,7 +17,7 @@ Write a function vocabulary_lookup that populates columns ending with _concept_i
 ##
 
 Based on the concept key in mapping.example.json, implement the concept table lookup function.
-If source is an array, perform the lookup for the first element only.
+If source is a comma separated string value, perform the lookup for the first element only.
 Find the source field value in concept.concept_code
 Update the target field to concept.concept_id
 
