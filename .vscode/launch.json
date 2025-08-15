@@ -2,10 +2,31 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Pytest",
-            "type": "python",
+
+            "name": "Python Test Debugger",
+            "type": "debugpy",
             "request": "launch",
-            "module": "pytest"
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "purpose": ["debug-test"],
+            "module": "pytest",
+            "args": [
+                "-s",
+                "--verbose"
+            ],
+        },
+
+        {
+            "type": "debugpy",
+            "name": "Python: Debug Elixir",
+            "request": "launch",
+            "program": "server.py",
+            "justMyCode": true,
+            "env": {
+                "TEST": "TEST"
+            },
+            "console": "integratedTerminal",
+            "consoleName": "Python Debug Console"
         }
-    ]
+    ],
 }

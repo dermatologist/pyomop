@@ -1,3 +1,11 @@
+"""Predefined OMOP SQL snippets from the OHDSI Query Library.
+
+This module exposes a small dictionary of named SQL queries that can be used
+for demos, tests, or quick analytics over a CDM instance.
+
+Source: https://github.com/OHDSI/QueryLibrary/tree/master/inst/shinyApps/QueryLibrary/queries
+"""
+
 # https://github.com/OHDSI/QueryLibrary/tree/master/inst/shinyApps/QueryLibrary/queries
 
 # Test

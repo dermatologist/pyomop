@@ -1,15 +1,15 @@
-import sys
 import logging
+import sys
 
 _logger = logging.getLogger(__name__)
 from .engine_factory import CdmEngineFactory
-from .vocabulary import CdmVocabulary
+from .loader import CdmCsvLoader
 from .vector import CdmVector
-
+from .vocabulary import CdmVocabulary
 
 try:
-    from .llm_query import CdmLLMQuery
     from .llm_engine import CDMDatabase
+    from .llm_query import CdmLLMQuery
 except ImportError:
     _logger.warning(
         "WARNING: LLM is not installed. Please install extras with pip install pyomop[llm] to use LLM functions."

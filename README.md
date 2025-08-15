@@ -1,9 +1,11 @@
 # pyomop
 
-![Libraries.io SourceRank](https://img.shields.io/librariesio/sourcerank/pypi/pyomop)
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-[![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
-[![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
+[![Release](https://img.shields.io/github/v/release/dermatologist/pyomop)](https://img.shields.io/github/v/release/dermatologist/pyomop)
+[![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/pyomop/pytest.yml?branch=develop)](https://github.com/dermatologist/pyomop/actions/workflows/pytest.yml?query=branch%3Adevelop)
+[![codecov](https://codecov.io/gh/dermatologist/pyomop/branch/develop/graph/badge.svg)](https://codecov.io/gh/dermatologist/pyomop)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/dermatologist/pyomop)](https://img.shields.io/github/commit-activity/m/dermatologist/pyomop)
+[![License](https://img.shields.io/github/license/dermatologist/pyomop)](https://img.shields.io/github/license/dermatologist/pyomop)
+[![Downloads](https://img.shields.io/pypi/dm/pyomop)](https://pypi.org/project/pyomop)
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/pyomop/)
 
 ## ✨ Overview
@@ -115,6 +117,25 @@ async def main():
 asyncio.run(main())
 ```
 
+
+## 🔥 FHIR to OMOP mapping
+
+pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
+
+- Sample datasets: https://github.com/smart-on-fhir/sample-bulk-fhir-datasets
+- Remove any non-FHIR files (for example, `log.ndjson`) from the input folder.
+- Download OMOP vocabulary CSV files (for example from OHDSI Athena) and place them in a folder.
+
+Run:
+
+```bash
+pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
+```
+
+This will create an OMOP CDM in SQLite, load the vocabulary files, and import the FHIR data from the input folder and reconcile vocabulary, mapping source_value to concept_id. The mapping is defined in the `mapping.example.json` file. The default mapping is [here](src/pyomop/mapping.default.json). Mapping happens in 5 steps as implemented [here](src/pyomop/loader.py).
+
+* FHIR to data frame mapping is done with [FHIRy](https://github.com/dermatologist/fhiry)
+* Most of the code for this functionality was written by an LLM agent. The prompts used are [here](notes/prompt.md)
 
 ### Command-line
 
