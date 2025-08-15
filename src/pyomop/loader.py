@@ -14,6 +14,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    and_,
     cast,
     insert,
     or_,
@@ -195,7 +196,7 @@ class CdmCsvLoader:
             # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
             await self.backfill_person_birth_fields(session, automap)
 
-            # Step 4: Apply concept lookups defined in mapping["concept"]
+            # Step 4: Apply concept mappings defined in the JSON mapping
             await self.apply_concept_mappings(session, automap, mapping)
 
             await session.commit()
@@ -324,120 +325,122 @@ class CdmCsvLoader:
                 await session.execute(stmt)
 
     async def apply_concept_mappings(
-        self, session: AsyncSession, automap: AutomapBase, mapping: Dict[str, Any]
+        self,
+        session: AsyncSession,
+        automap: AutomapBase,
+        mapping: Dict[str, Any],
     ) -> None:
         """
-        Based on mapping["concept"], update target *_concept_id fields by looking up
-        concept.concept_id where concept.concept_code equals the source field value.
-        If the source is an array-like string, only the first element is used.
+        Based on the "concept" key in the mapping JSON, populate target *_concept_id columns
+        by looking up concept.concept_id using codes found in the specified source column.
+
+        Rules:
+        - If the source value is a comma-separated string, use only the first element for lookup.
+        - Find by equality on concept.concept_code.
+        - Update the target column with the matching concept.concept_id.
         """
-        # Get vocabulary concept table
+        if not mapping or "concept" not in mapping:
+            return
+
+        # Resolve concept table
         try:
             concept_cls = getattr(automap.classes, "concept")
         except AttributeError:
             return
+
         concept_table = concept_cls.__table__
 
-        concept_entries = mapping.get("concept") or []
-        if not concept_entries:
-            return
+        # Simple in-memory cache to avoid repeated lookups
+        code_to_cid: Dict[str, Optional[int]] = {}
 
-        def first_code(val: Any) -> Optional[str]:
-            if val is None:
-                return None
-            if isinstance(val, (list, tuple)):
-                return None if not val else str(val[0]).strip()
-            if isinstance(val, str):
-                s = val.strip()
-                if not s:
-                    return None
-                # JSON array encoded as string
-                if s.startswith("[") and s.endswith("]"):
-                    try:
-                        arr = json.loads(s)
-                        if isinstance(arr, list) and arr:
-                            return str(arr[0]).strip()
-                    except Exception:
-                        pass
-                # Delimited list: try | then ,
-                for sep in ("|", ","):
-                    if sep in s:
-                        return s.split(sep)[0].strip()
-                return s
-            return str(val)
+        async def lookup_concept_id(code: str) -> Optional[int]:
+            if code in code_to_cid:
+                return code_to_cid[code]
+            res = await session.execute(
+                select(concept_table.c.concept_id).where(
+                    concept_table.c.concept_code == code
+                )
+            )
+            row = res.first()
+            cid = int(row[0]) if row and row[0] is not None else None
+            code_to_cid[code] = cid
+            return cid
 
-        for entry in concept_entries:
-            table_name = entry.get("table")
-            mappings = entry.get("mappings") or []
-            if not table_name or not mappings:
+        for item in mapping.get("concept", []):
+            table_name = item.get("table")
+            if not table_name:
                 continue
             try:
-                tbl_cls = getattr(automap.classes, table_name)
+                mapper = getattr(automap.classes, table_name)
             except AttributeError:
+                # Target table not found; skip
                 continue
-            table = tbl_cls.__table__
 
-            for m in mappings:
-                src_col_name = m.get("source")
-                tgt_col_name = m.get("target")
-                if not src_col_name or not tgt_col_name:
+            table = mapper.__table__
+            pk_cols = list(table.primary_key.columns)
+            if not pk_cols:
+                # Cannot safely update without a primary key
+                continue
+
+            for m in item.get("mappings", []):
+                source_col = m.get("source")
+                target_col = m.get("target")
+                if not source_col or not target_col:
                     continue
-                if src_col_name not in table.c or tgt_col_name not in table.c:
+                if source_col not in table.c or target_col not in table.c:
                     continue
 
-                src_col = table.c[src_col_name]
-                tgt_col = table.c[tgt_col_name]
-
-                # Get distinct source values needing mapping
+                # Fetch candidate rows: target is NULL or 0, and source is not NULL/empty
                 res = await session.execute(
-                    select(src_col)
-                    .where(src_col.isnot(None), or_(tgt_col.is_(None), tgt_col == 0))
-                    .distinct()
-                )
-                raw_values = [r[0] for r in res.fetchall() if r[0] is not None]
-                # Example raw values: ["['5803-2']", "['8867-4']", "['5794-3']", "['74006-8']", "['10834-0']", "['1191']", "['442571000124108']", "['102263004']"]
-                # Transform this into ['5803-2', '8867-4','5794-3', '10834-0', '1191', '442571000124108', '102263004']
-                _raw_values = []
-                for rv in raw_values:
-                    # remove [ ' ' ]
-                    rv = rv.strip("[]'\"")
-                    _raw_values.append(rv)
-
-                if not _raw_values:
-                    continue
-
-                # Compute first codes and list unique
-                raw_to_first: Dict[str, Optional[str]] = {}
-                first_list: List[str] = []
-                for rv in _raw_values:
-                    fc = first_code(rv)
-                    raw_to_first[str(rv)] = fc
-                    if fc:
-                        first_list.append(fc)
-                if not first_list:
-                    continue
-
-                # Lookup concept ids for these codes
-                cres = await session.execute(
                     select(
-                        concept_table.c.concept_code,
-                        concept_table.c.concept_id,
-                        concept_table.c.standard_concept,
-                    ).where(concept_table.c.concept_code.in_(list(set(first_list))))
+                        *pk_cols,
+                        table.c[source_col].label("_src"),
+                        table.c[target_col].label("_tgt"),
+                    ).where(
+                        or_(
+                            table.c[target_col].is_(None),
+                            table.c[target_col] == 0,
+                        ),
+                        table.c[source_col].isnot(None),
+                    )
                 )
-                rows = cres.fetchall()
+
+                rows = res.fetchall()
                 if not rows:
                     continue
 
                 for row in rows:
-                    (_source, dest, _) = row
-                    source = f"['{_source}']"
-                    print(f"Source: {source}, Dest: {dest}")
-                    # update table's tgt_col with dest where src_col = source
-                    stmt = (
-                        update(table)
-                        .where(src_col == source)
-                        .values({tgt_col_name: dest})
+                    # row is a tuple: (*pk_vals, _src, _tgt)
+                    pk_vals = row[: len(pk_cols)]
+                    src_val = row[len(pk_cols)]
+
+                    # Only care about non-empty strings; if comma-separated, take first element
+                    code: Optional[str] = None
+                    if isinstance(src_val, str):
+                        # Split on comma and strip whitespace
+                        first = src_val.split(",")[0].strip()
+                        code = first if first else None
+                    elif isinstance(src_val, list) and src_val:
+                        # If a list somehow made it into the DB, use first element's string
+                        code = str(src_val[0])
+                    else:
+                        # Fallback to simple string conversion if it's a scalar
+                        code = str(src_val) if src_val is not None else None
+
+                    if not code:
+                        continue
+
+                    cid = await lookup_concept_id(code)
+                    if cid is None:
+                        continue
+
+                    # Build WHERE with PK columns
+                    where_clause = and_(
+                        *[
+                            (pk_col == pk_val)
+                            for pk_col, pk_val in zip(pk_cols, pk_vals)
+                        ]
                     )
-                    print(f"Executing: {stmt}")
+
+                    stmt = update(table).where(where_clause).values({target_col: cid})
                     await session.execute(stmt)
