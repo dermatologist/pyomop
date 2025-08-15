@@ -24,6 +24,7 @@ from sqlalchemy import (
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
+    AsyncConnection,
     async_scoped_session,
     async_sessionmaker,
 )
@@ -73,7 +74,8 @@ class CdmCsvLoader:
         async with self._scope() as session:
             yield session
 
-    async def _prepare_automap(self, conn: Connection) -> AutomapBase:
+    async def _prepare_automap(self, conn: AsyncConnection) -> AutomapBase:
+        automap: AutomapBase = automap_base()
         automap: AutomapBase = automap_base()
 
         def _prepare(sync_conn):
