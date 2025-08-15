@@ -1,22 +1,24 @@
-[build-system]
-requires = ["setuptools>=77.0.0", "wheel", "pip"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "pyomop"
+dynamic = ["version"]
 description = "OMOP CDM utils in Python"
-license = "GPL-3.0"
+authors = [{ name = "Bell Eapen", email = "github_public@gulfdoctor.net" }]
+readme = "README.md"
+keywords = ['python']
+requires-python = ">=3.10,<4.0"
 classifiers = [
-    "Intended Audience :: Science/Research",
     "Development Status :: 4 - Beta",
-    "Operating System :: OS Independent",
+    "Intended Audience :: Healthcare Industry",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+    "Operating System :: OS Independent",
 ]
-requires-python = ">=3.11, <3.12"
 dependencies = [
-    "importlib-metadata; python_version<\"3.8\"",
     "sqlalchemy>=1.4",
     "click",
     "pandas",
@@ -25,20 +27,54 @@ dependencies = [
     "requests",
     "greenlet"
 ]
-dynamic = ["version"]
 
-[[project.authors]]
-name = "Bell Eapen"
-email = "github@gulfdoctor.net"
-
-
-[project.readme]
-file = "README.md"
-content-type = "text/markdown; charset=UTF-8"
 
 [project.urls]
-Homepage = "https://github.com/dermatologist/pyomop"
+Homepage = "https://dermatologist.github.io/pyomop/"
+Repository = "https://github.com/dermatologist/pyomop"
 Documentation = "https://dermatologist.github.io/pyomop/"
+
+[dependency-groups]
+dev = [
+    "pytest>=7.2.0",
+    "pre-commit>=2.20.0",
+    "tox-uv>=1.11.3",
+    "deptry>=0.23.0",
+    "mypy>=0.991",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.11.5",
+    "mkdocs>=1.4.2",
+    "mkdocs-material>=8.5.10",
+    "mkdocstrings[python]>=0.26.1",
+]
+
+[build-system]
+requires = ["hatchling", "uv-dynamic-versioning"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "uv-dynamic-versioning"
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
+
+[tool.uv-dynamic-versioning]
+fallback-version = "0.1.0"
+
+[tool.uv.build-backend]
+source-exclude = [
+  "tests/*",
+  "examples/*",
+  "docs/*",
+  "notes/*",
+  "notebooks/*"
+]
+
+[project.scripts]
+pyomop = "pyomop.main:main_routine"
 
 [project.optional-dependencies]
 llm = [
@@ -52,65 +88,83 @@ llm = [
     "llama-index-llms-google-genai",
     "llama-index-llms-langchain",
 ]
-testing = ["setuptools", "pytest", "pytest-cov"]
-dev = [
-    "setuptools>=77.0.0",
-    "packaging>=24.2",
-    "llama-index-llms-langchain",
-    "setuptools_scm",
-    "pytest",
-    "pytest-cov",
-    "tox",
-    "black",
-    "recommonmark",
-    "sphinx",
-    "wheel",
-    "twine",
-    "build",
-]
 
-[project.scripts]
-pyomop = "pyomop.main:main_routine"
+[tool.hatch.build.targets.wheel]
+packages = ["src/pyomop"]
 
-[tool.setuptools]
-zip-safe = false
-include-package-data = true
-platforms = ["any"]
-
-[tool.test]
-extras = "True"
-
-[tool.aliases]
-dists = "bdist_wheel"
-
-[tool.flake8]
-exclude = "\n.tox\nbuild\ndist\n.eggs\ndocs/conf.py"
-
-[tool.pyscaffold]
-version = "4.0.2"
-package = "pyomop"
-extensions = "\ntravis\ntox\nmarkdown"
-
-[tool.setuptools.package-dir]
-"" = "src"
+[tool.mypy]
+files = ["src"]
+disallow_untyped_defs = true
+disallow_any_unimported = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+show_error_codes = true
 
 [tool.pytest.ini_options]
-addopts = "\n--verbose"
+addopts = """
+--cov pyomop --cov-report term-missing
+--verbose
+"""
 norecursedirs = ["dist", "build", ".tox"]
 testpaths = ["tests"]
 
-[tool.distutils.bdist_wheel]
-universal = 0
+[tool.ruff]
+target-version = "py310"
+line-length = 120
+fix = true
 
-[tool.distutils.build_sphinx]
-source-dir = "docs"
-build-dir = "build/sphinx"
+[tool.ruff.lint]
+select = [
+    # flake8-2020
+    "YTT",
+    # flake8-bandit
+    "S",
+    # flake8-bugbear
+    "B",
+    # flake8-builtins
+    "A",
+    # flake8-comprehensions
+    "C4",
+    # flake8-debugger
+    "T10",
+    # flake8-simplify
+    "SIM",
+    # isort
+    "I",
+    # mccabe
+    "C90",
+    # pycodestyle
+    "E", "W",
+    # pyflakes
+    "F",
+    # pygrep-hooks
+    "PGH",
+    # pyupgrade
+    "UP",
+    # ruff
+    "RUF",
+    # tryceratops
+    "TRY",
+]
+ignore = [
+    # LineTooLong
+    "E501",
+    # DoNotAssignLambda
+    "E731",
+]
 
-[tool.devpi.upload]
-no-vcs = "1"
-formats = "bdist_wheel"
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
 
-[tool.setuptools.packages.find]
-where = ["src"]
-exclude = ["tests", "notes", "docs", "examples", "notebooks"]
-namespaces = true
+[tool.ruff.format]
+preview = true
+
+[tool.coverage.report]
+skip_empty = true
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+

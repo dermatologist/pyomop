@@ -1,0 +1,59 @@
+site_name: pyomop
+repo_url: https://github.com/dermatologist/pyomop
+site_url: https://dermatologist.github.io/pyomop
+site_description: OMOP CDM utils in Python
+site_author: Bell Eapen
+edit_uri: edit/main/docs/
+repo_name: dermatologist/pyomop
+copyright: Maintained by <a href="https://github.com/dermatologist">dermatologist</a>.
+
+nav:
+  - Home: index.md
+  - Modules: modules.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["src/pyomop"]
+theme:
+  name: material
+  feature:
+    tabs: true
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/dermatologist/pyomop
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/pyomop
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/beapen
+    - icon: fontawesome/solid/home
+      link: https://nuchange.ca
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.snippets

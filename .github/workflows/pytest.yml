@@ -10,6 +10,7 @@ on:
     branches:
       - master
       - develop
+      - main
 
 jobs:
   build:
@@ -23,17 +24,21 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install uv
-      uses: astral-sh/setup-uv@v6
-      with:
-        enable-cache: true
-    - name: "Set up Python"
-      uses: actions/setup-python@v5
-      with:
-          python-version-file: "pyproject.toml"
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras --dev
+
+    - name: Set up the environment
+      uses: ./.github/actions/setup-python-env
 
     - name: Run tests
-      run: uv run pytest tests
+      run: uv run python -m pytest tests --cov --cov-config=pyproject.toml --cov-report=xml
+
+  check-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up the environment
+        uses: ./.github/actions/setup-python-env
+
+      - name: Check if documentation can be built
+        run: uv run mkdocs build -s

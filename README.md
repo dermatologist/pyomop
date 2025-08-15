@@ -1,9 +1,11 @@
 # pyomop
 
-![Libraries.io SourceRank](https://img.shields.io/librariesio/sourcerank/pypi/pyomop)
-[![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
-[![PyPI download total](https://img.shields.io/pypi/dm/pyomop.svg)](https://pypi.python.org/pypi/pyomop/)
-[![Build](https://github.com/dermatologist/pyomop/workflows/Python%20Test/badge.svg)](https://nuchange.ca)
+[![Release](https://img.shields.io/github/v/release/dermatologist/pyomop)](https://img.shields.io/github/v/release/dermatologist/pyomop)
+[![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/pyomop/pytest.yml?branch=develop)](https://github.com/dermatologist/pyomop/actions/workflows/pytest.yml?query=branch%3Adevelop)
+[![codecov](https://codecov.io/gh/dermatologist/pyomop/branch/develop/graph/badge.svg)](https://codecov.io/gh/dermatologist/pyomop)
+[![Commit activity](https://img.shields.io/github/commit-activity/m/dermatologist/pyomop)](https://img.shields.io/github/commit-activity/m/dermatologist/pyomop)
+[![License](https://img.shields.io/github/license/dermatologist/pyomop)](https://img.shields.io/github/license/dermatologist/pyomop)
+[![Downloads](https://img.shields.io/pypi/dm/pyomop)](https://pypi.org/project/pyomop)
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/pyomop/)
 
 ## ✨ Overview
