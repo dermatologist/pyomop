@@ -23,6 +23,10 @@ Update the target field to concept.concept_id
 
 ##
 
+add a function for updating gender_concept_id column in person table according to static values as below.
+the standard concept IDs for person gender are 8507 for male and 8532 for female and 0 for unknown.
+
+###
 loader.py
 Checked loader.py, 9 problems found
 
