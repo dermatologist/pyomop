@@ -1,6 +1,5 @@
 import asyncio
 import json
-from ast import stmt
 from contextlib import asynccontextmanager
 from datetime import date, datetime
 from decimal import Decimal
@@ -22,7 +21,6 @@ from sqlalchemy import (
     select,
     update,
 )
-from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     AsyncConnection,
@@ -76,7 +74,6 @@ class CdmCsvLoader:
             yield session
 
     async def _prepare_automap(self, conn: AsyncConnection) -> AutomapBase:
-        automap: AutomapBase = automap_base()
         automap: AutomapBase = automap_base()
 
         def _prepare(sync_conn):
