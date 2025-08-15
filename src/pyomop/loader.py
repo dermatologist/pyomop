@@ -208,11 +208,11 @@ class CdmCsvLoader:
             logger.info("Backfilling person birth fields")
             await self.backfill_person_birth_fields(session, automap)
 
-            # Step 3b: Set gender_concept_id from gender_source_value using standard IDs
+            # Step 4: Set gender_concept_id from gender_source_value using standard IDs
             logger.info("Setting person.gender_concept_id from gender_source_value")
             await self.update_person_gender_concept_id(session, automap)
 
-            # Step 4: Apply concept mappings defined in the JSON mapping
+            # Step 5: Apply concept mappings defined in the JSON mapping
             logger.info("Applying concept mappings")
             await self.apply_concept_mappings(session, automap, mapping)
 

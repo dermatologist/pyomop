@@ -132,7 +132,10 @@ Run:
 pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
 ```
 
-This will create an OMOP CDM in SQLite, load the vocabulary files, and import the FHIR data from the input folder and reconcile vocabulary mapping source_value to concept_id.
+This will create an OMOP CDM in SQLite, load the vocabulary files, and import the FHIR data from the input folder and reconcile vocabulary, mapping source_value to concept_id. The mapping is defined in the `mapping.example.json` file. The default mapping is [here](src/pyomop/mapping.default.json). Mapping happens in 5 steps as implemented [here](src/pyomop/loader.py).
+
+* FHIR to data frame mapping is done with [FHIRy](https://github.com/dermatologist/fhiry)
+* Most of the code for this functionality was written by an LLM agent. The prompts used are [here](notes/prompt.md)
 
 ### Command-line
 
