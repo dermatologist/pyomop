@@ -29,6 +29,10 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.ext.automap import AutomapBase, automap_base
 
+# setup logging
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class CdmCsvLoader:
     """
@@ -137,6 +141,7 @@ class CdmCsvLoader:
             chunk_size: Batch size for INSERT statements.
         """
         # If mapping path is None, load mapping.default.json from the current directory
+        logger.info(f"Loading CSV data from {csv_path}")
         if mapping_path is None:
             mapping_path = str(Path(__file__).parent / "mapping.default.json")
         mapping = self._load_mapping(mapping_path)
@@ -194,12 +199,15 @@ class CdmCsvLoader:
                     await session.execute(stmt, batch)
 
             # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
+            logger.info("Normalizing person_id foreign keys")
             await self.fix_person_id(session, automap)
 
             # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
+            logger.info("Backfilling person birth fields")
             await self.backfill_person_birth_fields(session, automap)
 
             # Step 4: Apply concept mappings defined in the JSON mapping
+            logger.info("Applying concept mappings")
             await self.apply_concept_mappings(session, automap, mapping)
 
             await session.commit()

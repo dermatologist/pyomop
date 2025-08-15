@@ -51,6 +51,7 @@ from . import __version__
 )
 def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path):
     if create:
+        click.echo(f"Creating CDM {version} tables in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
         # initialize default engine
         engine = cdm.engine
@@ -60,13 +61,16 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
         else:  # default cdm6
             from .cdm6 import Base
             asyncio.run(cdm.init_models(Base.metadata))
+        click.echo("Done")
     if vocab != "":
+        click.echo(f"Creating CDM {version} vocabulary in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
         _vocab = CdmVocabulary(cdm)
         asyncio.run(_vocab.create_vocab(vocab))
-        print("Done")
+        click.echo("Done")
 
     if input_path:
+        click.echo(f"Loading FHIR data from {input_path} into {dbtype} database {name}")
         import fhiry.parallel as fp
         import json
         import sys
@@ -109,6 +113,7 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
             csv_path=temp_file.name,
             chunk_size=500,
         ))
+        click.echo("Done")
 
 def main_routine():
     click.echo("_________________________________________")
