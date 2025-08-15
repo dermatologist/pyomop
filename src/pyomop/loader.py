@@ -1,10 +1,13 @@
 import asyncio
 import json
+
+# setup logging
+import logging
 from contextlib import asynccontextmanager
 from datetime import date, datetime
 from decimal import Decimal
-from typing import Any, AsyncGenerator, Dict, List, Optional
 from pathlib import Path
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
 import pandas as pd
 from sqlalchemy import (
@@ -22,17 +25,16 @@ from sqlalchemy import (
     update,
 )
 from sqlalchemy.ext.asyncio import (
-    AsyncSession,
     AsyncConnection,
+    AsyncSession,
     async_scoped_session,
     async_sessionmaker,
 )
 from sqlalchemy.ext.automap import AutomapBase, automap_base
 
-# setup logging
-import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class CdmCsvLoader:
     """
@@ -206,6 +208,10 @@ class CdmCsvLoader:
             logger.info("Backfilling person birth fields")
             await self.backfill_person_birth_fields(session, automap)
 
+            # Step 3b: Set gender_concept_id from gender_source_value using standard IDs
+            logger.info("Setting person.gender_concept_id from gender_source_value")
+            await self.update_person_gender_concept_id(session, automap)
+
             # Step 4: Apply concept mappings defined in the JSON mapping
             logger.info("Applying concept mappings")
             await self.apply_concept_mappings(session, automap, mapping)
@@ -268,6 +274,60 @@ class CdmCsvLoader:
                     .values(person_id=pid)
                 )
                 await session.execute(stmt)
+
+    async def update_person_gender_concept_id(
+        self, session: AsyncSession, automap: AutomapBase
+    ) -> None:
+        """
+        Update person.gender_concept_id from person.gender_source_value using static mapping:
+        - male (or 'm')   -> 8507
+        - female (or 'f') -> 8532
+        - anything else   -> 0 (unknown)
+
+        Only updates rows where the computed value differs from the current value
+        or where gender_concept_id is NULL.
+        """
+        try:
+            person_cls = getattr(automap.classes, "person")
+        except AttributeError:
+            return
+
+        person_table = person_cls.__table__
+
+        # Fetch rows to evaluate. We consider all rows with a non-null gender_source_value
+        res = await session.execute(
+            select(
+                person_table.c.person_id,
+                person_table.c.gender_source_value,
+                person_table.c.gender_concept_id,
+            ).where(person_table.c.gender_source_value.isnot(None))
+        )
+
+        rows = res.fetchall()
+        if not rows:
+            return
+
+        def map_gender(val: str | None) -> int:
+            if val is None:
+                return 0
+            s = str(val).strip().lower()
+            if s in {"male", "m"}:
+                return 8507
+            if s in {"female", "f"}:
+                return 8532
+            return 0
+
+        for pid, gsrc, gcid in rows:
+            target = map_gender(gsrc)
+            # Skip if already correct
+            if gcid == target:
+                continue
+            stmt = (
+                update(person_table)
+                .where(person_table.c.person_id == pid)
+                .values(gender_concept_id=target)
+            )
+            await session.execute(stmt)
 
     async def backfill_person_birth_fields(
         self, session: AsyncSession, automap: AutomapBase
