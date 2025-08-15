@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, AsyncGenerator, Dict, List, Optional
+from pathlib import Path
 
 import pandas as pd
 from sqlalchemy import (
@@ -128,7 +129,7 @@ class CdmCsvLoader:
         return value
 
     async def load(
-        self, csv_path: str, mapping_path: str, chunk_size: int = 1000
+        self, csv_path: str, mapping_path: str | None = None, chunk_size: int = 1000
     ) -> None:
         """
         Load a CSV into multiple OMOP tables based on a mapping file.
@@ -138,6 +139,9 @@ class CdmCsvLoader:
             mapping_path: Path to the JSON mapping file.
             chunk_size: Batch size for INSERT statements.
         """
+        # If mapping path is None, load mapping.default.json from the current directory
+        if mapping_path is None:
+            mapping_path = str(Path(__file__).parent / "mapping.default.json")
         mapping = self._load_mapping(mapping_path)
         df = pd.read_csv(csv_path)
 
