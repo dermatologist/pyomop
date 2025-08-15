@@ -25,7 +25,8 @@ dependencies = [
     "aiosqlite",
     "asyncpg",
     "requests",
-    "greenlet"
+    "greenlet",
+    "fhiry"
 ]
 
 
