@@ -27,6 +27,7 @@ async def main():
     # Load CSV into OMOP tables using mapping
     await loader.load(
         csv_path="tests/fhir_export.csv",
+        # mapping_path="tests/mapping.example.json",
         chunk_size=500,
     )
 
