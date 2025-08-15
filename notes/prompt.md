@@ -27,6 +27,15 @@ add a function for updating gender_concept_id column in person table according t
 the standard concept IDs for person gender are 8507 for male and 8532 for female and 0 for unknown.
 
 ###
+
+Update the README to include support for FHIR to OMOP mapping.
+The user can download the sample FHIR bulk export datasets from [here](https://github.com/smart-on-fhir/sample-bulk-fhir-datasets).
+Remind to delete any non FHIR data such as log.ndjson.
+Remind to download vocabulary files.
+The command is of the form  pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
+This will create a OMOP CDM using SQLite, load vocabulary files, and import FHIR data.
+
+###
 loader.py
 Checked loader.py, 9 problems found
 

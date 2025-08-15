@@ -118,6 +118,22 @@ asyncio.run(main())
 ```
 
 
+## 🔥 FHIR to OMOP mapping
+
+pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
+
+- Sample datasets: https://github.com/smart-on-fhir/sample-bulk-fhir-datasets
+- Remove any non-FHIR files (for example, `log.ndjson`) from the input folder.
+- Download OMOP vocabulary CSV files (for example from OHDSI Athena) and place them in a folder.
+
+Run:
+
+```bash
+pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
+```
+
+This will create an OMOP CDM in SQLite, load the vocabulary files, and import the FHIR data from the input folder and reconcile vocabulary mapping source_value to concept_id.
+
 ### Command-line
 
 ```
