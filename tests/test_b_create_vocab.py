@@ -22,5 +22,5 @@ def create_vocab_cdm6(pyomop_fixture, engine):
     from src.pyomop import CdmVocabulary
 
     vocab = CdmVocabulary(pyomop_fixture, version="cdm6")
-    vocab.create_vocab("tests", 10)
+    asyncio.run(vocab.create_vocab("tests", 10))
     print("Done")

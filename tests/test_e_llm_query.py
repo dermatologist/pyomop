@@ -13,7 +13,7 @@ def test_create_cohort_cdm54(pyomop_fixture, cdm54_metadata_fixture, capsys):
 
 async def create_llm_query(pyomop_fixture, engine):
     from src.pyomop.cdm54 import Cohort
-    from src.pyomop import CdmLLMQuery
+    from src.pyomop.llm_query import CdmLLMQuery
     from langchain_core.language_models.fake import FakeListLLM
     from src.pyomop.llm_engine import CDMDatabase
 
