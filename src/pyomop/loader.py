@@ -430,7 +430,8 @@ class CdmCsvLoader:
                     continue
 
                 for row in rows:
-                    (source, dest, _) = row
+                    (_source, dest, _) = row
+                    source = f"['{_source}']"
                     print(f"Source: {source}, Dest: {dest}")
                     # update table's tgt_col with dest where src_col = source
                     stmt = (
