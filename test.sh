@@ -1,1 +1,0 @@
-pytest -s --cov --color=yes --verbose
