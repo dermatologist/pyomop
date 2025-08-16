@@ -5,19 +5,23 @@ concepts by id or code. Uses async SQLAlchemy sessions.
 """
 
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 from datetime import date, datetime
 from typing import AsyncGenerator
 
 import numpy as np
 import pandas as pd
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, text
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
     async_sessionmaker,
 )
 from sqlalchemy.ext.automap import AutomapBase, automap_base
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class CdmVocabulary(object):
@@ -170,86 +174,105 @@ class CdmVocabulary(object):
             sample: Optional number of rows to limit per file during import.
         """
         try:
+            # Parents first (for concept FKs): DOMAIN, CONCEPT_CLASS
             df = pd.read_csv(
-                folder + "/DRUG_STRENGTH.csv",
+                folder + "/DOMAIN.csv",
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
-            # convert valid_start_date and valid_end_date to datetime
-            df["valid_start_date"] = pd.to_datetime(
-                df["valid_start_date"], errors="coerce"
-            )
-            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
-            await self.write_vocab(df, "drug_strength", "replace")
-            # df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
-            df = pd.read_csv(
-                folder + "/CONCEPT.csv", sep="\t", nrows=sample, on_bad_lines="skip"
-            )
-            # convert valid_start_date and valid_end_date to datetime
-            df["valid_start_date"] = pd.to_datetime(
-                df["valid_start_date"], errors="coerce"
-            )
-            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
-            await self.write_vocab(df, "concept", "replace")
-            # df.to_sql('concept', con=self._engine, if_exists = 'replace')
-            df = pd.read_csv(
-                folder + "/CONCEPT_RELATIONSHIP.csv",
-                sep="\t",
-                nrows=sample,
-                on_bad_lines="skip",
-            )
-            # convert valid_start_date and valid_end_date to datetime
-            df["valid_start_date"] = pd.to_datetime(
-                df["valid_start_date"], errors="coerce"
-            )
-            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
-            await self.write_vocab(df, "concept_relationship", "replace")
-            # df.to_sql('concept_relationship', con=self._engine, if_exists = 'replace')
-            df = pd.read_csv(
-                folder + "/CONCEPT_ANCESTOR.csv",
-                sep="\t",
-                nrows=sample,
-                on_bad_lines="skip",
-            )
-            await self.write_vocab(df, "concept_ancestor", "replace")
-            # df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
-            df = pd.read_csv(
-                folder + "/CONCEPT_SYNONYM.csv",
-                sep="\t",
-                nrows=sample,
-                on_bad_lines="skip",
-            )
-            await self.write_vocab(df, "concept_synonym", "replace")
-            # df.to_sql('concept_synonym', con=self._engine, if_exists = 'replace')
-            df = pd.read_csv(
-                folder + "/VOCABULARY.csv", sep="\t", nrows=sample, on_bad_lines="skip"
-            )
-            await self.write_vocab(df, "vocabulary", "replace")
-            # df.to_sql('vocabulary', con=self._engine, if_exists = 'replace')
-            df = pd.read_csv(
-                folder + "/RELATIONSHIP.csv",
-                sep="\t",
-                nrows=sample,
-                on_bad_lines="skip",
-            )
-            await self.write_vocab(df, "relationship", "replace")
-            # df.to_sql('relationship', con=self._engine, if_exists = 'replace')
+            await self.write_vocab(df, "domain", "replace")
+
             df = pd.read_csv(
                 folder + "/CONCEPT_CLASS.csv",
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "concept_class", "replace")
-            # df.to_sql('concept_class', con=self._engine, if_exists = 'replace')
+
+            # Then CONCEPT (uses domain_id and concept_class_id)
             df = pd.read_csv(
-                folder + "/DOMAIN.csv", sep="\t", nrows=sample, on_bad_lines="skip"
+                folder + "/CONCEPT.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
             )
-            await self.write_vocab(df, "domain", "replace")
-            # df.to_sql('domain', con=self._engine, if_exists = 'replace')
+            df["valid_start_date"] = pd.to_datetime(
+                df["valid_start_date"], errors="coerce"
+            )
+            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
+            await self.write_vocab(df, "concept", "replace")
+
+            # Then VOCABULARY (uses vocabulary_concept_id -> concept)
+            df = pd.read_csv(
+                folder + "/VOCABULARY.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
+            )
+            await self.write_vocab(df, "vocabulary", "replace")
+
+            # Relationship depends on concept for relationship_concept_id
+            df = pd.read_csv(
+                folder + "/RELATIONSHIP.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
+            )
+            await self.write_vocab(df, "relationship", "replace")
+
+            # Post-concept tables
+            df = pd.read_csv(
+                folder + "/CONCEPT_RELATIONSHIP.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
+            )
+            df["valid_start_date"] = pd.to_datetime(
+                df["valid_start_date"], errors="coerce"
+            )
+            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
+            await self.write_vocab(df, "concept_relationship", "replace")
+
+            df = pd.read_csv(
+                folder + "/CONCEPT_SYNONYM.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
+            )
+            await self.write_vocab(df, "concept_synonym", "replace")
+
+            df = pd.read_csv(
+                folder + "/DRUG_STRENGTH.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
+            )
+            df["valid_start_date"] = pd.to_datetime(
+                df["valid_start_date"], errors="coerce"
+            )
+            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
+            await self.write_vocab(df, "drug_strength", "replace")
+
+            df = pd.read_csv(
+                folder + "/CONCEPT_ANCESTOR.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
+            )
+            await self.write_vocab(df, "concept_ancestor", "replace")
         except Exception as e:
-            print(f"An error occurred while creating the vocabulary: {e}")
+            logger.error(f"An error occurred while creating the vocabulary: {e}")
 
     @asynccontextmanager
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
@@ -274,6 +297,24 @@ class CdmVocabulary(object):
             chunk_size: Number of rows per batch insert.
         """
         async with self.get_session() as session:
+            # For PostgreSQL, temporarily relax constraint enforcement during bulk loads
+            is_pg = False
+            try:
+                is_pg = self._engine.dialect.name.startswith("postgres")
+            except Exception:
+                is_pg = False
+            if is_pg:
+                logger.info(
+                    "Temporarily disabling replication role for bulk load on postgres"
+                )
+                try:
+                    await session.execute(
+                        text("SET session_replication_role = replica")
+                    )
+                except Exception:
+                    # Ignore if not permitted or unsupported
+                    logger.warning("Failed to set session_replication_role to replica")
+
             conn = await session.connection()
             automap: AutomapBase = automap_base()
 
@@ -314,16 +355,15 @@ class CdmVocabulary(object):
             df2 = df.copy()
 
             for name, col in sa_cols.items():
-                if col.nullable:
-                    continue
                 # Ensure column exists
                 if name not in df2.columns:
-                    df2[name] = default_for(col)
+                    # For nullable columns, start with None; for required, use default
+                    df2[name] = None if col.nullable else default_for(col)
                     continue
 
-                # Coerce types and fill missing
+                # Coerce types and handle missing values
                 if str(df2[name].dtype) == "object":
-                    # Treat empty strings as missing for required fields
+                    # Treat empty strings as missing
                     df2[name] = df2[name].replace("", np.nan)
 
                 from sqlalchemy import BigInteger
@@ -333,26 +373,108 @@ class CdmVocabulary(object):
 
                 t = col.type
                 if isinstance(t, SA_Date):
-                    df2[name] = pd.to_datetime(df2[name], errors="coerce").dt.date
+                    ser = pd.to_datetime(df2[name], errors="coerce").dt.date
+                    df2[name] = (
+                        ser.where(pd.notna(ser), None)
+                        if col.nullable
+                        else ser.fillna(default_for(col))
+                    )
                 elif isinstance(t, SA_DateTime):
-                    df2[name] = pd.to_datetime(df2[name], errors="coerce")
-                elif isinstance(t, (Integer, BigInteger)):
-                    # Convert to numeric then to Int64 to allow NaNs, fill later
-                    df2[name] = pd.to_numeric(df2[name], errors="coerce")
-                elif isinstance(t, Numeric):
-                    df2[name] = pd.to_numeric(df2[name], errors="coerce")
-                elif isinstance(t, (String, Text)):
-                    # Trim to 255 to be safe for vocab tables
-                    df2[name] = df2[name].astype(str).str.slice(0, 255)
+                    # Normalize to UTC-naive to avoid tz-aware vs tz-naive issues in Postgres
+                    ser = pd.to_datetime(df2[name], errors="coerce", utc=True)
 
-                # Fill missing with defaults for required columns
-                df2[name] = df2[name].fillna(default_for(col))
+                    # Convert to Python datetime and drop tzinfo
+                    def _to_naive(dt):
+                        try:
+                            if pd.isna(dt):
+                                return None
+                        except Exception:
+                            pass
+                        if hasattr(dt, "to_pydatetime"):
+                            py = dt.to_pydatetime()
+                        else:
+                            py = dt
+                        if getattr(py, "tzinfo", None) is not None:
+                            py = (
+                                py.tz_convert("UTC").tz_localize(None)
+                                if hasattr(py, "tz_convert")
+                                else py.replace(tzinfo=None)
+                            )
+                        return py
+
+                    ser = ser.map(_to_naive)
+                    df2[name] = (
+                        ser.where(pd.notna(ser), None)
+                        if col.nullable
+                        else ser.fillna(default_for(col))
+                    )
+                elif isinstance(t, (Integer, BigInteger)):
+                    ser = pd.to_numeric(df2[name], errors="coerce")
+                    df2[name] = (
+                        ser.where(pd.notna(ser), None)
+                        if col.nullable
+                        else ser.fillna(default_for(col))
+                    )
+                elif isinstance(t, Numeric):
+                    ser = pd.to_numeric(df2[name], errors="coerce")
+                    df2[name] = (
+                        ser.where(pd.notna(ser), None)
+                        if col.nullable
+                        else ser.fillna(default_for(col))
+                    )
+                elif isinstance(t, (String, Text)):
+                    # Only cast non-null values to str and trim; keep nulls as None
+                    ser = df2[name].astype(object)
+                    mask = ser.notna()
+                    ser.loc[mask] = ser.loc[mask].astype(str).str.slice(0, 255)
+                    if col.nullable:
+                        ser = ser.where(pd.notna(ser), None)
+                    else:
+                        # Required string columns get a default
+                        ser = ser.where(pd.notna(ser), default_for(col))
+                    df2[name] = ser
+                else:
+                    # Fallback: ensure NaN/NaT -> None for nullable cols, else fill default
+                    df2[name] = (
+                        df2[name].where(pd.notna(df2[name]), None)
+                        if col.nullable
+                        else df2[name].fillna(default_for(col))
+                    )
+
+            # Final safety pass: replace any remaining NaN/NaT with None across all columns
+            df2 = df2.where(pd.notna(df2), None)
 
             stmt = insert(mapper)
 
-            for _, group in df2.groupby(
-                np.arange(df2.shape[0], dtype=int) // chunk_size
-            ):
-                await session.execute(stmt, group.to_dict("records"))
-            await session.commit()
-            await session.close()
+            try:
+                for _, group in df2.groupby(
+                    np.arange(df2.shape[0], dtype=int) // chunk_size
+                ):
+                    records = group.to_dict("records")
+                    try:
+                        # Fast path: batch insert
+                        await session.execute(stmt, records)
+                    except Exception:
+                        logger.warning(
+                            "Batch insert failed, falling back to row-by-row insert."
+                        )
+                        # Fallback: insert row-by-row, skipping bad rows
+                        for row in records:
+                            try:
+                                await session.execute(stmt, [row])
+                            except Exception:
+                                # Ignore duplicates/FK issues per row
+                                logger.warning(
+                                    f"Failed to insert row: {row}. Skipping."
+                                )
+                                continue
+                    # Commit after each group
+                    await session.commit()
+            finally:
+                if is_pg:
+                    try:
+                        await session.execute(
+                            text("SET session_replication_role = origin")
+                        )
+                    except Exception:
+                        pass

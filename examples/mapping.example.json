@@ -288,6 +288,63 @@
                     "target": "condition_concept_id"
                 }
             ]
+        },
+        {
+            "table": "measurement",
+            "mappings": [
+                {
+                    "source": "measurement_source_value",
+                    "target": "measurement_concept_id"
+                },
+                {
+                    "source": "unit_source_value",
+                    "target": "unit_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "procedure_occurrence",
+            "mappings": [
+                {
+                    "source": "procedure_source_value",
+                    "target": "procedure_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "device_exposure",
+            "mappings": [
+                {
+                    "source": "device_source_value",
+                    "target": "device_concept_id"
+                },
+                {
+                    "source": "unit_source_value",
+                    "target": "unit_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "drug_exposure",
+            "mappings": [
+                {
+                    "source": "drug_source_value",
+                    "target": "drug_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "visit_occurrence",
+            "mappings": [
+                {
+                    "source": "visit_source_value",
+                    "target": "visit_concept_id"
+                }
+            ]
         }
+    ],
+    "force_text_fields": [
+        "production_id",
+        "drug_source_value"
     ]
 }

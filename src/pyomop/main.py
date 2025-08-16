@@ -34,7 +34,7 @@ from .vocabulary import CdmVocabulary
     help="CDM version (cdm54 (default) or cdm6)",
 )
 @click.option(
-    "--name", "-n", multiple=False, default="cdm6.sqlite", help="Database name"
+    "--name", "-n", multiple=False, default="cdm.sqlite", help="Database name"
 )
 @click.option(
     "--schema",
@@ -58,6 +58,9 @@ from .vocabulary import CdmVocabulary
     help="Input folder with FHIR bundles or ndjson files.",
 )
 def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path):
+    # clear database name if not sqlite
+    if dbtype != "sqlite" and name == "cdm.sqlite":
+        name = ""
     if create:
         click.echo(f"Creating CDM {version} tables in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)

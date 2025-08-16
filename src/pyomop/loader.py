@@ -12,12 +12,13 @@ import json
 # setup logging
 import logging
 from contextlib import asynccontextmanager
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, Set
 
 import pandas as pd
+from sqlalchemy import text  # added for DDL execution
 from sqlalchemy import (
     BigInteger,
     Date,
@@ -25,6 +26,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    Text,
     and_,
     cast,
     insert,
@@ -104,6 +106,174 @@ class CdmCsvLoader:
         await conn.run_sync(_prepare)
         return automap
 
+    def _coerce_record_to_table_types(
+        self,
+        table,
+        rec: Dict[str, Any],
+        force_text_fields: Optional[Set[str]] = None,
+    ) -> Dict[str, Any]:
+        """Coerce a record's values to the SQL types defined by the target OMOP table.
+
+        Rules:
+        - Strings/Text: cast to str; lists/tuples joined by comma; dicts JSON-serialized; enforce max length if defined.
+        - Integers/Numerics: tolerant numeric parsing; None if unparsable.
+        - Dates/DateTimes: parsed via pandas; DateTime normalized to UTC-naive.
+        - Forced TEXT fields: certain columns are always stringified (e.g., codes arrays). The list comes
+          from mapping["force_text_fields"].
+
+        This is applied just before insert to ensure DB type compatibility.
+        """
+        # Columns that should always be treated as TEXT regardless of inferred type
+        force_text: Set[str] = set(force_text_fields or [])
+
+        # Local helper: stringify numbers without trailing .0 (e.g., 1.0 -> "1")
+        def _s(v: Any) -> str:
+            try:
+                if isinstance(v, float):
+                    return str(int(v)) if v.is_integer() else str(v)
+                if isinstance(v, Decimal):
+                    if v == v.to_integral_value():
+                        return str(int(v))
+                    # Normalize to drop insignificant trailing zeros
+                    return format(v.normalize(), "f")
+                return "" if v is None else str(v)
+            except Exception:
+                return str(v)
+
+        for col in table.columns:
+            name = col.name
+            if name not in rec:
+                continue
+            val = rec[name]
+            if val is None:
+                continue
+
+            t = col.type
+
+            # Force certain fields to TEXT
+            if name in force_text:
+                if isinstance(val, (list, tuple)):
+                    sval = ",".join([_s(v) for v in val])
+                elif isinstance(val, dict):
+                    try:
+                        import json as _json
+
+                        sval = _json.dumps(val, ensure_ascii=False)
+                    except Exception:
+                        sval = _s(val)
+                else:
+                    sval = _s(val)
+                max_len = getattr(t, "length", None)
+                rec[name] = sval[: max_len or 255]
+                continue
+
+            # Type-driven coercion
+            try:
+                from pandas import to_datetime as _to_datetime
+                from pandas import to_numeric as _to_numeric
+
+                if isinstance(t, Date):
+                    dt = _to_datetime(val, errors="coerce")
+                    rec[name] = None if pd.isna(dt) else dt.date()
+                elif isinstance(t, DateTime):
+                    ts = _to_datetime(val, errors="coerce", utc=True)
+                    if pd.isna(ts):
+                        rec[name] = None
+                    else:
+                        py = ts.to_pydatetime()
+                        rec[name] = py.astimezone(timezone.utc).replace(tzinfo=None)
+                elif isinstance(t, (Integer, BigInteger)):
+                    num = _to_numeric(val, errors="coerce")
+                    rec[name] = None if pd.isna(num) else int(num)
+                elif isinstance(t, Numeric):
+                    num = _to_numeric(val, errors="coerce")
+                    rec[name] = None if pd.isna(num) else Decimal(str(num))
+                elif isinstance(t, (String, Text)):
+                    if isinstance(val, (list, tuple)):
+                        sval = ",".join([_s(v) for v in val])
+                    elif isinstance(val, dict):
+                        try:
+                            import json as _json
+
+                            sval = _json.dumps(val, ensure_ascii=False)
+                        except Exception:
+                            sval = _s(val)
+                    else:
+                        sval = _s(val)
+                    max_len = getattr(t, "length", None)
+                    rec[name] = sval[: max_len or 255]
+                else:
+                    # Leave other types as-is
+                    pass
+            except Exception:
+                # Last resort, stringify
+                try:
+                    s = _s(val)
+                    max_len = getattr(getattr(col, "type", None), "length", None)
+                    rec[name] = s[: max_len or 255]
+                except Exception:
+                    rec[name] = val
+
+        return rec
+
+    async def _list_tables_with_person_id(self, conn: AsyncConnection) -> List[str]:
+        """Return table names (in default schema) that contain a person_id column, excluding 'person'."""
+
+        def _inner(sync_conn):
+            from sqlalchemy import inspect as _inspect
+
+            insp = _inspect(sync_conn)
+            tables = insp.get_table_names()
+            result: List[str] = []
+            for t in tables:
+                try:
+                    cols = insp.get_columns(t)
+                except Exception:
+                    continue
+                if any(c.get("name") == "person_id" for c in cols) and t != "person":
+                    result.append(t)
+            return result
+
+        return await conn.run_sync(_inner)
+
+    async def _add_person_id_text_columns(self, session: AsyncSession) -> None:
+        """Add a temporary person_id_text TEXT column to all non-person tables that have person_id.
+
+        This avoids fragile type-alter and FK juggling. We'll populate this column
+        when incoming person identifiers are not numeric, then resolve to integer
+        person_id in step 2 and drop the column.
+        """
+        conn = await session.connection()
+        tables = await self._list_tables_with_person_id(conn)
+        dialect = self._engine.dialect.name
+        for t in tables:
+            if dialect == "postgresql":
+                ddl = f'ALTER TABLE "{t}" ADD COLUMN IF NOT EXISTS person_id_text TEXT'
+            else:
+                # SQLite (and others): try without IF NOT EXISTS
+                ddl = f'ALTER TABLE "{t}" ADD COLUMN person_id_text TEXT'
+            try:
+                await session.execute(text(ddl))
+            except Exception:
+                # Column may already exist or backend may not support IF NOT EXISTS; ignore
+                pass
+
+    async def _drop_person_id_text_columns(self, session: AsyncSession) -> None:
+        """Drop the temporary person_id_text column from all non-person tables."""
+        conn = await session.connection()
+        tables = await self._list_tables_with_person_id(conn)
+        dialect = self._engine.dialect.name
+        for t in tables:
+            if dialect == "postgresql":
+                ddl = f'ALTER TABLE "{t}" DROP COLUMN IF EXISTS person_id_text'
+            else:
+                ddl = f'ALTER TABLE "{t}" DROP COLUMN person_id_text'
+            try:
+                await session.execute(text(ddl))
+            except Exception:
+                # Some backends or versions (older SQLite) may not support DROP COLUMN; ignore
+                pass
+
     def _load_mapping(self, mapping_path: str) -> Dict[str, Any]:
         """Load a JSON mapping file from disk."""
         with open(mapping_path, "r", encoding="utf-8") as f:
@@ -140,8 +310,14 @@ class CdmCsvLoader:
                 dt = pd.to_datetime(value, errors="coerce")
                 return None if pd.isna(dt) else dt.date()
             if isinstance(sa_type, DateTime):
-                dt = pd.to_datetime(value, errors="coerce")
-                return None if pd.isna(dt) else dt.to_pydatetime()
+                # Normalize to UTC-naive for Postgres compatibility
+                ts = pd.to_datetime(value, errors="coerce", utc=True)
+                if pd.isna(ts):
+                    return None
+                py = ts.to_pydatetime()
+                if getattr(py, "tzinfo", None) is not None:
+                    py = py.astimezone(timezone.utc).replace(tzinfo=None)
+                return py
             if isinstance(sa_type, (Integer, BigInteger)):
                 return int(value)
             if isinstance(sa_type, Numeric):
@@ -169,77 +345,155 @@ class CdmCsvLoader:
         if mapping_path is None:
             mapping_path = str(Path(__file__).parent / "mapping.default.json")
         mapping = self._load_mapping(mapping_path)
-        df = pd.read_csv(csv_path)
+        # Use low_memory=False to avoid DtypeWarning for mixed-type columns
+        df = pd.read_csv(csv_path, low_memory=False)
 
         async with self._get_session() as session:
-            conn = await session.connection()
-            automap = await self._prepare_automap(conn)
-
-            for tbl in mapping.get("tables", []):
-                table_name = tbl.get("name")
-                if not table_name:
-                    continue
-                # obtain mapped class
+            # Relax constraint enforcement during bulk load on Postgres
+            is_pg = False
+            try:
+                is_pg = str(self._engine.dialect.name).startswith("postgres")
+            except Exception:
+                is_pg = False
+            if is_pg:
                 try:
-                    mapper = getattr(automap.classes, table_name)
-                except AttributeError:
-                    raise ValueError(f"Table '{table_name}' not found in database.")
+                    await session.execute(
+                        text("SET session_replication_role = replica")
+                    )
+                except Exception:
+                    pass
 
-                # compute filtered dataframe
-                df_tbl = self._apply_filters(df, tbl.get("filters"))
-                if df_tbl.empty:
-                    continue
+            try:
+                conn = await session.connection()
+                # Before reflecting, add a temporary person_id_text column to accept non-numeric IDs
+                await self._add_person_id_text_columns(session)
+                automap = await self._prepare_automap(conn)
 
-                col_map: Dict[str, Any] = tbl.get("columns", {})
-                # Gather target SQLA column types
-                sa_cols = {c.name: c.type for c in mapper.__table__.columns}
+                for tbl in mapping.get("tables", []):
+                    table_name = tbl.get("name")
+                    if not table_name:
+                        continue
+                    # obtain mapped class
+                    try:
+                        mapper = getattr(automap.classes, table_name)
+                    except AttributeError:
+                        raise ValueError(f"Table '{table_name}' not found in database.")
 
-                # Build records
-                records: List[Dict[str, Any]] = []
-                for _, row in df_tbl.iterrows():
-                    rec: Dict[str, Any] = {}
-                    for target_col, src in col_map.items():
-                        if isinstance(src, dict) and "const" in src:
-                            value = src["const"]
-                        elif isinstance(src, str):
-                            value = row.get(src)
-                        else:
-                            value = None
+                    # compute filtered dataframe
+                    df_tbl = self._apply_filters(df, tbl.get("filters"))
+                    if df_tbl.empty:
+                        continue
 
-                        # Convert based on SA type if available
-                        sa_t = sa_cols.get(target_col)
-                        if sa_t is not None:
-                            value = self._convert_value(sa_t, value)
-                        rec[target_col] = value
-                    records.append(rec)
+                    col_map: Dict[str, Any] = tbl.get("columns", {})
+                    # Gather target SQLA column metadata
+                    sa_cols = {c.name: c.type for c in mapper.__table__.columns}
+                    sa_col_objs = {c.name: c for c in mapper.__table__.columns}
 
-                if not records:
-                    continue
+                    # Build records
+                    records: List[Dict[str, Any]] = []
+                    for _, row in df_tbl.iterrows():
+                        rec: Dict[str, Any] = {}
+                        for target_col, src in col_map.items():
+                            if isinstance(src, dict) and "const" in src:
+                                value = src["const"]
+                            elif isinstance(src, str):
+                                value = row.get(src)
+                            else:
+                                value = None
 
-                stmt = insert(mapper)
-                # Chunked insert
-                for i in range(0, len(records), chunk_size):
-                    batch = records[i : i + chunk_size]
-                    await session.execute(stmt, batch)
+                            # IMPORTANT: keep person_id raw for staging logic below
+                            if target_col != "person_id":
+                                # Convert based on SA type if available
+                                sa_t = sa_cols.get(target_col)
+                                if sa_t is not None:
+                                    value = self._convert_value(sa_t, value)
+                            rec[target_col] = value
 
-            # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
-            logger.info("Normalizing person_id foreign keys")
-            await self.fix_person_id(session, automap)
+                        # If person_id exists in the record, route non-numeric values into person_id_text
+                        if "person_id" in rec:
+                            pid = rec.get("person_id")
+                            if pid is None:
+                                # If NOT NULL, use placeholder to avoid constraint errors
+                                col = sa_col_objs.get("person_id")
+                                if col is not None and not getattr(
+                                    col, "nullable", True
+                                ):
+                                    rec["person_id"] = 0
+                            elif isinstance(pid, int):
+                                pass
+                            elif isinstance(pid, str) and pid.strip().isdigit():
+                                try:
+                                    rec["person_id"] = int(pid.strip())
+                                except Exception:
+                                    # If conversion unexpectedly fails, send to text column
+                                    if "person_id_text" in sa_cols:
+                                        rec["person_id_text"] = str(pid)
+                                    # Respect NOT NULL with placeholder when required
+                                    col = sa_col_objs.get("person_id")
+                                    if col is not None and not getattr(
+                                        col, "nullable", True
+                                    ):
+                                        rec["person_id"] = 0
+                                    else:
+                                        rec["person_id"] = None
+                            else:
+                                # Non-numeric content: place into person_id_text if available
+                                if "person_id_text" in sa_cols:
+                                    rec["person_id_text"] = str(pid)
+                                # Respect NOT NULL with placeholder when required
+                                col = sa_col_objs.get("person_id")
+                                if col is not None and not getattr(
+                                    col, "nullable", True
+                                ):
+                                    rec["person_id"] = 0
+                                else:
+                                    rec["person_id"] = None
+                        # Finally coerce all fields to the table's schema (string lengths, forced TEXT, datetimes)
+                        rec = self._coerce_record_to_table_types(
+                            mapper.__table__,
+                            rec,
+                            set(mapping.get("force_text_fields", [])),
+                        )
+                        records.append(rec)
 
-            # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
-            logger.info("Backfilling person birth fields")
-            await self.backfill_person_birth_fields(session, automap)
+                    if not records:
+                        continue
 
-            # Step 4: Set gender_concept_id from gender_source_value using standard IDs
-            logger.info("Setting person.gender_concept_id from gender_source_value")
-            await self.update_person_gender_concept_id(session, automap)
+                    stmt = insert(mapper)
+                    # Chunked insert
+                    for i in range(0, len(records), chunk_size):
+                        batch = records[i : i + chunk_size]
+                        await session.execute(stmt, batch)
 
-            # Step 5: Apply concept mappings defined in the JSON mapping
-            logger.info("Applying concept mappings")
-            await self.apply_concept_mappings(session, automap, mapping)
+                # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
+                logger.info("Normalizing person_id foreign keys")
+                await self.fix_person_id(session, automap)
 
-            await session.commit()
-            await session.close()
+                # Drop the temporary person_id_text columns now that person_id has been normalized
+                await self._drop_person_id_text_columns(session)
+
+                # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
+                logger.info("Backfilling person birth fields")
+                await self.backfill_person_birth_fields(session, automap)
+
+                # Step 4: Set gender_concept_id from gender_source_value using standard IDs
+                logger.info("Setting person.gender_concept_id from gender_source_value")
+                await self.update_person_gender_concept_id(session, automap)
+
+                # Step 5: Apply concept mappings defined in the JSON mapping
+                logger.info("Applying concept mappings")
+                await self.apply_concept_mappings(session, automap, mapping)
+
+                await session.commit()
+            finally:
+                if is_pg:
+                    try:
+                        await session.execute(
+                            text("SET session_replication_role = origin")
+                        )
+                    except Exception:
+                        pass
+                await session.close()
 
     async def fix_person_id(self, session: AsyncSession, automap: AutomapBase) -> None:
         """
@@ -282,20 +536,45 @@ class CdmCsvLoader:
             return
 
         # Iterate all tables and update person_id where it matches a known person_source_value
-        for table in automap.metadata.sorted_tables:
-            if table.name == person_table.name:
+        # Also handle rows that staged a non-numeric value in person_id_text.
+        # Avoid metadata.sorted_tables to prevent SAWarning about unresolvable cycles in vocab tables.
+        for tbl_name, table in automap.metadata.tables.items():
+            if tbl_name == person_table.name:
                 continue
             if "person_id" not in table.c:
                 continue
 
+            # If person_id_text exists, prefer it for matching
+            has_text = "person_id_text" in table.c
+
             # Run per-psv updates; small and explicit for clarity
             for psv, pid in psv_to_id.items():
-                stmt = (
+                if has_text:
+                    # Match on person_id_text
+                    stmt = (
+                        update(table)
+                        .where(table.c.person_id_text == psv)
+                        .values(person_id=pid)
+                    )
+                    await session.execute(stmt)
+                # Also try matching where person_id was staged as string
+                stmt2 = (
                     update(table)
                     .where(cast(table.c.person_id, String()) == psv)
                     .values(person_id=pid)
                 )
-                await session.execute(stmt)
+                await session.execute(stmt2)
+
+            # Clear person_id_text after normalization when column exists
+            if has_text:
+                try:
+                    await session.execute(
+                        update(table)
+                        .where(table.c.person_id_text.isnot(None))
+                        .values(person_id_text=None)
+                    )
+                except Exception:
+                    pass
 
     async def update_person_gender_concept_id(
         self, session: AsyncSession, automap: AutomapBase
@@ -387,13 +666,21 @@ class CdmCsvLoader:
             # Parse birth_dt to a datetime if needed
             bd: Optional[datetime]
             if isinstance(birth_dt, datetime):
-                bd = birth_dt
+                # Normalize timezone-aware to UTC-naive
+                if birth_dt.tzinfo is not None:
+                    bd = birth_dt.astimezone(timezone.utc).replace(tzinfo=None)
+                else:
+                    bd = birth_dt
             elif isinstance(birth_dt, date):
                 bd = datetime(birth_dt.year, birth_dt.month, birth_dt.day)
             else:
                 try:
-                    tmp = pd.to_datetime(birth_dt, errors="coerce")
-                    bd = None if pd.isna(tmp) else tmp.to_pydatetime()
+                    tmp = pd.to_datetime(birth_dt, errors="coerce", utc=True)
+                    if pd.isna(tmp):
+                        bd = None
+                    else:
+                        py = tmp.to_pydatetime()
+                        bd = py.astimezone(timezone.utc).replace(tzinfo=None)
                 except Exception:
                     bd = None
 
@@ -443,7 +730,7 @@ class CdmCsvLoader:
 
         concept_table = concept_cls.__table__
 
-        # Simple in-memory cache to avoid repeated lookups
+        # Simple in-memory code to cid mapping
         code_to_cid: Dict[str, Optional[int]] = {}
 
         async def lookup_concept_id(code: str) -> Optional[int]:
