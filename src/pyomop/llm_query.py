@@ -1,19 +1,31 @@
+"""LLM query utilities over the OMOP CDM schema.
+
+This module wires llama-index components to an OMOP-aware ``CDMDatabase`` so
+you can build semantic and SQL-first query engines that know about your CDM
+tables. All LLM-related imports are optional and performed lazily at runtime.
+"""
+
+import importlib
 from typing import Any
-from llama_index.core.indices.struct_store.sql_query import (
-    SQLTableRetrieverQueryEngine,
-)
-from llama_index.core.objects import (
-    SQLTableNodeMapping,
-    ObjectIndex,
-    SQLTableSchema,
-)
-from llama_index.core import VectorStoreIndex
-from langchain_huggingface import HuggingFaceEmbeddings
-from llama_index.core import Settings
+
 from .llm_engine import CDMDatabase
 
 
 class CdmLLMQuery:
+    """Helper that prepares an LLM-backed SQL query engine for OMOP.
+
+    It constructs an object index of selected CDM tables and exposes a
+    retriever-backed query engine that can generate SQL or run SQL-only queries
+    depending on configuration.
+
+    Args:
+        sql_database: A ``CDMDatabase`` instance connected to the OMOP DB.
+        llm: Optional LLM implementation to plug into llama-index settings.
+        similarity_top_k: Top-k tables to retrieve for each query.
+        embed_model: HuggingFace embedding model name.
+        **kwargs: Reserved for future expansion.
+    """
+
     def __init__(
         self,
         sql_database: CDMDatabase,
@@ -22,6 +34,26 @@ class CdmLLMQuery:
         embed_model: str = "BAAI/bge-small-en-v1.5",
         **kwargs: Any,
     ):
+        # Lazy import optional dependencies so the package imports without them
+        try:
+            sql_query_mod = importlib.import_module(
+                "llama_index.core.indices.struct_store.sql_query"
+            )
+            objects_mod = importlib.import_module("llama_index.core.objects")
+            core_mod = importlib.import_module("llama_index.core")
+            hf_mod = importlib.import_module("langchain_huggingface")
+
+            SQLTableRetrieverQueryEngine = getattr(
+                sql_query_mod, "SQLTableRetrieverQueryEngine"
+            )
+            SQLTableNodeMapping = getattr(objects_mod, "SQLTableNodeMapping")
+            ObjectIndex = getattr(objects_mod, "ObjectIndex")
+            SQLTableSchema = getattr(objects_mod, "SQLTableSchema")
+            VectorStoreIndex = getattr(core_mod, "VectorStoreIndex")
+            Settings = getattr(core_mod, "Settings")
+            HuggingFaceEmbeddings = getattr(hf_mod, "HuggingFaceEmbeddings")
+        except Exception as e:  # pragma: no cover
+            raise ImportError("Install 'pyomop[llm]' to use LLM query features.") from e
         self._sql_database = sql_database
         self._similarity_top_k = similarity_top_k
         self._embed_model = HuggingFaceEmbeddings(model_name=embed_model)
@@ -29,24 +61,14 @@ class CdmLLMQuery:
         Settings.llm = llm
         Settings.embed_model = self._embed_model
         self._table_node_mapping = SQLTableNodeMapping(sql_database)
+        usable_tables = []
+        if hasattr(sql_database, "usable_tables"):
+            usable_tables = list(sql_database.usable_tables())  # type: ignore[attr-defined]
+        elif hasattr(sql_database, "get_usable_table_names"):
+            usable_tables = list(sql_database.get_usable_table_names())  # type: ignore[attr-defined]
         self._table_schema_objs = [
-            (SQLTableSchema(table_name="care_site")),
-            (SQLTableSchema(table_name="condition_occurrence")),
-            (SQLTableSchema(table_name="cohort")),
-            (SQLTableSchema(table_name="concept")),
-            (SQLTableSchema(table_name="death")),
-            (SQLTableSchema(table_name="device_exposure")),
-            (SQLTableSchema(table_name="drug_exposure")),
-            (SQLTableSchema(table_name="location")),
-            (SQLTableSchema(table_name="measurement")),
-            (SQLTableSchema(table_name="observation")),
-            (SQLTableSchema(table_name="observation_period")),
-            (SQLTableSchema(table_name="person")),
-            (SQLTableSchema(table_name="procedure_occurrence")),
-            (SQLTableSchema(table_name="provider")),
-            (SQLTableSchema(table_name="visit_occurrence")),
-            (SQLTableSchema(table_name="note")),
-        ]  # add a SQLTableSchema for each table
+            SQLTableSchema(table_name=t) for t in sorted(set(usable_tables))
+        ]
 
         self._object_index = ObjectIndex.from_objects(
             self._table_schema_objs,
@@ -61,17 +83,21 @@ class CdmLLMQuery:
         )
 
     @property
-    def table_node_mapping(self) -> SQLTableNodeMapping:
+    def table_node_mapping(self) -> Any:
+        """Mapping between tables and nodes used by the object index."""
         return self._table_node_mapping
 
     @property
-    def table_schema_objs(self) -> list[SQLTableSchema]:
+    def table_schema_objs(self) -> list[Any]:
+        """List of table schema objects indexed for retrieval."""
         return self._table_schema_objs
 
     @property
-    def object_index(self) -> ObjectIndex:
+    def object_index(self) -> Any:
+        """The underlying llama-index object index used for retrieval."""
         return self._object_index
 
     @property
-    def query_engine(self) -> SQLTableRetrieverQueryEngine:
+    def query_engine(self) -> Any:
+        """A retriever-backed SQL query engine over the CDM tables."""
         return self._query_engine

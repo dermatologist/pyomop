@@ -1,10 +1,17 @@
 import asyncio
-import pytest
-import os
 import datetime
+import importlib
+import pytest
 
 
 def test_create_cohort_cdm54(pyomop_fixture, cdm54_metadata_fixture, capsys):
+    # Skip test gracefully if LLM extras are not installed
+    try:
+        importlib.import_module("llama_index")
+        importlib.import_module("langchain_core")
+        importlib.import_module("langchain_huggingface")
+    except Exception:
+        pytest.skip("LLM optional dependencies are not installed")
     engine = pyomop_fixture.engine
     # create tables
     asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
@@ -13,8 +20,14 @@ def test_create_cohort_cdm54(pyomop_fixture, cdm54_metadata_fixture, capsys):
 
 async def create_llm_query(pyomop_fixture, engine):
     from src.pyomop.cdm54 import Cohort
-    from src.pyomop import CdmLLMQuery
-    from langchain_core.language_models.fake import FakeListLLM
+    from src.pyomop.llm_query import CdmLLMQuery
+    try:
+        FakeListLLM = getattr(
+            importlib.import_module("langchain_core.language_models.fake"),
+            "FakeListLLM",
+        )
+    except Exception:
+        pytest.skip("langchain_core FakeListLLM not available")
     from src.pyomop.llm_engine import CDMDatabase
 
     fake_llm = FakeListLLM(

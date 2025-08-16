@@ -1,0 +1,42 @@
+version: "3.8"
+services:
+  omopdb:
+    image: postgres:16-alpine  # Or your preferred Postgres version
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ohdsi
+      POSTGRES_PASSWORD: ohdsi
+      POSTGRES_DB: ohdsi
+    volumes:
+      - ohdsi_data:/var/lib/postgresql/data
+    networks:
+      - pyomop_ohdsi
+
+  webapi:
+    image: ohdsi/webapi:latest  # Or your preferred WebAPI version
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_SERVER: omopdb
+      DATABASE_PORT: 5432
+      DATABASE_USER: ohdsi
+      DATABASE_PASSWORD: ohdsi
+      DATABASE_NAME: ohdsi
+      # Add other environment variables as needed, such as JDBC driver paths
+      WEBAPI_ADDITIONAL_JDBC_FILE_PATH: /opt/tomcat/webapps/WebAPI/WEB-INF/lib/postgresql-42.2.23.jar #Example, adjust version as needed.
+      JAVA_OPTS: -Xms2g -Xmx4g # Example JVM settings
+    depends_on:
+      - omopdb
+    networks:
+      - pyomop_ohdsi
+    # volumes:
+    #   - ./webapi_logs:/usr/local/tomcat/logs # Optional: For persistent logs
+
+volumes:
+  ohdsi_data:
+
+networks:
+  pyomop_ohdsi:
+    driver: bridge
+
