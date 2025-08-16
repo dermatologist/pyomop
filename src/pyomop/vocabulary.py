@@ -5,6 +5,7 @@ concepts by id or code. Uses async SQLAlchemy sessions.
 """
 
 import asyncio
+import logging
 from contextlib import asynccontextmanager
 from datetime import date, datetime
 from typing import AsyncGenerator
@@ -19,9 +20,9 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.ext.automap import AutomapBase, automap_base
 
-import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 class CdmVocabulary(object):
     """Helpers for OMOP Vocabulary management and lookups.
@@ -303,7 +304,9 @@ class CdmVocabulary(object):
             except Exception:
                 is_pg = False
             if is_pg:
-                logger.info("Temporarily disabling replication role for bulk load on postgres")
+                logger.info(
+                    "Temporarily disabling replication role for bulk load on postgres"
+                )
                 try:
                     await session.execute(
                         text("SET session_replication_role = replica")
@@ -379,6 +382,7 @@ class CdmVocabulary(object):
                 elif isinstance(t, SA_DateTime):
                     # Normalize to UTC-naive to avoid tz-aware vs tz-naive issues in Postgres
                     ser = pd.to_datetime(df2[name], errors="coerce", utc=True)
+
                     # Convert to Python datetime and drop tzinfo
                     def _to_naive(dt):
                         try:
@@ -391,7 +395,11 @@ class CdmVocabulary(object):
                         else:
                             py = dt
                         if getattr(py, "tzinfo", None) is not None:
-                            py = py.tz_convert("UTC").tz_localize(None) if hasattr(py, "tz_convert") else py.replace(tzinfo=None)
+                            py = (
+                                py.tz_convert("UTC").tz_localize(None)
+                                if hasattr(py, "tz_convert")
+                                else py.replace(tzinfo=None)
+                            )
                         return py
 
                     ser = ser.map(_to_naive)
