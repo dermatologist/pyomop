@@ -58,21 +58,6 @@ from .vocabulary import CdmVocabulary
     help="Input folder with FHIR bundles or ndjson files.",
 )
 def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path):
-    """pyomop CLI entrypoint.
-
-    Args:
-        version: CDM version ("cdm54" or "cdm6").
-        create: If True, (re)create CDM tables.
-        dbtype: Database type ("sqlite", "mysql", "pgsql").
-        host: Database host.
-        port: Database port.
-        user: Database user.
-        pw: Database password.
-        name: Database name or SQLite filename.
-        schema: Database schema (PostgreSQL).
-        vocab: Folder with vocabulary CSV files to import.
-        input_path: Folder with FHIR bundles or ndjson files to import.
-    """
     if create:
         click.echo(f"Creating CDM {version} tables in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
@@ -148,7 +133,7 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
 def main_routine():
     """Top-level runner used by ``python -m pyomop``."""
     click.echo("_________________________________________")
-    click.echo("Pyomop v" + __version__ + " working:.....")
+    click.echo("Pyomop v" + __version__ + " by Bell Eapen ( https://nuchange.ca ) ")
     cli()  # run the main function
     click.echo("Pyomop done.")
 
