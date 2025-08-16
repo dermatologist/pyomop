@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/5.1.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.2.0...HEAD)
 
 **Merged pull requests:**
 
@@ -36,6 +36,10 @@
 - build\(deps\): bump requests from 2.26.0 to 2.31.0 [\#138](https://github.com/dermatologist/pyomop/pull/138) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Update README.md [\#129](https://github.com/dermatologist/pyomop/pull/129) ([dermatologist](https://github.com/dermatologist))
 - Update vocabulary.py [\#128](https://github.com/dermatologist/pyomop/pull/128) ([EthelEz](https://github.com/EthelEz))
+
+## [v5.2.0](https://github.com/dermatologist/pyomop/tree/v5.2.0) (2025-08-16)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/5.1.0...v5.2.0)
 
 ## [5.1.0](https://github.com/dermatologist/pyomop/tree/5.1.0) (2025-06-22)
 
