@@ -272,7 +272,7 @@ class CdmVocabulary(object):
             )
             await self.write_vocab(df, "concept_ancestor", "replace")
         except Exception as e:
-            print(f"An error occurred while creating the vocabulary: {e}")
+            logger.error(f"An error occurred while creating the vocabulary: {e}")
 
     @asynccontextmanager
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
@@ -314,7 +314,7 @@ class CdmVocabulary(object):
                 except Exception:
                     # Ignore if not permitted or unsupported
                     logger.warning("Failed to set session_replication_role to replica")
-                    pass
+
             conn = await session.connection()
             automap: AutomapBase = automap_base()
 
