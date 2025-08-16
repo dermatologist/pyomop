@@ -238,64 +238,93 @@ class CdmCsvLoader:
         df = pd.read_csv(csv_path, low_memory=False)
 
         async with self._get_session() as session:
-            conn = await session.connection()
-            # Before reflecting, add a temporary person_id_text column to accept non-numeric IDs
-            await self._add_person_id_text_columns(session)
-            automap = await self._prepare_automap(conn)
-
-            for tbl in mapping.get("tables", []):
-                table_name = tbl.get("name")
-                if not table_name:
-                    continue
-                # obtain mapped class
+            # Relax constraint enforcement during bulk load on Postgres
+            is_pg = False
+            try:
+                is_pg = str(self._engine.dialect.name).startswith("postgres")
+            except Exception:
+                is_pg = False
+            if is_pg:
                 try:
-                    mapper = getattr(automap.classes, table_name)
-                except AttributeError:
-                    raise ValueError(f"Table '{table_name}' not found in database.")
+                    await session.execute(
+                        text("SET session_replication_role = replica")
+                    )
+                except Exception:
+                    pass
 
-                # compute filtered dataframe
-                df_tbl = self._apply_filters(df, tbl.get("filters"))
-                if df_tbl.empty:
-                    continue
+            try:
+                conn = await session.connection()
+                # Before reflecting, add a temporary person_id_text column to accept non-numeric IDs
+                await self._add_person_id_text_columns(session)
+                automap = await self._prepare_automap(conn)
 
-                col_map: Dict[str, Any] = tbl.get("columns", {})
-                # Gather target SQLA column metadata
-                sa_cols = {c.name: c.type for c in mapper.__table__.columns}
-                sa_col_objs = {c.name: c for c in mapper.__table__.columns}
+                for tbl in mapping.get("tables", []):
+                    table_name = tbl.get("name")
+                    if not table_name:
+                        continue
+                    # obtain mapped class
+                    try:
+                        mapper = getattr(automap.classes, table_name)
+                    except AttributeError:
+                        raise ValueError(f"Table '{table_name}' not found in database.")
 
-                # Build records
-                records: List[Dict[str, Any]] = []
-                for _, row in df_tbl.iterrows():
-                    rec: Dict[str, Any] = {}
-                    for target_col, src in col_map.items():
-                        if isinstance(src, dict) and "const" in src:
-                            value = src["const"]
-                        elif isinstance(src, str):
-                            value = row.get(src)
-                        else:
-                            value = None
+                    # compute filtered dataframe
+                    df_tbl = self._apply_filters(df, tbl.get("filters"))
+                    if df_tbl.empty:
+                        continue
 
-                        # Convert based on SA type if available
-                        sa_t = sa_cols.get(target_col)
-                        if sa_t is not None:
-                            value = self._convert_value(sa_t, value)
-                        rec[target_col] = value
+                    col_map: Dict[str, Any] = tbl.get("columns", {})
+                    # Gather target SQLA column metadata
+                    sa_cols = {c.name: c.type for c in mapper.__table__.columns}
+                    sa_col_objs = {c.name: c for c in mapper.__table__.columns}
 
-                    # If person_id exists in the record, route non-numeric values into person_id_text
-                    if "person_id" in rec:
-                        pid = rec.get("person_id")
-                        if pid is None:
-                            # If NOT NULL, use placeholder to avoid constraint errors
-                            col = sa_col_objs.get("person_id")
-                            if col is not None and not getattr(col, "nullable", True):
-                                rec["person_id"] = 0
-                        elif isinstance(pid, int):
-                            pass
-                        elif isinstance(pid, str) and pid.strip().isdigit():
-                            try:
-                                rec["person_id"] = int(pid.strip())
-                            except Exception:
-                                # If conversion unexpectedly fails, send to text column
+                    # Build records
+                    records: List[Dict[str, Any]] = []
+                    for _, row in df_tbl.iterrows():
+                        rec: Dict[str, Any] = {}
+                        for target_col, src in col_map.items():
+                            if isinstance(src, dict) and "const" in src:
+                                value = src["const"]
+                            elif isinstance(src, str):
+                                value = row.get(src)
+                            else:
+                                value = None
+
+                            # Convert based on SA type if available
+                            sa_t = sa_cols.get(target_col)
+                            if sa_t is not None:
+                                value = self._convert_value(sa_t, value)
+                            rec[target_col] = value
+
+                        # If person_id exists in the record, route non-numeric values into person_id_text
+                        if "person_id" in rec:
+                            pid = rec.get("person_id")
+                            if pid is None:
+                                # If NOT NULL, use placeholder to avoid constraint errors
+                                col = sa_col_objs.get("person_id")
+                                if col is not None and not getattr(
+                                    col, "nullable", True
+                                ):
+                                    rec["person_id"] = 0
+                            elif isinstance(pid, int):
+                                pass
+                            elif isinstance(pid, str) and pid.strip().isdigit():
+                                try:
+                                    rec["person_id"] = int(pid.strip())
+                                except Exception:
+                                    # If conversion unexpectedly fails, send to text column
+                                    if "person_id_text" in sa_cols:
+                                        rec["person_id_text"] = str(pid)
+                                    # Respect NOT NULL with placeholder when required
+                                    col = sa_col_objs.get("person_id")
+                                    if col is not None and not getattr(
+                                        col, "nullable", True
+                                    ):
+                                        rec["person_id"] = 0
+                                    else:
+                                        rec["person_id"] = None
+                            else:
+                                # Non-numeric content: place into person_id_text if available
                                 if "person_id_text" in sa_cols:
                                     rec["person_id_text"] = str(pid)
                                 # Respect NOT NULL with placeholder when required
@@ -306,48 +335,46 @@ class CdmCsvLoader:
                                     rec["person_id"] = 0
                                 else:
                                     rec["person_id"] = None
-                        else:
-                            # Non-numeric content: place into person_id_text if available
-                            if "person_id_text" in sa_cols:
-                                rec["person_id_text"] = str(pid)
-                            # Respect NOT NULL with placeholder when required
-                            col = sa_col_objs.get("person_id")
-                            if col is not None and not getattr(col, "nullable", True):
-                                rec["person_id"] = 0
-                            else:
-                                rec["person_id"] = None
-                    records.append(rec)
+                        records.append(rec)
 
-                if not records:
-                    continue
+                    if not records:
+                        continue
 
-                stmt = insert(mapper)
-                # Chunked insert
-                for i in range(0, len(records), chunk_size):
-                    batch = records[i : i + chunk_size]
-                    await session.execute(stmt, batch)
+                    stmt = insert(mapper)
+                    # Chunked insert
+                    for i in range(0, len(records), chunk_size):
+                        batch = records[i : i + chunk_size]
+                        await session.execute(stmt, batch)
 
-            # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
-            logger.info("Normalizing person_id foreign keys")
-            await self.fix_person_id(session, automap)
+                # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
+                logger.info("Normalizing person_id foreign keys")
+                await self.fix_person_id(session, automap)
 
-            # Drop the temporary person_id_text columns now that person_id has been normalized
-            await self._drop_person_id_text_columns(session)
+                # Drop the temporary person_id_text columns now that person_id has been normalized
+                await self._drop_person_id_text_columns(session)
 
-            # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
-            logger.info("Backfilling person birth fields")
-            await self.backfill_person_birth_fields(session, automap)
+                # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
+                logger.info("Backfilling person birth fields")
+                await self.backfill_person_birth_fields(session, automap)
 
-            # Step 4: Set gender_concept_id from gender_source_value using standard IDs
-            logger.info("Setting person.gender_concept_id from gender_source_value")
-            await self.update_person_gender_concept_id(session, automap)
+                # Step 4: Set gender_concept_id from gender_source_value using standard IDs
+                logger.info("Setting person.gender_concept_id from gender_source_value")
+                await self.update_person_gender_concept_id(session, automap)
 
-            # Step 5: Apply concept mappings defined in the JSON mapping
-            logger.info("Applying concept mappings")
-            await self.apply_concept_mappings(session, automap, mapping)
+                # Step 5: Apply concept mappings defined in the JSON mapping
+                logger.info("Applying concept mappings")
+                await self.apply_concept_mappings(session, automap, mapping)
 
-            await session.commit()
-            await session.close()
+                await session.commit()
+            finally:
+                if is_pg:
+                    try:
+                        await session.execute(
+                            text("SET session_replication_role = origin")
+                        )
+                    except Exception:
+                        pass
+                await session.close()
 
     async def fix_person_id(self, session: AsyncSession, automap: AutomapBase) -> None:
         """
