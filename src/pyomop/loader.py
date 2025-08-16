@@ -283,8 +283,9 @@ class CdmCsvLoader:
             return
 
         # Iterate all tables and update person_id where it matches a known person_source_value
-        for table in automap.metadata.sorted_tables:
-            if table.name == person_table.name:
+        # Avoid metadata.sorted_tables to prevent SAWarning about unresolvable cycles in vocab tables.
+        for tbl_name, table in automap.metadata.tables.items():
+            if tbl_name == person_table.name:
                 continue
             if "person_id" not in table.c:
                 continue
