@@ -126,6 +126,20 @@ class CdmCsvLoader:
         # Columns that should always be treated as TEXT regardless of inferred type
         force_text: Set[str] = set(force_text_fields or [])
 
+        # Local helper: stringify numbers without trailing .0 (e.g., 1.0 -> "1")
+        def _s(v: Any) -> str:
+            try:
+                if isinstance(v, float):
+                    return str(int(v)) if v.is_integer() else str(v)
+                if isinstance(v, Decimal):
+                    if v == v.to_integral_value():
+                        return str(int(v))
+                    # Normalize to drop insignificant trailing zeros
+                    return format(v.normalize(), "f")
+                return "" if v is None else str(v)
+            except Exception:
+                return str(v)
+
         for col in table.columns:
             name = col.name
             if name not in rec:
@@ -139,16 +153,16 @@ class CdmCsvLoader:
             # Force certain fields to TEXT
             if name in force_text:
                 if isinstance(val, (list, tuple)):
-                    sval = ",".join(["" if v is None else str(v) for v in val])
+                    sval = ",".join([_s(v) for v in val])
                 elif isinstance(val, dict):
                     try:
                         import json as _json
 
                         sval = _json.dumps(val, ensure_ascii=False)
                     except Exception:
-                        sval = str(val)
+                        sval = _s(val)
                 else:
-                    sval = str(val)
+                    sval = _s(val)
                 max_len = getattr(t, "length", None)
                 rec[name] = sval[: max_len or 255]
                 continue
@@ -176,16 +190,16 @@ class CdmCsvLoader:
                     rec[name] = None if pd.isna(num) else Decimal(str(num))
                 elif isinstance(t, (String, Text)):
                     if isinstance(val, (list, tuple)):
-                        sval = ",".join(["" if v is None else str(v) for v in val])
+                        sval = ",".join([_s(v) for v in val])
                     elif isinstance(val, dict):
                         try:
                             import json as _json
 
                             sval = _json.dumps(val, ensure_ascii=False)
                         except Exception:
-                            sval = str(val)
+                            sval = _s(val)
                     else:
-                        sval = str(val)
+                        sval = _s(val)
                     max_len = getattr(t, "length", None)
                     rec[name] = sval[: max_len or 255]
                 else:
@@ -194,7 +208,7 @@ class CdmCsvLoader:
             except Exception:
                 # Last resort, stringify
                 try:
-                    s = str(val)
+                    s = _s(val)
                     max_len = getattr(getattr(col, "type", None), "length", None)
                     rec[name] = s[: max_len or 255]
                 except Exception:

@@ -70,3 +70,7 @@ drug_source_value : vaccineCode.coding.codes, medicationCodeableConcept.coding.c
 Add a generic function to cast all fields to the required type by the OMOP schema before inserting into the database.
 
 ##
+
+Improve the function def _coerce_record_to_table_types to remove 0 after the decimal point while coercing FLOAT to string.
+
+###
