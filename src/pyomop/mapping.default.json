@@ -342,5 +342,9 @@
                 }
             ]
         }
+    ],
+    "force_text_fields": [
+        "production_id",
+        "drug_source_value"
     ]
 }

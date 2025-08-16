@@ -1,1 +1,1 @@
-docker run -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=pword -p 5432:5432 smartchartsuite/omop-cdm-54-postgres
+docker run --name mypostgres -p 5432:5432 -e POSTGRES_USER=ohdsi -e POSTGRES_PASSWORD=ohdsi postgres:16-alpine
