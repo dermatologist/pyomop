@@ -259,8 +259,9 @@ class CdmCsvLoader:
                     continue
 
                 col_map: Dict[str, Any] = tbl.get("columns", {})
-                # Gather target SQLA column types
+                # Gather target SQLA column metadata
                 sa_cols = {c.name: c.type for c in mapper.__table__.columns}
+                sa_col_objs = {c.name: c for c in mapper.__table__.columns}
 
                 # Build records
                 records: List[Dict[str, Any]] = []
@@ -284,7 +285,10 @@ class CdmCsvLoader:
                     if "person_id" in rec:
                         pid = rec.get("person_id")
                         if pid is None:
-                            pass
+                            # If NOT NULL, use placeholder to avoid constraint errors
+                            col = sa_col_objs.get("person_id")
+                            if col is not None and not getattr(col, "nullable", True):
+                                rec["person_id"] = 0
                         elif isinstance(pid, int):
                             pass
                         elif isinstance(pid, str) and pid.strip().isdigit():
@@ -294,12 +298,24 @@ class CdmCsvLoader:
                                 # If conversion unexpectedly fails, send to text column
                                 if "person_id_text" in sa_cols:
                                     rec["person_id_text"] = str(pid)
-                                rec["person_id"] = None
+                                # Respect NOT NULL with placeholder when required
+                                col = sa_col_objs.get("person_id")
+                                if col is not None and not getattr(
+                                    col, "nullable", True
+                                ):
+                                    rec["person_id"] = 0
+                                else:
+                                    rec["person_id"] = None
                         else:
                             # Non-numeric content: place into person_id_text if available
                             if "person_id_text" in sa_cols:
                                 rec["person_id_text"] = str(pid)
-                            rec["person_id"] = None
+                            # Respect NOT NULL with placeholder when required
+                            col = sa_col_objs.get("person_id")
+                            if col is not None and not getattr(col, "nullable", True):
+                                rec["person_id"] = 0
+                            else:
+                                rec["person_id"] = None
                     records.append(rec)
 
                 if not records:
@@ -374,6 +390,7 @@ class CdmCsvLoader:
             return
 
         # Iterate all tables and update person_id where it matches a known person_source_value
+        # Also handle rows that staged a non-numeric value in person_id_text.
         # Avoid metadata.sorted_tables to prevent SAWarning about unresolvable cycles in vocab tables.
         for tbl_name, table in automap.metadata.tables.items():
             if tbl_name == person_table.name:
@@ -381,14 +398,37 @@ class CdmCsvLoader:
             if "person_id" not in table.c:
                 continue
 
+            # If person_id_text exists, prefer it for matching
+            has_text = "person_id_text" in table.c
+
             # Run per-psv updates; small and explicit for clarity
             for psv, pid in psv_to_id.items():
-                stmt = (
+                if has_text:
+                    # Match on person_id_text
+                    stmt = (
+                        update(table)
+                        .where(table.c.person_id_text == psv)
+                        .values(person_id=pid)
+                    )
+                    await session.execute(stmt)
+                # Also try matching where person_id was staged as string
+                stmt2 = (
                     update(table)
                     .where(cast(table.c.person_id, String()) == psv)
                     .values(person_id=pid)
                 )
-                await session.execute(stmt)
+                await session.execute(stmt2)
+
+            # Clear person_id_text after normalization when column exists
+            if has_text:
+                try:
+                    await session.execute(
+                        update(table)
+                        .where(table.c.person_id_text.isnot(None))
+                        .values(person_id_text=None)
+                    )
+                except Exception:
+                    pass
 
     async def update_person_gender_concept_id(
         self, session: AsyncSession, automap: AutomapBase

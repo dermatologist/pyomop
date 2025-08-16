@@ -52,3 +52,9 @@ I'll edit the loader to add a safe, schema-agnostic workaround: add a temporary 
 set session_replication_role to replica before load and back to origin after load.
 
 ##
+
+You have edited the loader to add a safe, schema-agnostic workaround: add a temporary person_id_text column to non-person tables before inserts, route non-numeric person IDs into it,
+Add a placeholder patient_id to avoid vioalating non_null constraint
+normalize patient_id in step 2 using this patient_id_text column, and drop it right after. This avoids fragile FK/type changes and works across SQLite/Postgres.
+
+###
