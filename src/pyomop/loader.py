@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
 import pandas as pd
+from sqlalchemy import text  # added for DDL execution
 from sqlalchemy import (
     BigInteger,
     Date,
@@ -104,6 +105,64 @@ class CdmCsvLoader:
         await conn.run_sync(_prepare)
         return automap
 
+    async def _list_tables_with_person_id(self, conn: AsyncConnection) -> List[str]:
+        """Return table names (in default schema) that contain a person_id column, excluding 'person'."""
+
+        def _inner(sync_conn):
+            from sqlalchemy import inspect as _inspect
+
+            insp = _inspect(sync_conn)
+            tables = insp.get_table_names()
+            result: List[str] = []
+            for t in tables:
+                try:
+                    cols = insp.get_columns(t)
+                except Exception:
+                    continue
+                if any(c.get("name") == "person_id" for c in cols) and t != "person":
+                    result.append(t)
+            return result
+
+        return await conn.run_sync(_inner)
+
+    async def _add_person_id_text_columns(self, session: AsyncSession) -> None:
+        """Add a temporary person_id_text TEXT column to all non-person tables that have person_id.
+
+        This avoids fragile type-alter and FK juggling. We'll populate this column
+        when incoming person identifiers are not numeric, then resolve to integer
+        person_id in step 2 and drop the column.
+        """
+        conn = await session.connection()
+        tables = await self._list_tables_with_person_id(conn)
+        dialect = self._engine.dialect.name
+        for t in tables:
+            if dialect == "postgresql":
+                ddl = f'ALTER TABLE "{t}" ADD COLUMN IF NOT EXISTS person_id_text TEXT'
+            else:
+                # SQLite (and others): try without IF NOT EXISTS
+                ddl = f'ALTER TABLE "{t}" ADD COLUMN person_id_text TEXT'
+            try:
+                await session.execute(text(ddl))
+            except Exception:
+                # Column may already exist or backend may not support IF NOT EXISTS; ignore
+                pass
+
+    async def _drop_person_id_text_columns(self, session: AsyncSession) -> None:
+        """Drop the temporary person_id_text column from all non-person tables."""
+        conn = await session.connection()
+        tables = await self._list_tables_with_person_id(conn)
+        dialect = self._engine.dialect.name
+        for t in tables:
+            if dialect == "postgresql":
+                ddl = f'ALTER TABLE "{t}" DROP COLUMN IF EXISTS person_id_text'
+            else:
+                ddl = f'ALTER TABLE "{t}" DROP COLUMN person_id_text'
+            try:
+                await session.execute(text(ddl))
+            except Exception:
+                # Some backends or versions (older SQLite) may not support DROP COLUMN; ignore
+                pass
+
     def _load_mapping(self, mapping_path: str) -> Dict[str, Any]:
         """Load a JSON mapping file from disk."""
         with open(mapping_path, "r", encoding="utf-8") as f:
@@ -174,6 +233,8 @@ class CdmCsvLoader:
 
         async with self._get_session() as session:
             conn = await session.connection()
+            # Before reflecting, add a temporary person_id_text column to accept non-numeric IDs
+            await self._add_person_id_text_columns(session)
             automap = await self._prepare_automap(conn)
 
             for tbl in mapping.get("tables", []):
@@ -212,6 +273,27 @@ class CdmCsvLoader:
                         if sa_t is not None:
                             value = self._convert_value(sa_t, value)
                         rec[target_col] = value
+
+                    # If person_id exists in the record, route non-numeric values into person_id_text
+                    if "person_id" in rec:
+                        pid = rec.get("person_id")
+                        if pid is None:
+                            pass
+                        elif isinstance(pid, int):
+                            pass
+                        elif isinstance(pid, str) and pid.strip().isdigit():
+                            try:
+                                rec["person_id"] = int(pid.strip())
+                            except Exception:
+                                # If conversion unexpectedly fails, send to text column
+                                if "person_id_text" in sa_cols:
+                                    rec["person_id_text"] = str(pid)
+                                rec["person_id"] = None
+                        else:
+                            # Non-numeric content: place into person_id_text if available
+                            if "person_id_text" in sa_cols:
+                                rec["person_id_text"] = str(pid)
+                            rec["person_id"] = None
                     records.append(rec)
 
                 if not records:
@@ -226,6 +308,9 @@ class CdmCsvLoader:
             # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
             logger.info("Normalizing person_id foreign keys")
             await self.fix_person_id(session, automap)
+
+            # Drop the temporary person_id_text columns now that person_id has been normalized
+            await self._drop_person_id_text_columns(session)
 
             # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
             logger.info("Backfilling person birth fields")
@@ -445,7 +530,7 @@ class CdmCsvLoader:
 
         concept_table = concept_cls.__table__
 
-        # Simple in-memory cache to avoid repeated lookups
+        # Simple in-memory code to cid mapping
         code_to_cid: Dict[str, Optional[int]] = {}
 
         async def lookup_concept_id(code: str) -> Optional[int]:

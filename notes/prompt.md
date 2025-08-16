@@ -37,3 +37,14 @@ Remind to download vocabulary files.
 The command is of the form  pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
 This will create a OMOP CDM using SQLite, load vocabulary files, and import FHIR data.
 
+##
+
+Alter all person_id foreign keys in the tables other than person to type TEXT before import.
+Convert the type back to default after step 2: : Normalize person_id FKs using person.person_id
+
+##
+
+REPLY
+I'll edit the loader to add a safe, schema-agnostic workaround: add a temporary person_id_text column to non-person tables before inserts, route non-numeric person IDs into it, normalize in step 2 using this column, and drop it right after. This avoids fragile FK/type changes and works across SQLite/Postgres.
+
+##
