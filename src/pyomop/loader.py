@@ -169,7 +169,8 @@ class CdmCsvLoader:
         if mapping_path is None:
             mapping_path = str(Path(__file__).parent / "mapping.default.json")
         mapping = self._load_mapping(mapping_path)
-        df = pd.read_csv(csv_path)
+        # Use low_memory=False to avoid DtypeWarning for mixed-type columns
+        df = pd.read_csv(csv_path, low_memory=False)
 
         async with self._get_session() as session:
             conn = await session.connection()
