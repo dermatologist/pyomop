@@ -175,6 +175,7 @@ class CdmVocabulary(object):
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             # convert valid_start_date and valid_end_date to datetime
             df["valid_start_date"] = pd.to_datetime(
@@ -184,7 +185,11 @@ class CdmVocabulary(object):
             await self.write_vocab(df, "drug_strength", "replace")
             # df.to_sql('drug_strength', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
-                folder + "/CONCEPT.csv", sep="\t", nrows=sample, on_bad_lines="skip"
+                folder + "/CONCEPT.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
             )
             # convert valid_start_date and valid_end_date to datetime
             df["valid_start_date"] = pd.to_datetime(
@@ -198,6 +203,7 @@ class CdmVocabulary(object):
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             # convert valid_start_date and valid_end_date to datetime
             df["valid_start_date"] = pd.to_datetime(
@@ -211,6 +217,7 @@ class CdmVocabulary(object):
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "concept_ancestor", "replace")
             # df.to_sql('concept_ancester', con=self._engine, if_exists = 'replace')
@@ -219,11 +226,16 @@ class CdmVocabulary(object):
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "concept_synonym", "replace")
             # df.to_sql('concept_synonym', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
-                folder + "/VOCABULARY.csv", sep="\t", nrows=sample, on_bad_lines="skip"
+                folder + "/VOCABULARY.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "vocabulary", "replace")
             # df.to_sql('vocabulary', con=self._engine, if_exists = 'replace')
@@ -232,6 +244,7 @@ class CdmVocabulary(object):
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "relationship", "replace")
             # df.to_sql('relationship', con=self._engine, if_exists = 'replace')
@@ -240,11 +253,16 @@ class CdmVocabulary(object):
                 sep="\t",
                 nrows=sample,
                 on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "concept_class", "replace")
             # df.to_sql('concept_class', con=self._engine, if_exists = 'replace')
             df = pd.read_csv(
-                folder + "/DOMAIN.csv", sep="\t", nrows=sample, on_bad_lines="skip"
+                folder + "/DOMAIN.csv",
+                sep="\t",
+                nrows=sample,
+                on_bad_lines="skip",
+                low_memory=False,
             )
             await self.write_vocab(df, "domain", "replace")
             # df.to_sql('domain', con=self._engine, if_exists = 'replace')
