@@ -26,7 +26,7 @@ dependencies = [
     "asyncpg",
     "requests",
     "greenlet",
-    "fhiry"
+    "fhiry>=5.1.1"
 ]
 
 
