@@ -15,7 +15,7 @@ from contextlib import asynccontextmanager
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, Set
 
 import pandas as pd
 from sqlalchemy import text  # added for DDL execution
@@ -107,7 +107,10 @@ class CdmCsvLoader:
         return automap
 
     def _coerce_record_to_table_types(
-        self, table, rec: Dict[str, Any]
+        self,
+        table,
+        rec: Dict[str, Any],
+        force_text_fields: Optional[Set[str]] = None,
     ) -> Dict[str, Any]:
         """Coerce a record's values to the SQL types defined by the target OMOP table.
 
@@ -115,12 +118,13 @@ class CdmCsvLoader:
         - Strings/Text: cast to str; lists/tuples joined by comma; dicts JSON-serialized; enforce max length if defined.
         - Integers/Numerics: tolerant numeric parsing; None if unparsable.
         - Dates/DateTimes: parsed via pandas; DateTime normalized to UTC-naive.
-        - Forced TEXT fields: certain columns are always stringified (e.g., codes arrays).
+        - Forced TEXT fields: certain columns are always stringified (e.g., codes arrays). The list comes
+          from mapping["force_text_fields"].
 
         This is applied just before insert to ensure DB type compatibility.
         """
         # Columns that should always be treated as TEXT regardless of inferred type
-        FORCE_TEXT_FIELDS = {"production_id", "drug_source_value"}
+        force_text: Set[str] = set(force_text_fields or [])
 
         for col in table.columns:
             name = col.name
@@ -133,7 +137,7 @@ class CdmCsvLoader:
             t = col.type
 
             # Force certain fields to TEXT
-            if name in FORCE_TEXT_FIELDS:
+            if name in force_text:
                 if isinstance(val, (list, tuple)):
                     sval = ",".join(["" if v is None else str(v) for v in val])
                 elif isinstance(val, dict):
@@ -431,7 +435,11 @@ class CdmCsvLoader:
                                 else:
                                     rec["person_id"] = None
                         # Finally coerce all fields to the table's schema (string lengths, forced TEXT, datetimes)
-                        rec = self._coerce_record_to_table_types(mapper.__table__, rec)
+                        rec = self._coerce_record_to_table_types(
+                            mapper.__table__,
+                            rec,
+                            set(mapping.get("force_text_fields", [])),
+                        )
                         records.append(rec)
 
                     if not records:
