@@ -26,6 +26,7 @@ from sqlalchemy import (
     Integer,
     Numeric,
     String,
+    Text,
     and_,
     cast,
     insert,
@@ -104,6 +105,98 @@ class CdmCsvLoader:
 
         await conn.run_sync(_prepare)
         return automap
+
+    def _coerce_record_to_table_types(
+        self, table, rec: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Coerce a record's values to the SQL types defined by the target OMOP table.
+
+        Rules:
+        - Strings/Text: cast to str; lists/tuples joined by comma; dicts JSON-serialized; enforce max length if defined.
+        - Integers/Numerics: tolerant numeric parsing; None if unparsable.
+        - Dates/DateTimes: parsed via pandas; DateTime normalized to UTC-naive.
+        - Forced TEXT fields: certain columns are always stringified (e.g., codes arrays).
+
+        This is applied just before insert to ensure DB type compatibility.
+        """
+        # Columns that should always be treated as TEXT regardless of inferred type
+        FORCE_TEXT_FIELDS = {"production_id", "drug_source_value"}
+
+        for col in table.columns:
+            name = col.name
+            if name not in rec:
+                continue
+            val = rec[name]
+            if val is None:
+                continue
+
+            t = col.type
+
+            # Force certain fields to TEXT
+            if name in FORCE_TEXT_FIELDS:
+                if isinstance(val, (list, tuple)):
+                    sval = ",".join(["" if v is None else str(v) for v in val])
+                elif isinstance(val, dict):
+                    try:
+                        import json as _json
+
+                        sval = _json.dumps(val, ensure_ascii=False)
+                    except Exception:
+                        sval = str(val)
+                else:
+                    sval = str(val)
+                max_len = getattr(t, "length", None)
+                rec[name] = sval[: max_len or 255]
+                continue
+
+            # Type-driven coercion
+            try:
+                from pandas import to_datetime as _to_datetime
+                from pandas import to_numeric as _to_numeric
+
+                if isinstance(t, Date):
+                    dt = _to_datetime(val, errors="coerce")
+                    rec[name] = None if pd.isna(dt) else dt.date()
+                elif isinstance(t, DateTime):
+                    ts = _to_datetime(val, errors="coerce", utc=True)
+                    if pd.isna(ts):
+                        rec[name] = None
+                    else:
+                        py = ts.to_pydatetime()
+                        rec[name] = py.astimezone(timezone.utc).replace(tzinfo=None)
+                elif isinstance(t, (Integer, BigInteger)):
+                    num = _to_numeric(val, errors="coerce")
+                    rec[name] = None if pd.isna(num) else int(num)
+                elif isinstance(t, Numeric):
+                    num = _to_numeric(val, errors="coerce")
+                    rec[name] = None if pd.isna(num) else Decimal(str(num))
+                elif isinstance(t, (String, Text)):
+                    if isinstance(val, (list, tuple)):
+                        sval = ",".join(["" if v is None else str(v) for v in val])
+                    elif isinstance(val, dict):
+                        try:
+                            import json as _json
+
+                            sval = _json.dumps(val, ensure_ascii=False)
+                        except Exception:
+                            sval = str(val)
+                    else:
+                        sval = str(val)
+                    max_len = getattr(t, "length", None)
+                    rec[name] = sval[: max_len or 255]
+                else:
+                    # Leave other types as-is
+                    pass
+            except Exception:
+                # Last resort, stringify
+                try:
+                    s = str(val)
+                    max_len = getattr(getattr(col, "type", None), "length", None)
+                    rec[name] = s[: max_len or 255]
+                except Exception:
+                    rec[name] = val
+
+        return rec
 
     async def _list_tables_with_person_id(self, conn: AsyncConnection) -> List[str]:
         """Return table names (in default schema) that contain a person_id column, excluding 'person'."""
@@ -290,10 +383,12 @@ class CdmCsvLoader:
                             else:
                                 value = None
 
-                            # Convert based on SA type if available
-                            sa_t = sa_cols.get(target_col)
-                            if sa_t is not None:
-                                value = self._convert_value(sa_t, value)
+                            # IMPORTANT: keep person_id raw for staging logic below
+                            if target_col != "person_id":
+                                # Convert based on SA type if available
+                                sa_t = sa_cols.get(target_col)
+                                if sa_t is not None:
+                                    value = self._convert_value(sa_t, value)
                             rec[target_col] = value
 
                         # If person_id exists in the record, route non-numeric values into person_id_text
@@ -335,6 +430,8 @@ class CdmCsvLoader:
                                     rec["person_id"] = 0
                                 else:
                                     rec["person_id"] = None
+                        # Finally coerce all fields to the table's schema (string lengths, forced TEXT, datetimes)
+                        rec = self._coerce_record_to_table_types(mapper.__table__, rec)
                         records.append(rec)
 
                     if not records:
