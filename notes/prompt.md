@@ -48,3 +48,7 @@ REPLY
 I'll edit the loader to add a safe, schema-agnostic workaround: add a temporary person_id_text column to non-person tables before inserts, route non-numeric person IDs into it, normalize in step 2 using this column, and drop it right after. This avoids fragile FK/type changes and works across SQLite/Postgres.
 
 ##
+
+set session_replication_role to replica before load and back to origin after load.
+
+##

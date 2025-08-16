@@ -12,7 +12,7 @@ import json
 # setup logging
 import logging
 from contextlib import asynccontextmanager
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from pathlib import Path
 from typing import Any, AsyncGenerator, Dict, List, Optional
@@ -199,8 +199,14 @@ class CdmCsvLoader:
                 dt = pd.to_datetime(value, errors="coerce")
                 return None if pd.isna(dt) else dt.date()
             if isinstance(sa_type, DateTime):
-                dt = pd.to_datetime(value, errors="coerce")
-                return None if pd.isna(dt) else dt.to_pydatetime()
+                # Normalize to UTC-naive for Postgres compatibility
+                ts = pd.to_datetime(value, errors="coerce", utc=True)
+                if pd.isna(ts):
+                    return None
+                py = ts.to_pydatetime()
+                if getattr(py, "tzinfo", None) is not None:
+                    py = py.astimezone(timezone.utc).replace(tzinfo=None)
+                return py
             if isinstance(sa_type, (Integer, BigInteger)):
                 return int(value)
             if isinstance(sa_type, Numeric):
@@ -474,13 +480,21 @@ class CdmCsvLoader:
             # Parse birth_dt to a datetime if needed
             bd: Optional[datetime]
             if isinstance(birth_dt, datetime):
-                bd = birth_dt
+                # Normalize timezone-aware to UTC-naive
+                if birth_dt.tzinfo is not None:
+                    bd = birth_dt.astimezone(timezone.utc).replace(tzinfo=None)
+                else:
+                    bd = birth_dt
             elif isinstance(birth_dt, date):
                 bd = datetime(birth_dt.year, birth_dt.month, birth_dt.day)
             else:
                 try:
-                    tmp = pd.to_datetime(birth_dt, errors="coerce")
-                    bd = None if pd.isna(tmp) else tmp.to_pydatetime()
+                    tmp = pd.to_datetime(birth_dt, errors="coerce", utc=True)
+                    if pd.isna(tmp):
+                        bd = None
+                    else:
+                        py = tmp.to_pydatetime()
+                        bd = py.astimezone(timezone.utc).replace(tzinfo=None)
                 except Exception:
                     bd = None
 

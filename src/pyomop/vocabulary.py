@@ -377,7 +377,24 @@ class CdmVocabulary(object):
                         else ser.fillna(default_for(col))
                     )
                 elif isinstance(t, SA_DateTime):
-                    ser = pd.to_datetime(df2[name], errors="coerce")
+                    # Normalize to UTC-naive to avoid tz-aware vs tz-naive issues in Postgres
+                    ser = pd.to_datetime(df2[name], errors="coerce", utc=True)
+                    # Convert to Python datetime and drop tzinfo
+                    def _to_naive(dt):
+                        try:
+                            if pd.isna(dt):
+                                return None
+                        except Exception:
+                            pass
+                        if hasattr(dt, "to_pydatetime"):
+                            py = dt.to_pydatetime()
+                        else:
+                            py = dt
+                        if getattr(py, "tzinfo", None) is not None:
+                            py = py.tz_convert("UTC").tz_localize(None) if hasattr(py, "tz_convert") else py.replace(tzinfo=None)
+                        return py
+
+                    ser = ser.map(_to_naive)
                     df2[name] = (
                         ser.where(pd.notna(ser), None)
                         if col.nullable
