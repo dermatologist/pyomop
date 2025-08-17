@@ -111,7 +111,7 @@ async def main():
         print(row)
         assert row.person_id == 100
 
-    # Query the cohort pattern 2
+    # Query the person pattern 2
     person = await session.get(Person, 100)
     print(person)
     assert person.person_id == 100  # type: ignore
