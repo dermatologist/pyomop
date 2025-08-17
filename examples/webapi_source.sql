@@ -26,7 +26,7 @@ WHERE source_key = 'DEMO_CDM'
 ;
 
 INSERT INTO webapi.source (source_id, source_name, source_key, source_connection, source_dialect)
-SELECT nextval('webapi.source_sequence'), 'My CDM', 'MY_CDM', 'jdbc:postgresql://10.0.0.211:5432/postgres?user=postgres&password=mypass', 'postgresql';
+SELECT nextval('webapi.source_sequence'), 'My CDM', 'MY_CDM', 'jdbc:postgresql://localhost:5432/postgres?user=postgres&password=mypass', 'postgresql';
 
 INSERT INTO webapi.source_daimon (source_daimon_id, source_id, daimon_type, table_qualifier, priority)
 SELECT nextval('webapi.source_daimon_sequence'), source_id, 0, 'public', 0
