@@ -1,42 +1,68 @@
-version: "3.8"
 services:
   omopdb:
-    image: postgres:16-alpine  # Or your preferred Postgres version
+    image: beapen/broadsea-atlasdb:1.0
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: mypass
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_USER: ohdsi
-      POSTGRES_PASSWORD: ohdsi
-      POSTGRES_DB: ohdsi
+    networks:
+      - ohdsi-omop-v5
     volumes:
-      - ohdsi_data:/var/lib/postgresql/data
-    # networks:
-    #   - pyomop_ohdsi
+      - omop-postgres-data:/var/lib/postgresql/data
 
-  # webapi:
-  #   image: ohdsi/webapi:latest  # Or your preferred WebAPI version
-  #   ports:
-  #     - "8080:8080"
-  #   environment:
-  #     DATABASE_SERVER: omopdb
-  #     DATABASE_PORT: 5432
-  #     DATABASE_USER: ohdsi
-  #     DATABASE_PASSWORD: ohdsi
-  #     DATABASE_NAME: ohdsi
-  #     # Add other environment variables as needed, such as JDBC driver paths
-  #     WEBAPI_ADDITIONAL_JDBC_FILE_PATH: /opt/tomcat/webapps/WebAPI/WEB-INF/lib/postgresql-42.2.23.jar #Example, adjust version as needed.
-  #     JAVA_OPTS: -Xms2g -Xmx4g # Example JVM settings
-  #   depends_on:
-  #     - omopdb
-  #   networks:
-  #     - pyomop_ohdsi
-    # volumes:
-    #   - ./webapi_logs:/usr/local/tomcat/logs # Optional: For persistent logs
+
+  webapi:
+    image: ohdsi/webapi:2.14.0
+    restart: unless-stopped
+    ports:
+      - "${WEBAPI_HOST_PORT:-9876}:8080"
+    environment:
+      DATASOURCE_DRIVERCLASSNAME: org.postgresql.Driver
+      DATASOURCE_URL: jdbc:postgresql://omopdb:5432/postgres
+      DATASOURCE_USERNAME: postgres
+      DATASOURCE_PASSWORD: mypass
+      DATASOURCE_OHDSI_SCHEMA: webapi
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA: webapi
+      SPRING_BATCH_INITIALIZER_ENABLED: true
+      # Spring batch initialization always
+      SPRING_BATCH_INITIALIZE-SCHEMA: always
+      SPRING_BATCH_REPOSITORY_TABLEPREFIX: webapi.BATCH_
+      FLYWAY_DATASOURCE_DRIVERCLASSNAME: org.postgresql.Driver
+      FLYWAY_DATASOURCE_URL: jdbc:postgresql://omopdb:5432/postgres
+      FLYWAY_DATASOURCE_USERNAME: postgres
+      FLYWAY_DATASOURCE_PASSWORD: mypass
+      FLYWAY_LOCATIONS: classpath:db/migration/postgresql
+      FLYWAY_PLACEHOLDERS_OHDSISCHEMA: webapi
+      FLYWAY_SCHEMAS: webapi
+
+      SECURITY_ORIGIN: "http://localhost:8080"
+      SECURITY_CORS_ENABLED: "true"
+      SECURITY_SSL_ENABLED: "false"
+
+    networks:
+      - ohdsi-omop-v5
+    depends_on:
+      - omopdb
+
+  atlas:
+    image: ohdsi/atlas:2.14.1
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config-local.js:/etc/atlas/config-local.js
+    networks:
+      - ohdsi-omop-v5
+    depends_on:
+      - webapi
+
+networks:
+  ohdsi-omop-v5:
+    name: ${DOCKER_NETWORK}
 
 volumes:
-  ohdsi_data:
-
-# networks:
-#   pyomop_ohdsi:
-#     driver: bridge
-
+  omop-postgres-data:
+    name: omop-postgres-data
+    driver: local
