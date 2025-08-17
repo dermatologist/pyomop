@@ -11,7 +11,7 @@ async def main():
     # Create a local SQLite CDM and initialize tables
     cdm = CdmEngineFactory(
         # db="pgsql",
-        # host="10.0.0.211",
+        # host="localhost",
         # port=5432,
         # user="postgres",
         # pw="pword",

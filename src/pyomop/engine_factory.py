@@ -9,8 +9,13 @@ create/init CDM schemas and obtain async sessions across supported backends
 # from sqlalchemy.orm import Session
 # from sqlalchemy.ext.automap import automap_base
 
+import logging
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.automap import automap_base
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class CdmEngineFactory(object):
@@ -118,8 +123,20 @@ class CdmEngineFactory(object):
             Async engine instance bound to the configured database.
         """
         if self._db == "sqlite":
+            # Schemas are not supported for SQLite; warn if a non-default schema was provided
+            if self._schema and self._schema not in ("", "public"):
+                logger.warning(
+                    "Schema is not supported for SQLite; ignoring schema='%s'",
+                    self._schema,
+                )
             self._engine = create_async_engine("sqlite+aiosqlite:///" + self._name)
-        if self._db == "mysql":
+        elif self._db == "mysql":
+            # Schemas are not supported for MySQL in the same way as PostgreSQL; warn and ignore
+            if self._schema and self._schema not in ("", "public"):
+                logger.warning(
+                    "Schema is not supported for MySQL; ignoring schema='%s'",
+                    self._schema,
+                )
             mysql_url = "mysql://{}:{}@{}:{}/{}"
             mysql_url = mysql_url.format(
                 self._user, self._pw, self._host, self._port, self._name
@@ -127,15 +144,21 @@ class CdmEngineFactory(object):
             self._engine = create_async_engine(
                 mysql_url, isolation_level="READ UNCOMMITTED"
             )
-        if self._db == "pgsql":
-            # https://stackoverflow.com/questions/9298296/sqlalchemy-support-of-postgres-schemas
-            dbschema = "{},public"  # Searches left-to-right
-            dbschema = dbschema.format(self._schema)
+        elif self._db == "pgsql":
             pgsql_url = "postgresql+asyncpg://{}:{}@{}:{}/{}"
             pgsql_url = pgsql_url.format(
                 self._user, self._pw, self._host, self._port, self._name
             )
-            self._engine = create_async_engine(pgsql_url, connect_args={})
+            connect_args = {}
+            # If a schema is provided, set the PostgreSQL search_path so that all
+            # operations (reflection, DDL/DML) use this schema by default.
+            if self._schema and self._schema != "":
+                connect_args = {"server_settings": {"search_path": self._schema}}
+            self._engine = create_async_engine(pgsql_url, connect_args=connect_args)
+        else:
+            # Unknown DB type; create no engine and warn
+            logger.warning("Unknown database type '%s'—no engine created.", self._db)
+            return None
         return self._engine
 
     @property

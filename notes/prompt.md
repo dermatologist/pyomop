@@ -74,3 +74,8 @@ Add a generic function to cast all fields to the required type by the OMOP schem
 Improve the function def _coerce_record_to_table_types to remove 0 after the decimal point while coercing FLOAT to string.
 
 ###
+
+Add support for schema when postgres database is selected.
+Log a warning that schemas are not supported for other databases.
+
+###

@@ -18,12 +18,9 @@ async def main():
     vocab = CdmVocabulary(cdm)
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
-    # Add a cohort
+    # Add Persons
     async with cdm.session() as session:  # type: ignore
         async with session.begin():
-            session.add(Cohort(cohort_definition_id=2, subject_id=100,
-                cohort_end_date=datetime.datetime.now(),
-                cohort_start_date=datetime.datetime.now()))
             session.add(
                 Person(
                     person_id=100,
@@ -52,21 +49,21 @@ async def main():
                     race_source_concept_id=8552,
                     ethnicity_concept_id=38003564,
                     ethnicity_source_concept_id=38003564,
-                    )
                 )
+            )
         await session.commit()
 
-    # Query the cohort
-    stmt = select(Cohort).where(Cohort.subject_id == 100)
+    # Query the Person
+    stmt = select(Person).where(Person.person_id == 100)
     result = await session.execute(stmt)
     for row in result.scalars():
         print(row)
-        assert row.subject_id == 100
+        assert row.person_id == 100
 
-    # Query the cohort pattern 2
-    cohort = await session.get(Cohort, 1)
-    print(cohort)
-    assert cohort.subject_id == 100 # type: ignore
+    # Query the person pattern 2
+    person = await session.get(Person, 100)
+    print(person)
+    assert person.person_id == 100  # type: ignore
 
     # Convert result to a pandas dataframe
     vec = CdmVector()
@@ -77,7 +74,7 @@ async def main():
     print("DataFrame from result:")
     print(df.head())
 
-    result = await vec.execute(cdm, query='SELECT * from cohort;')
+    result = await vec.execute(cdm, query='SELECT * from person;')
     print("Executing custom query:")
     df = vec.result_to_df(result)
     print("DataFrame from result:")
