@@ -12,7 +12,7 @@
 
 **pyomop** is a Python library for working with [OHDSI](https://www.ohdsi.org/) OMOP Common Data Model (CDM) v5.4 or v6 compliant databases using SQLAlchemy as the ORM. It supports converting query results to pandas DataFrames for machine learning pipelines and provides utilities for working with OMOP vocabularies. Table definitions are based on the [omop-cdm](https://github.com/thehyve/omop-cdm) library. Pyomop is designed to be a lightweight, easy-to-use library for researchers and developers experimenting and testing with OMOP CDM databases.
 
-- Supports SQLite, PostgreSQL, and MySQL. (All tables are in the default schema) (See usage below for more details)
+- Supports SQLite, PostgreSQL, and MySQL. CDM and Vocab tables are created in the same schema. (See usage below for more details)
 - LLM-based natural language queries via llama-index. [Usage](examples/llm_example.py).
 - Execute [QueryLibrary](https://github.com/OHDSI/QueryLibrary). (See usage below for more details)
 
@@ -61,11 +61,10 @@ async def main():
     vocab = CdmVocabulary(cdm, version='cdm54') # or 'cdm6' for v6
     # Uncomment the following line to create a new vocabulary from CSV files
     # vocab.create_vocab('/path/to/csv/files')
-    async with cdm.session() as session:
+
+    # Add Persons
+    async with cdm.session() as session:  # type: ignore
         async with session.begin():
-            session.add(Cohort(cohort_definition_id=2, subject_id=100,
-                cohort_end_date=datetime.datetime.now(),
-                cohort_start_date=datetime.datetime.now()))
             session.add(
                 Person(
                     person_id=100,
@@ -81,39 +80,59 @@ async def main():
                     ethnicity_source_concept_id=38003564,
                 )
             )
+            session.add(
+                Person(
+                    person_id=101,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                )
+            )
         await session.commit()
 
-        stmt = select(Cohort).where(Cohort.subject_id == 100)
-        result = await session.execute(stmt)
-        for row in result.scalars():
-            print(row)
+    # Query the Person
+    stmt = select(Person).where(Person.person_id == 100)
+    result = await session.execute(stmt)
+    for row in result.scalars():
+        print(row)
+        assert row.person_id == 100
 
-        cohort = await session.get(Cohort, 1)
-        print(cohort)
+    # Query the cohort pattern 2
+    person = await session.get(Person, 100)
+    print(person)
+    assert person.person_id == 100  # type: ignore
 
-        vec = CdmVector()
+    # Convert result to a pandas dataframe
+    vec = CdmVector()
 
-        # supports QueryLibrary queries
-        # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
-        result = await vec.query_library(cdm, resource='person', query_name='PE02')
-        df = vec.result_to_df(result)
-        print("DataFrame from result:")
-        print(df.head())
+    # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
+    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    df = vec.result_to_df(result)
+    print("DataFrame from result:")
+    print(df.head())
 
-        result = await vec.execute(cdm, query='SELECT * from cohort;')
-        print("Executing custom query:")
-        df = vec.result_to_df(result)
-        print("DataFrame from result:")
-        print(df.head())
+    result = await vec.execute(cdm, query='SELECT * from person;')
+    print("Executing custom query:")
+    df = vec.result_to_df(result)
+    print("DataFrame from result:")
+    print(df.head())
 
-        # access sqlalchemy result directly
-        for row in result:
-            print(row)
+    # access sqlalchemy result directly
+    for row in result:
+        print(row)
 
-
+    # Close session
     await session.close()
-    await engine.dispose()
+    await engine.dispose() # type: ignore
 
+# Run the main function
 asyncio.run(main())
 ```
 

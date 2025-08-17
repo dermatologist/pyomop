@@ -1,21 +1,22 @@
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
+from src.pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
 from src.pyomop.cdm54 import Person, Cohort, Base
 from sqlalchemy.future import select
 import datetime
 import asyncio
 
+
 async def main():
-    cdm = CdmEngineFactory()  # Creates SQLite database by default
+    # cdm = CdmEngineFactory()  # Creates SQLite database by default
     # Postgres example (db='mysql' also supported)
-    # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
-    #                       user='', pw='',
-    #                       name='', schema='cdm6')
+    cdm = CdmEngineFactory(db='pgsql', host='10.0.0.211', port=5432,
+                          user='postgres', pw='mypass',
+                          name='postgres', schema='public')
 
     engine = cdm.engine
     # Create Tables if required
-    await cdm.init_models(Base.metadata)
+    # await cdm.init_models(Base.metadata)
     # Create vocabulary if required
-    vocab = CdmVocabulary(cdm)
+    # vocab = CdmVocabulary(cdm)
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
     # Add Persons
@@ -61,7 +62,7 @@ async def main():
         assert row.person_id == 100
 
     # Query the cohort pattern 2
-    person = await session.get(Person, 100)
+    person = await session.get(Person, 1)
     print(person)
     assert person.person_id == 100  # type: ignore
 
@@ -69,12 +70,12 @@ async def main():
     vec = CdmVector()
 
     # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
-    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    result = await vec.query_library(cdm, resource="person", query_name="PE02")
     df = vec.result_to_df(result)
     print("DataFrame from result:")
     print(df.head())
 
-    result = await vec.execute(cdm, query='SELECT * from person;')
+    result = await vec.execute(cdm, query="SELECT * from cohort;")
     print("Executing custom query:")
     df = vec.result_to_df(result)
     print("DataFrame from result:")
@@ -86,7 +87,8 @@ async def main():
 
     # Close session
     await session.close()
-    await engine.dispose() # type: ignore
+    await engine.dispose()  # type: ignore
+
 
 # Run the main function
 asyncio.run(main())
