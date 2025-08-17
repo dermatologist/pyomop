@@ -157,9 +157,9 @@ pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
 
 This will create an OMOP CDM in SQLite, load the vocabulary files, and import the FHIR data from the input folder and reconcile vocabulary, mapping source_value to concept_id. The mapping is defined in the `mapping.example.json` file. The default mapping is [here](src/pyomop/mapping.default.json). Mapping happens in 5 steps as implemented [here](src/pyomop/loader.py).
 
-* Example using postgres
+* Example using postgres (Docker)
 ```bash
-pyomop --dbtype pgsql --host localhost --user ohdsi --pw ohdsi  --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
+pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
 ```
 
 * FHIR to data frame mapping is done with [FHIRy](https://github.com/dermatologist/fhiry)
