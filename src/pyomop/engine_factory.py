@@ -158,6 +158,7 @@ class CdmEngineFactory(object):
         else:
             # Unknown DB type; create no engine and warn
             logger.warning("Unknown database type '%s'—no engine created.", self._db)
+            return None
         return self._engine
 
     @property
