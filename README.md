@@ -17,6 +17,8 @@
 - 🔥 FHIR to OMOP conversion utilities. (See usage below for more details)
 - Execute [QueryLibrary](https://github.com/OHDSI/QueryLibrary). (See usage below for more details)
 
+Please ⭐️ If you find this project useful!
+
 ## Installation
 
 **Stable release:**
@@ -39,7 +41,7 @@ See [llm_example.py](examples/llm_example.py) for usage.
 
 ## Docker
 
-* A [docker-compose](/docker-compose.yml) is provided to quickly set up an environment with postgrs, webapi, atlas and a [sql script](/examples/webapi_source.sql) to create a source in webapi. The script can be run using the `psql` command line tool or via the webapi UI. Please refresh after running the script by sending a request to /WebAPI/source/refresh.
+* A [docker-compose](/docker-compose.yml) is provided to quickly set up an environment with postgrs, [webapi](https://github.com/OHDSI/WebAPI), [atlas](https://github.com/OHDSI/atlas) and a [sql script](/examples/webapi_source.sql) to create a source in webapi. The script can be run using the `psql` command line tool or via the webapi UI. Please refresh after running the script by sending a request to /WebAPI/source/refresh.
 
 ## 🔧 Usage
 
@@ -191,6 +193,4 @@ Pull requests are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 - [Bell Eapen](https://nuchange.ca) [![Twitter Follow](https://img.shields.io/twitter/follow/beapen?style=social)](https://twitter.com/beapen)
 
----
 
-⭐️ If you find this project useful!
