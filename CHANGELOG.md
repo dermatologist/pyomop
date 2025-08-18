@@ -2,10 +2,11 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.3.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.4.0...HEAD)
 
 **Merged pull requests:**
 
+- Feature/hot fix 3 [\#232](https://github.com/dermatologist/pyomop/pull/232) ([dermatologist](https://github.com/dermatologist))
 - Feature/docker 1 [\#230](https://github.com/dermatologist/pyomop/pull/230) ([dermatologist](https://github.com/dermatologist))
 - Feature/hotfix 2 [\#229](https://github.com/dermatologist/pyomop/pull/229) ([dermatologist](https://github.com/dermatologist))
 - Feature/fhir to omop 2 [\#228](https://github.com/dermatologist/pyomop/pull/228) ([dermatologist](https://github.com/dermatologist))
@@ -36,7 +37,10 @@
 - build\(deps\): bump urllib3 from 1.26.6 to 1.26.18 [\#140](https://github.com/dermatologist/pyomop/pull/140) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump pygments from 2.10.0 to 2.15.0 [\#139](https://github.com/dermatologist/pyomop/pull/139) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump requests from 2.26.0 to 2.31.0 [\#138](https://github.com/dermatologist/pyomop/pull/138) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Update README.md [\#129](https://github.com/dermatologist/pyomop/pull/129) ([dermatologist](https://github.com/dermatologist))
+
+## [v5.4.0](https://github.com/dermatologist/pyomop/tree/v5.4.0) (2025-08-17)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.3.0...v5.4.0)
 
 ## [v5.3.0](https://github.com/dermatologist/pyomop/tree/v5.3.0) (2025-08-16)
 

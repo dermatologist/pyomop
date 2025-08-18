@@ -58,7 +58,7 @@ async def main():
     cdm = CdmEngineFactory() # Creates SQLite database by default for fast testing
     # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
     #                       user='', pw='',
-    #                       name='', schema='public')
+    #                       name='', schema='')
     # cdm = CdmEngineFactory(db='mysql', host='', port=3306,
     #                       user='', pw='',
     #                       name='')
