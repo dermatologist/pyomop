@@ -35,6 +35,7 @@ WHERE source_key = 'MY_CDM'
 ;
 
 INSERT INTO webapi.source_daimon (source_daimon_id, source_id, daimon_type, table_qualifier, priority)
+-- This vocabulary has higher priority --
 SELECT nextval('webapi.source_daimon_sequence'), source_id, 1, 'my_cdm', 2
 FROM webapi.source
 WHERE source_key = 'MY_CDM'
