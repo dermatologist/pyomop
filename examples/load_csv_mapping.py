@@ -17,7 +17,7 @@ async def main():
         # user="postgres",
         # pw="pword",
         # name="postgres",
-        # schema="public"
+        # schema=""
     )
     engine = cdm.engine
     if RESET_DB:

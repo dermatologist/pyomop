@@ -29,13 +29,14 @@ INSERT INTO webapi.source (source_id, source_name, source_key, source_connection
 SELECT nextval('webapi.source_sequence'), 'My CDM', 'MY_CDM', 'jdbc:postgresql://localhost:5432/postgres?user=postgres&password=mypass', 'postgresql';
 
 INSERT INTO webapi.source_daimon (source_daimon_id, source_id, daimon_type, table_qualifier, priority)
-SELECT nextval('webapi.source_daimon_sequence'), source_id, 0, 'public', 0
+SELECT nextval('webapi.source_daimon_sequence'), source_id, 0, 'my_cdm', 0
 FROM webapi.source
 WHERE source_key = 'MY_CDM'
 ;
 
 INSERT INTO webapi.source_daimon (source_daimon_id, source_id, daimon_type, table_qualifier, priority)
-SELECT nextval('webapi.source_daimon_sequence'), source_id, 1, 'public', 1
+-- This vocabulary has higher priority --
+SELECT nextval('webapi.source_daimon_sequence'), source_id, 1, 'my_cdm', 2
 FROM webapi.source
 WHERE source_key = 'MY_CDM'
 ;

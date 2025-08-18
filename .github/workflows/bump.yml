@@ -13,7 +13,7 @@ jobs:
 
     steps:
     - name: Checkout Latest Commit
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
 
     - name: "✏️ Generate release changelog"
       uses: janheinrichmerker/action-github-changelog-generator@v2.4
