@@ -40,7 +40,7 @@ from .vocabulary import CdmVocabulary
     "--schema",
     "-s",
     multiple=False,
-    default="public",
+    default="",
     help="Database schema (for pgsql)",
 )
 @click.option(

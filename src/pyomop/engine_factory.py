@@ -42,7 +42,7 @@ class CdmEngineFactory(object):
         user="root",
         pw="pass",
         name="cdm.sqlite",
-        schema="public",
+        schema="",
     ):
         self._db = db
         self._name = name
