@@ -1,6 +1,6 @@
 services:
   omopdb:
-    image: beapen/broadsea-atlasdb:1.0
+    image: beapen/broadsea-atlasdb:2.0
     restart: unless-stopped
     environment:
       POSTGRES_PASSWORD: mypass
