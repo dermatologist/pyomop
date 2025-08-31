@@ -1,5 +1,7 @@
 # pyomop: OMOP Swiss Army Knife 🔧
 
+<div align="center">
+
 [![Release](https://img.shields.io/github/v/release/dermatologist/pyomop)](https://img.shields.io/github/v/release/dermatologist/pyomop)
 [![Build status](https://img.shields.io/github/actions/workflow/status/dermatologist/pyomop/pytest.yml?branch=develop)](https://github.com/dermatologist/pyomop/actions/workflows/pytest.yml?query=branch%3Adevelop)
 [![codecov](https://codecov.io/gh/dermatologist/pyomop/branch/develop/graph/badge.svg)](https://codecov.io/gh/dermatologist/pyomop)
@@ -7,6 +9,10 @@
 [![License](https://img.shields.io/github/license/dermatologist/pyomop)](https://img.shields.io/github/license/dermatologist/pyomop)
 [![Downloads](https://img.shields.io/pypi/dm/pyomop)](https://pypi.org/project/pyomop)
 [![Documentation](https://badgen.net/badge/icon/documentation?icon=libraries&label)](https://dermatologist.github.io/pyomop/)
+<!-- gh-dependents-info-used-by-start -->
+<!-- gh-dependents-info-used-by-end -->
+
+</div>
 
 ## ✨ Overview
 
