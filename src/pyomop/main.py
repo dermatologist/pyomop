@@ -57,7 +57,18 @@ from .vocabulary import CdmVocabulary
     type=click.Path(exists=True, file_okay=False),
     help="Input folder with FHIR bundles or ndjson files.",
 )
-def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path):
+@click.option(
+    "--eunomia-dataset",
+    "-e",
+    "eunomia_dataset",
+    help="Download and load Eunomia dataset (e.g., 'GiBleed', 'Synthea')",
+)
+@click.option(
+    "--eunomia-path",
+    default="",
+    help="Path to store/find Eunomia datasets (uses EUNOMIA_DATA_FOLDER env var if not specified)",
+)
+def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path, eunomia_dataset, eunomia_path):
     # clear database name if not sqlite
     if dbtype != "sqlite" and name == "cdm.sqlite":
         name = ""
@@ -130,6 +141,44 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
                 chunk_size=500,
             )
         )
+        click.echo("Done")
+
+    if eunomia_dataset:
+        click.echo(f"Downloading and loading Eunomia dataset '{eunomia_dataset}' into {dbtype} database {name}")
+        from .eunomia import EunomiaData
+        
+        cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
+        eunomia = EunomiaData(cdm)
+        
+        # Download dataset
+        zip_path = eunomia.download_eunomia_data(
+            dataset_name=eunomia_dataset,
+            path_to_data=eunomia_path if eunomia_path else None,
+            verbose=True
+        )
+        click.echo(f"Downloaded dataset to: {zip_path}")
+        
+        # Extract and load into database
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as tmp_db:
+            db_path = tmp_db.name
+            
+        try:
+            asyncio.run(eunomia.extract_load_data(
+                from_path=zip_path,
+                to_path=db_path,
+                dbms=dbtype,
+                verbose=True
+            ))
+            click.echo(f"Loaded dataset into database: {db_path}")
+            
+        except Exception as e:
+            click.echo(f"Error loading dataset: {e}", err=True)
+            import os
+            if os.path.exists(db_path):
+                os.unlink(db_path)
+            raise
+            
         click.echo("Done")
 
 

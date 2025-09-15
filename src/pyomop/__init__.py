@@ -3,6 +3,7 @@ import sys
 
 _logger = logging.getLogger(__name__)
 from .engine_factory import CdmEngineFactory
+from .eunomia import EunomiaData, download_eunomia_data, extract_load_data, export_data_files, load_data_files
 from .loader import CdmCsvLoader
 from .vector import CdmVector
 from .vocabulary import CdmVocabulary
