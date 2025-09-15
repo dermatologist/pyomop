@@ -22,7 +22,6 @@
 - LLM-based natural language queries via llama-index. [Usage](examples/llm_example.py).
 - 🔥 FHIR to OMOP conversion utilities. (See usage below for more details)
 - Execute [QueryLibrary](https://github.com/OHDSI/QueryLibrary). (See usage below for more details)
-- 📊 **OMOP CDM sample datasets** via Eunomia data functionality. [Usage](docs/eunomia.md) and [Example](examples/eunomia_example.py).
 
 Please ⭐️ If you find this project useful!
 
@@ -51,39 +50,6 @@ See [llm_example.py](examples/llm_example.py) for usage.
 * A [docker-compose](/docker-compose.yml) is provided to quickly set up an environment with postgrs, [webapi](https://github.com/OHDSI/WebAPI), [atlas](https://github.com/OHDSI/atlas) and a [sql script](/examples/webapi_source.sql) to create a source in webapi. The script can be run using the `psql` command line tool or via the webapi UI. Please refresh after running the script by sending a request to /WebAPI/source/refresh.
 
 ## 🔧 Usage
-
-### Working with OMOP CDM Sample Data
-
-**pyomop** now includes functionality to download and work with OMOP CDM sample datasets from the [OHDSI EunomiaDatasets](https://github.com/OHDSI/EunomiaDatasets) repository:
-
-```python
-import asyncio
-from pyomop.eunomia import download_eunomia_data, extract_load_data
-
-async def main():
-    # Download GiBleed sample dataset
-    zip_path = download_eunomia_data("GiBleed", verbose=True)
-    
-    # Extract and load into SQLite database
-    await extract_load_data(zip_path, "gibleed.db", verbose=True)
-    
-    print(f"✅ Sample dataset loaded into gibleed.db")
-
-asyncio.run(main())
-```
-
-**Command line usage:**
-```bash
-# Download and load a sample dataset
-pyomop --eunomia-dataset GiBleed --create --version cdm54
-
-# Use custom storage path
-pyomop --eunomia-dataset Synthea --eunomia-path ./datasets --create
-```
-
-See [Eunomia documentation](docs/eunomia.md) and [example](examples/eunomia_example.py) for complete usage.
-
-### Working with Your Own Data
 
 
 ```python
@@ -214,9 +180,13 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
 pyomop -help
 ```
 
-**New Eunomia options:**
-- `--eunomia-dataset`: Download and load sample datasets (e.g., 'GiBleed', 'Synthea')
-- `--eunomia-path`: Custom path for dataset storage
+## Updates
+
+### Eunomia support
+```
+pyomop -e Synthea27Nj -v 5.4
+pyomop -e GiBleed -v 5.3
+```
 
 ## Additional Tools
 

@@ -5,19 +5,16 @@ sample datasets from the OHDSI EunomiaDatasets repository. This is a Python
 port of the Eunomia R package functionality.
 """
 
-import asyncio
 import logging
 import os
-import sqlite3
 import tempfile
 import zipfile
 from pathlib import Path
-from typing import Optional, Union
-from urllib.parse import urljoin
+from typing import Optional
 
 import pandas as pd
 import requests
-from sqlalchemy import text
+import sqlalchemy
 
 from .engine_factory import CdmEngineFactory
 
@@ -26,7 +23,7 @@ _logger = logging.getLogger(__name__)
 
 class EunomiaData:
     """Provides access to OMOP CDM sample datasets.
-    
+
     This class offers functionality to download, extract, and load sample
     OMOP CDM datasets from the OHDSI EunomiaDatasets repository.
     """
@@ -37,7 +34,7 @@ class EunomiaData:
         base_url: Optional[str] = None,
     ):
         """Initialize EunomiaData.
-        
+
         Args:
             cdm_engine_factory: CDM engine factory instance. If None, creates SQLite engine.
             base_url: Base URL for dataset downloads. Defaults to EunomiaDatasets repository.
@@ -45,7 +42,7 @@ class EunomiaData:
         self.cdm = cdm_engine_factory or CdmEngineFactory()
         self.base_url = base_url or os.getenv(
             "EUNOMIA_DATASETS_URL",
-            "https://raw.githubusercontent.com/OHDSI/EunomiaDatasets/main/datasets"
+            "https://raw.githubusercontent.com/OHDSI/EunomiaDatasets/main/datasets",
         )
 
     def download_eunomia_data(
@@ -57,9 +54,9 @@ class EunomiaData:
         verbose: bool = False,
     ) -> str:
         """Download Eunomia data files.
-        
+
         Download the Eunomia data files from https://github.com/OHDSI/EunomiaDatasets
-        
+
         Args:
             dataset_name: The data set name as found on EunomiaDatasets repository.
                          The data set name corresponds to the folder with the data set ZIP files.
@@ -70,10 +67,10 @@ class EunomiaData:
             overwrite: Control whether the existing archive file will be overwritten should it
                       already exist.
             verbose: Provide additional logging details during execution.
-            
+
         Returns:
             The path to the downloaded file.
-            
+
         Raises:
             ValueError: If dataset_name is empty or None.
             requests.RequestException: If download fails.
@@ -100,7 +97,9 @@ class EunomiaData:
 
         if os.path.exists(file_path) and not overwrite:
             if verbose:
-                _logger.info(f"Dataset already exists ({file_path}). Specify overwrite=True to overwrite existing zip archive.")
+                _logger.info(
+                    f"Dataset already exists ({file_path}). Specify overwrite=True to overwrite existing zip archive."
+                )
             return file_path
 
         # Download the file
@@ -111,34 +110,33 @@ class EunomiaData:
         try:
             response = requests.get(url, stream=True, timeout=30)
             response.raise_for_status()
-            
-            with open(file_path, 'wb') as f:
+
+            with open(file_path, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-                    
+
             if verbose:
                 _logger.info(f"Downloaded {zip_name} to {file_path}")
-                
+
         except requests.RequestException as e:
             _logger.error(f"Failed to download {url}: {e}")
             raise
-            
+
         return file_path
 
     async def extract_load_data(
         self,
         from_path: str,
-        to_path: str,
-        dbms: str = "sqlite",
+        dataset_name: str,
         cdm_version: str = "5.3",
         input_format: str = "csv",
         verbose: bool = False,
     ) -> None:
         """Extract files from a ZIP file and load into a database.
-        
+
         Extract files from a .ZIP file and creates a OMOP CDM database that is then
         stored in the same directory as the .ZIP file.
-        
+
         Args:
             from_path: The path to the .ZIP file that contains the csv CDM source files.
             to_path: The path to the .sqlite or .duckdb file that will be created.
@@ -146,29 +144,37 @@ class EunomiaData:
             cdm_version: The version of the OMOP CDM that are represented in the archive files.
             input_format: The format of the files expected in the archive (csv or parquet).
             verbose: Provide additional logging details during execution.
-            
+
         Raises:
             ValueError: If from_path is not a ZIP file or doesn't exist.
             FileNotFoundError: If the ZIP file doesn't exist.
         """
-        if not from_path.lower().endswith('.zip'):
+        if not from_path.lower().endswith(".zip"):
             raise ValueError("Source must be a .zip file")
-            
+
         if not os.path.exists(from_path):
             raise FileNotFoundError(f"Zipped archive '{from_path}' not found!")
 
         with tempfile.TemporaryDirectory() as unzip_location:
             if verbose:
                 _logger.info(f"Unzipping to: {unzip_location}")
-                
-            with zipfile.ZipFile(from_path, 'r') as zip_ref:
+
+            with zipfile.ZipFile(from_path, "r") as zip_ref:
                 zip_ref.extractall(unzip_location)
-                
+
+                # log extracted files for debugging
+                extracted_files = os.listdir(unzip_location)
+                _logger.info(f"Extracted files: {extracted_files}")
+                # Add dataset_name and version subfolder to unzip_location
+                if dataset_name and dataset_name.strip() != "Synthea27Nj":
+                    unzip_location = os.path.join(unzip_location, dataset_name + "_" + cdm_version)
+                # wait till extraction is done
+                # then load the data files
+                if verbose:
+                    _logger.info(f"Loading data files from: {unzip_location}")
+
             await self.load_data_files(
                 data_path=unzip_location,
-                db_path=to_path,
-                dbms=dbms,
-                cdm_version=cdm_version,
                 input_format=input_format,
                 verbose=verbose,
             )
@@ -176,312 +182,203 @@ class EunomiaData:
     async def load_data_files(
         self,
         data_path: str,
-        db_path: str,
         input_format: str = "csv",
-        cdm_version: str = "5.3",
-        cdm_database_schema: str = "main",
-        dbms: str = "sqlite",
         verbose: bool = False,
-        overwrite: bool = False,
     ) -> None:
-        """Load data files into a database (sqlite or duckdb).
-        
-        Load data from csv or parquet files into a database file (sqlite or duckdb).
-        
-        Args:
-            data_path: The path to the directory containing CDM source files (csv or parquet).
-            db_path: The path to the .sqlite or .duckdb file that will be created.
-            input_format: The input format of the files to load. Supported formats include csv, parquet.
-            cdm_version: The CDM version to create in the resulting database. Supported versions are 5.3 and 5.4.
-            cdm_database_schema: The schema in which to create the CDM tables. Default is main.
-            dbms: The file-based database system to use: 'sqlite' (default) or 'duckdb'.
-            verbose: Provide additional logging details during execution.
-            overwrite: Remove and replace an existing data set.
-            
-        Raises:
-            ValueError: If input_format or dbms is not supported.
-            FileNotFoundError: If data_path doesn't exist or contains no data files.
         """
+        Load data files into a database using the SQLAlchemy async engine from self.cdm.
+
+        Args:
+            data_path (str): Path to the directory containing CDM source files (csv or parquet).
+            input_format (str, optional): Input file format ('csv' or 'parquet'). Defaults to 'csv'.
+            verbose (bool, optional): If True, provides additional logging. Defaults to False.
+
+        Raises:
+            ValueError: If input_format is not supported.
+            FileNotFoundError: If data_path doesn't exist or contains no data files.
+            RuntimeError: If the CDM engine is not initialized.
+        """
+        # Validate input format
         if input_format not in ["csv", "parquet"]:
             raise ValueError(f"Unsupported input format: {input_format}")
-            
-        if dbms not in ["sqlite", "duckdb"]:
-            raise ValueError(f"Unsupported dbms: {dbms}")
 
+        # Check that the data path exists
         if not os.path.exists(data_path):
             raise FileNotFoundError(f"Data path does not exist: {data_path}")
 
-        # Find data files
-        data_files = sorted([
-            f for f in os.listdir(data_path) 
-            if f.lower().endswith(f'.{input_format}')
-        ])
-        
+        # Find all files matching the input format
+        data_files = sorted(
+            [f for f in os.listdir(data_path) if f.lower().endswith(f".{input_format}")]
+        )
+
         if not data_files:
-            raise FileNotFoundError(f"Data directory does not contain {input_format} files to load into the database.")
+            raise FileNotFoundError(
+                f"Data directory does not contain {input_format} files to load into the database."
+            )
 
         if verbose:
             _logger.info(f"Found {len(data_files)} {input_format} files to load")
 
-        if overwrite and os.path.exists(db_path):
-            if verbose:
-                _logger.info(f"Deleting existing file: {db_path}")
-            os.unlink(db_path)
+        # Get the async engine from the CDM engine factory
+        engine = self.cdm.engine
+        if engine is None:
+            raise RuntimeError("CDM engine is not initialized.")
 
-        # For now, implement basic SQLite loading
-        # Note: For full compatibility, we'd need DDL generation from CommonDataModel
-        if dbms == "sqlite":
-            await self._load_data_files_sqlite(
-                data_path, db_path, data_files, input_format, verbose
-            )
-        else:
-            raise NotImplementedError("DuckDB support not yet implemented")
+        # Open a transaction and load each file as a table
+        async with engine.begin() as conn:
+            # Best-effort: relax FK/constraint enforcement during bulk load per backend
+            backend = engine.url.get_backend_name().split("+")[0]
+            is_sqlite = backend == "sqlite"
+            is_mysql = backend in ("mysql", "mariadb")
+            is_pg = backend in ("postgresql", "postgres", "pgsql")
+            if is_sqlite:
+                await conn.exec_driver_sql("PRAGMA defer_foreign_keys = ON;")
+                await conn.exec_driver_sql("PRAGMA foreign_keys = OFF;")
+            elif is_mysql:
+                await conn.exec_driver_sql("SET FOREIGN_KEY_CHECKS=0;")
+            elif is_pg:
+                # Only affects deferrable constraints; NOT NULL cannot be deferred.
+                await conn.exec_driver_sql("SET CONSTRAINTS ALL DEFERRED;")
 
-    async def _load_data_files_sqlite(
-        self,
-        data_path: str,
-        db_path: str,
-        data_files: list[str],
-        input_format: str,
-        verbose: bool,
-    ) -> None:
-        """Load data files into SQLite database."""
-        # Create SQLite connection
-        conn = sqlite3.connect(db_path)
-        
-        try:
-            for data_file in data_files:
-                if verbose:
-                    _logger.info(f"Loading file: {data_file}")
-                    
-                file_path = os.path.join(data_path, data_file)
-                table_name = Path(data_file).stem.lower()
-                
-                if input_format == "csv":
-                    df = pd.read_csv(file_path)
-                elif input_format == "parquet":
-                    df = pd.read_parquet(file_path)
-                else:
-                    continue
-                    
-                # Convert column names to lowercase
-                df.columns = df.columns.str.lower()
-                
-                if verbose:
-                    _logger.info(f"Saving table: {table_name} (rows: {len(df)})")
-                    
-                # Write to SQLite
-                df.to_sql(table_name, conn, if_exists='append', index=False)
-                
-        finally:
-            conn.close()
+            try:
+                for data_file in data_files:
+                    if verbose:
+                        _logger.info(f"Loading file: {data_file}")
+
+                    file_path = os.path.join(data_path, data_file)
+                    table_name = Path(data_file).stem.lower()
+
+                    # Read the file into a DataFrame
+                    if input_format == "csv":
+                        df = pd.read_csv(file_path)
+                    elif input_format == "parquet":
+                        df = pd.read_parquet(file_path)
+                    else:
+                        continue  # Should not occur due to earlier check
+
+                    # Convert all column names to lowercase for consistency
+                    df.columns = df.columns.str.lower()
+
+                    # Introspect existing table schema to find NOT NULL columns
+                    def _get_non_nullable(sync_conn, tbl):
+                        insp = sqlalchemy.inspect(sync_conn)
+                        try:
+                            cols = insp.get_columns(tbl)
+                        except Exception:
+                            return []
+                        return [
+                            c.get("name") for c in cols if not c.get("nullable", True)
+                        ]
+
+                    non_nullable_cols = await conn.run_sync(
+                        lambda sc: _get_non_nullable(sc, table_name)
+                    )
+                    nn_set = {c.lower() for c in (non_nullable_cols or []) if c}
+
+                    # Fill NaNs for non-nullable columns to avoid NOT NULL failures
+                    if nn_set:
+                        df = df.copy()
+                        for col in df.columns:
+                            if col not in nn_set:
+                                continue
+                            dtype = df[col].dtype
+                            if pd.api.types.is_string_dtype(dtype) or dtype == object:
+                                df[col] = df[col].fillna("")
+                            elif pd.api.types.is_integer_dtype(dtype):
+                                df[col] = df[col].fillna(0)
+                            elif pd.api.types.is_float_dtype(dtype):
+                                df[col] = df[col].fillna(0.0)
+                            elif pd.api.types.is_bool_dtype(dtype):
+                                df[col] = df[col].fillna(False)
+                            elif (
+                                pd.api.types.is_datetime64_any_dtype(dtype)
+                                or col.endswith("_date")
+                                or col.endswith("date")
+                            ):
+                                df[col] = df[col].fillna("1970-01-01")
+
+                    if verbose:
+                        _logger.info(f"Saving table: {table_name} (rows: {len(df)})")
+
+                    # Write the DataFrame to the database using the sync connection
+                    await conn.run_sync(
+                        lambda sync_conn: df.to_sql(
+                            table_name,
+                            sync_conn,
+                            if_exists="append",
+                            index=False,
+                        )
+                    )
+            finally:
+                # Restore normal constraint behavior
+                if is_sqlite:
+                    await conn.exec_driver_sql("PRAGMA foreign_keys = ON;")
+                elif is_mysql:
+                    await conn.exec_driver_sql("SET FOREIGN_KEY_CHECKS=1;")
+                elif is_pg:
+                    await conn.exec_driver_sql("SET CONSTRAINTS ALL IMMEDIATE;")
 
     async def export_data_files(
         self,
-        db_path: str,
         output_folder: str,
         output_format: str = "csv",
-        dbms: str = "sqlite",
         verbose: bool = False,
     ) -> None:
-        """Export data files from a database (sqlite or duckdb).
-        
-        Helper function to export data to csv or parquet files from a database file.
-        
-        Args:
-            db_path: The path to the source .sqlite or .duckdb file.
-            output_folder: The path to the export destination directory.
-            output_format: The output format for the files. Supported formats include csv, parquet.
-            dbms: The file-based database system to use: 'sqlite' (default) or 'duckdb'.
-            verbose: Boolean argument controlling verbose debugging output.
-            
-        Raises:
-            ValueError: If output_format or dbms is not supported.
-            FileNotFoundError: If db_path doesn't exist.
         """
+        Export data files from a database using the SQLAlchemy async engine from self.cdm.
+
+        Args:
+            output_folder (str): Path to the export destination directory.
+            output_format (str, optional): Output file format ('csv' or 'parquet'). Defaults to 'csv'.
+            verbose (bool, optional): If True, provides additional logging. Defaults to False.
+
+        Raises:
+            ValueError: If output_format is not supported.
+            RuntimeError: If the CDM engine is not initialized.
+        """
+        # Validate output format
         if output_format not in ["csv", "parquet"]:
             raise ValueError(f"Unsupported output format: {output_format}")
-            
-        if dbms not in ["sqlite", "duckdb"]:
-            raise ValueError(f"Unsupported dbms: {dbms}")
-            
-        if not os.path.exists(db_path):
-            raise FileNotFoundError(f"Database file does not exist: {db_path}")
 
-        # Create output directory if it doesn't exist
+        # Ensure the output directory exists
         os.makedirs(output_folder, exist_ok=True)
 
-        if dbms == "sqlite":
-            await self._export_data_files_sqlite(
-                db_path, output_folder, output_format, verbose
-            )
-        else:
-            raise NotImplementedError("DuckDB support not yet implemented")
+        # Get the async engine from the CDM engine factory
+        engine = self.cdm.engine
+        if engine is None:
+            raise RuntimeError("CDM engine is not initialized.")
 
-    async def _export_data_files_sqlite(
-        self,
-        db_path: str,
-        output_folder: str,
-        output_format: str,
-        verbose: bool,
-    ) -> None:
-        """Export data files from SQLite database."""
-        conn = sqlite3.connect(db_path)
-        
-        try:
-            # Get list of tables
-            cursor = conn.cursor()
-            cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            table_names = [row[0] for row in cursor.fetchall()]
-            
+        # Open a transaction and export each table to a file
+        async with engine.begin() as conn:
+            # Helper to get all table names in the database
+            def get_tables(sync_conn):
+                insp = sqlalchemy.inspect(sync_conn)
+                return insp.get_table_names()
+
+            table_names = await conn.run_sync(get_tables)
+
             if verbose:
                 _logger.info(f"Processing {len(table_names)} tables")
-            
+
             for table_name in table_names:
                 if verbose:
                     _logger.info(f"Processing {table_name}")
-                    
-                # Query data
-                df = pd.read_sql_query(f"SELECT * FROM {table_name}", conn)
-                
-                # Export to file
-                output_file = os.path.join(output_folder, f"{table_name}.{output_format}")
-                
+
+                # Helper to fetch the table as a DataFrame
+                def fetch_df(sync_conn):
+                    return pd.read_sql_query(f"SELECT * FROM {table_name}", sync_conn)
+
+                df = await conn.run_sync(fetch_df)
+
+                # Export the DataFrame to the specified format
+                output_file = os.path.join(
+                    output_folder, f"{table_name}.{output_format}"
+                )
+
                 if output_format == "csv":
                     df.to_csv(output_file, index=False)
                 elif output_format == "parquet":
                     df.to_parquet(output_file, index=False)
-                    
+
                 if verbose:
                     _logger.info(f"Exported {table_name} to {output_file}")
-                    
-        finally:
-            conn.close()
-
-
-# Convenience functions that match the R API
-def download_eunomia_data(
-    dataset_name: str,
-    cdm_version: str = "5.3",
-    path_to_data: Optional[str] = None,
-    overwrite: bool = False,
-    verbose: bool = False,
-) -> str:
-    """Download Eunomia data files.
-    
-    Convenience function that creates an EunomiaData instance and downloads data.
-    
-    Args:
-        dataset_name: The data set name as found on EunomiaDatasets repository.
-        cdm_version: The OMOP CDM version. Default: '5.3'
-        path_to_data: The path where the Eunomia data is stored on the file system.
-        overwrite: Control whether the existing archive file will be overwritten.
-        verbose: Provide additional logging details during execution.
-        
-    Returns:
-        The path to the downloaded file.
-    """
-    eunomia = EunomiaData()
-    return eunomia.download_eunomia_data(
-        dataset_name=dataset_name,
-        cdm_version=cdm_version,
-        path_to_data=path_to_data,
-        overwrite=overwrite,
-        verbose=verbose,
-    )
-
-
-async def extract_load_data(
-    from_path: str,
-    to_path: str,
-    dbms: str = "sqlite",
-    cdm_version: str = "5.3",
-    input_format: str = "csv",
-    verbose: bool = False,
-) -> None:
-    """Extract files from a ZIP file and load into a database.
-    
-    Convenience function that creates an EunomiaData instance and extracts/loads data.
-    
-    Args:
-        from_path: The path to the .ZIP file that contains the csv CDM source files.
-        to_path: The path to the .sqlite or .duckdb file that will be created.
-        dbms: The file based database system to use: 'sqlite' (default) or 'duckdb'.
-        cdm_version: The version of the OMOP CDM that are represented in the archive files.
-        input_format: The format of the files expected in the archive (csv or parquet).
-        verbose: Provide additional logging details during execution.
-    """
-    eunomia = EunomiaData()
-    await eunomia.extract_load_data(
-        from_path=from_path,
-        to_path=to_path,
-        dbms=dbms,
-        cdm_version=cdm_version,
-        input_format=input_format,
-        verbose=verbose,
-    )
-
-
-async def load_data_files(
-    data_path: str,
-    db_path: str,
-    input_format: str = "csv",
-    cdm_version: str = "5.3",
-    cdm_database_schema: str = "main",
-    dbms: str = "sqlite",
-    verbose: bool = False,
-    overwrite: bool = False,
-) -> None:
-    """Load data files into a database (sqlite or duckdb).
-    
-    Convenience function that creates an EunomiaData instance and loads data files.
-    
-    Args:
-        data_path: The path to the directory containing CDM source files.
-        db_path: The path to the .sqlite or .duckdb file that will be created.
-        input_format: The input format of the files to load.
-        cdm_version: The CDM version to create in the resulting database.
-        cdm_database_schema: The schema in which to create the CDM tables.
-        dbms: The file-based database system to use: 'sqlite' (default) or 'duckdb'.
-        verbose: Provide additional logging details during execution.
-        overwrite: Remove and replace an existing data set.
-    """
-    eunomia = EunomiaData()
-    await eunomia.load_data_files(
-        data_path=data_path,
-        db_path=db_path,
-        input_format=input_format,
-        cdm_version=cdm_version,
-        cdm_database_schema=cdm_database_schema,
-        dbms=dbms,
-        verbose=verbose,
-        overwrite=overwrite,
-    )
-
-
-async def export_data_files(
-    db_path: str,
-    output_folder: str,
-    output_format: str = "csv",
-    dbms: str = "sqlite",
-    verbose: bool = False,
-) -> None:
-    """Export data files from a database (sqlite or duckdb).
-    
-    Convenience function that creates an EunomiaData instance and exports data files.
-    
-    Args:
-        db_path: The path to the source .sqlite or .duckdb file.
-        output_folder: The path to the export destination directory.
-        output_format: The output format for the files.
-        dbms: The file-based database system to use: 'sqlite' (default) or 'duckdb'.
-        verbose: Boolean argument controlling verbose debugging output.
-    """
-    eunomia = EunomiaData()
-    await eunomia.export_data_files(
-        db_path=db_path,
-        output_folder=output_folder,
-        output_format=output_format,
-        dbms=dbms,
-        verbose=verbose,
-    )
