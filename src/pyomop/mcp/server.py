@@ -504,14 +504,7 @@ async def _get_engine(
 
 async def _get_table_columns(
     table_name: str,
-    version: str = "cdm54",
-    db: str = "sqlite",
-    host: str = "localhost",
-    port: int = 5432,
-    user: str = "root",
-    pw: str = "pass",
-    name: str = "cdm.sqlite",
-    schema: str = "",
+    engine
 ) -> List[types.TextContent]:
     """Get column names for a specific table."""
     try:
@@ -519,9 +512,6 @@ async def _get_table_columns(
         try:
             from ..llm_engine import CDMDatabase
 
-            engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
-            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             columns = cdm_db.get_table_columns(table_name)
@@ -549,14 +539,7 @@ async def _get_table_columns(
 
 async def _get_single_table_info(
     table_name: str,
-    version: str = "cdm54",
-    db: str = "sqlite",
-    host: str = "localhost",
-    port: int = 5432,
-    user: str = "root",
-    pw: str = "pass",
-    name: str = "cdm.sqlite",
-    schema: str = "",
+    engine
 ) -> List[types.TextContent]:
     """Get detailed information about a single table."""
     try:
@@ -564,9 +547,6 @@ async def _get_single_table_info(
         try:
             from ..llm_engine import CDMDatabase
 
-            engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
-            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_info = cdm_db.get_single_table_info(table_name)
@@ -586,14 +566,7 @@ async def _get_single_table_info(
 
 
 async def _get_usable_table_names(
-    version: str = "cdm54",
-    db: str = "sqlite",
-    host: str = "localhost",
-    port: int = 5432,
-    user: str = "root",
-    pw: str = "pass",
-    name: str = "cdm.sqlite",
-    schema: str = "",
+    engine
 ) -> List[types.TextContent]:
     """Get list of all usable table names."""
     try:
@@ -601,9 +574,6 @@ async def _get_usable_table_names(
         try:
             from ..llm_engine import CDMDatabase
 
-            engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
-            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_names = cdm_db.get_usable_table_names()
@@ -629,7 +599,7 @@ async def _get_usable_table_names(
 async def _run_sql(
     db_path: str, sql: str, fetch_results: bool = True
 ) -> List[types.TextContent]:
-    """Execute a SQL statement."""
+    """Execute a SQL statement using engine.begin() pattern."""
     try:
         if not Path(db_path).exists():
             return [
@@ -639,46 +609,35 @@ async def _run_sql(
             ]
 
         engine = await _get_engine(db="sqlite", name=db_path)
-        cdm = CdmEngineFactory(db="sqlite", name=db_path)
-        cdm._engine = engine
 
         # Sanitize SQL (basic validation)
         sql = sql.strip()
         if not sql:
             return [types.TextContent(type="text", text="Empty SQL statement provided")]
 
-        # Execute the SQL
-        async with cdm.async_session() as session:
-            from sqlalchemy import text
+        from sqlalchemy import text
 
-            result = await session.execute(text(sql))
+        async with engine.begin() as conn:
+            result = await conn.execute(text(sql))
 
             if fetch_results and sql.lower().strip().startswith("select"):
-                # Fetch results for SELECT queries
                 rows = result.fetchall()
                 if rows:
-                    # Get column names
                     columns = list(result.keys()) if hasattr(result, "keys") else []
-
-                    # Format results
                     result_text = (
                         f"Query executed successfully. Found {len(rows)} rows.\n"
                     )
                     if columns:
                         result_text += f"Columns: {', '.join(columns)}\n"
-
-                    # Show first few rows
-                    for i, row in enumerate(rows[:10]):  # Limit to first 10 rows
+                    for i, row in enumerate(rows[:10]):
                         row_dict = (
                             dict(row._mapping)
                             if hasattr(row, "_mapping")
                             else dict(row)
                         )
                         result_text += f"Row {i+1}: {row_dict}\n"
-
                     if len(rows) > 10:
                         result_text += f"... and {len(rows) - 10} more rows"
-
                     return [types.TextContent(type="text", text=result_text)]
                 else:
                     return [
@@ -689,16 +648,13 @@ async def _run_sql(
                     ]
             else:
                 # For non-SELECT queries or when not fetching results
-                await session.commit()
                 return [
                     types.TextContent(
                         type="text",
                         text=f"SQL statement executed successfully: {sql[:100]}...",
                     )
                 ]
-
     except Exception as e:
-        # Return error as string without throwing exception
         return [types.TextContent(type="text", text=f"SQL execution error: {str(e)}")]
 
 
