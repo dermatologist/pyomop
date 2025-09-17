@@ -6,10 +6,10 @@ with OMOP CDM databases using pyomop functionality.
 Example usage:
     # Start the server
     python -m pyomop.mcp
-    
+
     # Or via CLI
     pyomop --mcp-server
-    
+
     # Or via dedicated script
     pyomop-mcp-server
 
@@ -70,17 +70,17 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     },
                     "version": {
                         "type": "string",
                         "enum": ["cdm54", "cdm6"],
                         "default": "cdm54",
-                        "description": "CDM version to create"
-                    }
+                        "description": "CDM version to create",
+                    },
                 },
-                "required": ["db_path"]
-            }
+                "required": ["db_path"],
+            },
         ),
         types.Tool(
             name="create_eunomia",
@@ -90,22 +90,22 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     },
                     "version": {
                         "type": "string",
                         "enum": ["cdm54", "cdm6"],
                         "default": "cdm54",
-                        "description": "CDM version to create"
+                        "description": "CDM version to create",
                     },
                     "dataset": {
                         "type": "string",
                         "default": "Synthea27Nj",
-                        "description": "Eunomia dataset to load"
-                    }
+                        "description": "Eunomia dataset to load",
+                    },
                 },
-                "required": ["db_path"]
-            }
+                "required": ["db_path"],
+            },
         ),
         types.Tool(
             name="get_cdm",
@@ -115,11 +115,11 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     }
                 },
-                "required": ["db_path"]
-            }
+                "required": ["db_path"],
+            },
         ),
         types.Tool(
             name="get_table_columns",
@@ -129,21 +129,21 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     },
                     "table_name": {
                         "type": "string",
-                        "description": "Name of the table to get columns for"
+                        "description": "Name of the table to get columns for",
                     },
                     "version": {
                         "type": "string",
                         "enum": ["cdm54", "cdm6"],
                         "default": "cdm54",
-                        "description": "CDM version"
-                    }
+                        "description": "CDM version",
+                    },
                 },
-                "required": ["db_path", "table_name"]
-            }
+                "required": ["db_path", "table_name"],
+            },
         ),
         types.Tool(
             name="get_single_table_info",
@@ -153,21 +153,21 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     },
                     "table_name": {
                         "type": "string",
-                        "description": "Name of the table to get info for"
+                        "description": "Name of the table to get info for",
                     },
                     "version": {
                         "type": "string",
                         "enum": ["cdm54", "cdm6"],
                         "default": "cdm54",
-                        "description": "CDM version"
-                    }
+                        "description": "CDM version",
+                    },
                 },
-                "required": ["db_path", "table_name"]
-            }
+                "required": ["db_path", "table_name"],
+            },
         ),
         types.Tool(
             name="get_usable_table_names",
@@ -177,17 +177,17 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     },
                     "version": {
                         "type": "string",
                         "enum": ["cdm54", "cdm6"],
                         "default": "cdm54",
-                        "description": "CDM version"
-                    }
+                        "description": "CDM version",
+                    },
                 },
-                "required": ["db_path"]
-            }
+                "required": ["db_path"],
+            },
         ),
         types.Tool(
             name="run_sql",
@@ -197,21 +197,21 @@ async def handle_list_tools() -> List[types.Tool]:
                 "properties": {
                     "db_path": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file"
+                        "description": "Full path to the SQLite database file",
                     },
                     "sql": {
                         "type": "string",
-                        "description": "SQL statement to execute"
+                        "description": "SQL statement to execute",
                     },
                     "fetch_results": {
                         "type": "boolean",
                         "default": True,
-                        "description": "Whether to fetch and return results for SELECT queries"
-                    }
+                        "description": "Whether to fetch and return results for SELECT queries",
+                    },
                 },
-                "required": ["db_path", "sql"]
-            }
-        )
+                "required": ["db_path", "sql"],
+            },
+        ),
     ]
 
 
@@ -237,9 +237,9 @@ async def handle_get_prompt(
             messages=[
                 types.PromptMessage(
                     role="assistant",
-                    content=types.TextContent(type="text", text=QUERY_EXECUTION_PROMPT)
+                    content=types.TextContent(type="text", text=QUERY_EXECUTION_PROMPT),
                 )
-            ]
+            ],
         )
     else:
         raise ValueError(f"Unknown prompt: {name}")
@@ -280,276 +280,285 @@ async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextCo
     try:
         # Ensure the directory exists
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
-        
+
         # Create CDM engine factory
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
-        
+
         # Initialize the models
         if version == "cdm6":
             from ..cdm6 import Base
         else:
             from ..cdm54 import Base
-            
+
         await cdm.init_models(Base.metadata)
-        
-        return [types.TextContent(
-            type="text",
-            text=f"Successfully created CDM {version} database at: {db_path}"
-        )]
+
+        return [
+            types.TextContent(
+                type="text",
+                text=f"Successfully created CDM {version} database at: {db_path}",
+            )
+        ]
     except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=f"Error creating CDM database: {str(e)}"
-        )]
+        return [
+            types.TextContent(
+                type="text", text=f"Error creating CDM database: {str(e)}"
+            )
+        ]
 
 
 async def _create_eunomia(
-    db_path: str, 
-    version: str = "cdm54", 
-    dataset: str = "Synthea27Nj"
+    db_path: str, version: str = "cdm54", dataset: str = "Synthea27Nj"
 ) -> List[types.TextContent]:
     """Create a CDM database with eunomia data."""
     try:
         # First create the CDM structure
         await _create_cdm(db_path, version)
-        
+
         # Load eunomia data
         from ..eunomia import EunomiaData
-        
+
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
         eunomia = EunomiaData(cdm)
-        
+
         # Download and load dataset
         zip_path = eunomia.download_eunomia_data(
-            dataset_name=dataset,
-            cdm_version=version,
-            verbose=True
+            dataset_name=dataset, cdm_version=version, verbose=True
         )
-        
+
         await eunomia.extract_load_data(
             from_path=zip_path,
             dataset_name=dataset,
             cdm_version=version,
             input_format="csv",
-            verbose=True
+            verbose=True,
         )
-        
-        return [types.TextContent(
-            type="text",
-            text=f"Successfully created CDM {version} database with {dataset} data at: {db_path}"
-        )]
+
+        return [
+            types.TextContent(
+                type="text",
+                text=f"Successfully created CDM {version} database with {dataset} data at: {db_path}",
+            )
+        ]
     except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=f"Error creating CDM database with eunomia data: {str(e)}"
-        )]
+        return [
+            types.TextContent(
+                type="text",
+                text=f"Error creating CDM database with eunomia data: {str(e)}",
+            )
+        ]
 
 
 async def _get_cdm(db_path: str) -> List[types.TextContent]:
     """Get CDM engine factory information."""
     try:
         if not Path(db_path).exists():
-            return [types.TextContent(
-                type="text",
-                text=f"Database file does not exist: {db_path}"
-            )]
-        
+            return [
+                types.TextContent(
+                    type="text", text=f"Database file does not exist: {db_path}"
+                )
+            ]
+
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
-        
-        return [types.TextContent(
-            type="text",
-            text=f"CDM engine factory created for database: {db_path}\n"
-                 f"Engine URL: {cdm.engine.url}"
-        )]
+
+        return [
+            types.TextContent(
+                type="text",
+                text=f"CDM engine factory created for database: {db_path}\n"
+                f"Engine URL: {cdm.engine.name}\n",
+            )
+        ]
     except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=f"Error getting CDM: {str(e)}"
-        )]
+        return [types.TextContent(type="text", text=f"Error getting CDM: {str(e)}")]
 
 
 async def _get_table_columns(
-    db_path: str, 
-    table_name: str, 
-    version: str = "cdm54"
+    db_path: str, table_name: str, version: str = "cdm54"
 ) -> List[types.TextContent]:
     """Get column names for a specific table."""
     try:
         if not Path(db_path).exists():
-            return [types.TextContent(
-                type="text",
-                text=f"Database file does not exist: {db_path}"
-            )]
-        
+            return [
+                types.TextContent(
+                    type="text", text=f"Database file does not exist: {db_path}"
+                )
+            ]
+
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
-            
+
             cdm = CdmEngineFactory(db="sqlite", name=db_path)
-            cdm_db = CDMDatabase(cdm.engine, version=version)
-            
+            cdm_db = CDMDatabase(cdm.engine, version=version)  # type: ignore
+
             columns = cdm_db.get_table_columns(table_name)
-            
-            return [types.TextContent(
-                type="text",
-                text=f"Columns for table '{table_name}': {', '.join(columns)}"
-            )]
+
+            return [
+                types.TextContent(
+                    type="text",
+                    text=f"Columns for table '{table_name}': {', '.join(columns)}",
+                )
+            ]
         except ImportError:
-            return [types.TextContent(
-                type="text",
-                text="LLM features not available. Install pyomop[llm] to use this tool."
-            )]
+            return [
+                types.TextContent(
+                    type="text",
+                    text="LLM features not available. Install pyomop[llm] to use this tool.",
+                )
+            ]
     except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=f"Error getting table columns: {str(e)}"
-        )]
+        return [
+            types.TextContent(
+                type="text", text=f"Error getting table columns: {str(e)}"
+            )
+        ]
 
 
 async def _get_single_table_info(
-    db_path: str, 
-    table_name: str, 
-    version: str = "cdm54"
+    db_path: str, table_name: str, version: str = "cdm54"
 ) -> List[types.TextContent]:
     """Get detailed information about a single table."""
     try:
         if not Path(db_path).exists():
-            return [types.TextContent(
-                type="text",
-                text=f"Database file does not exist: {db_path}"
-            )]
-        
+            return [
+                types.TextContent(
+                    type="text", text=f"Database file does not exist: {db_path}"
+                )
+            ]
+
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
-            
+
             cdm = CdmEngineFactory(db="sqlite", name=db_path)
-            cdm_db = CDMDatabase(cdm.engine, version=version)
-            
+            cdm_db = CDMDatabase(cdm.engine, version=version)  # type: ignore
+
             table_info = cdm_db.get_single_table_info(table_name)
-            
-            return [types.TextContent(
-                type="text",
-                text=table_info
-            )]
+
+            return [types.TextContent(type="text", text=table_info)]
         except ImportError:
-            return [types.TextContent(
-                type="text",
-                text="LLM features not available. Install pyomop[llm] to use this tool."
-            )]
+            return [
+                types.TextContent(
+                    type="text",
+                    text="LLM features not available. Install pyomop[llm] to use this tool.",
+                )
+            ]
     except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=f"Error getting table info: {str(e)}"
-        )]
+        return [
+            types.TextContent(type="text", text=f"Error getting table info: {str(e)}")
+        ]
 
 
 async def _get_usable_table_names(
-    db_path: str, 
-    version: str = "cdm54"
+    db_path: str, version: str = "cdm54"
 ) -> List[types.TextContent]:
     """Get list of all usable table names."""
     try:
         if not Path(db_path).exists():
-            return [types.TextContent(
-                type="text",
-                text=f"Database file does not exist: {db_path}"
-            )]
-        
+            return [
+                types.TextContent(
+                    type="text", text=f"Database file does not exist: {db_path}"
+                )
+            ]
+
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
-            
+
             cdm = CdmEngineFactory(db="sqlite", name=db_path)
-            cdm_db = CDMDatabase(cdm.engine, version=version)
-            
+            cdm_db = CDMDatabase(cdm.engine, version=version)  # type: ignore
+
             table_names = cdm_db.get_usable_table_names()
-            
-            return [types.TextContent(
-                type="text",
-                text=f"Available tables: {', '.join(table_names)}"
-            )]
+
+            return [
+                types.TextContent(
+                    type="text", text=f"Available tables: {', '.join(table_names)}"
+                )
+            ]
         except ImportError:
-            return [types.TextContent(
-                type="text",
-                text="LLM features not available. Install pyomop[llm] to use this tool."
-            )]
+            return [
+                types.TextContent(
+                    type="text",
+                    text="LLM features not available. Install pyomop[llm] to use this tool.",
+                )
+            ]
     except Exception as e:
-        return [types.TextContent(
-            type="text",
-            text=f"Error getting table names: {str(e)}"
-        )]
+        return [
+            types.TextContent(type="text", text=f"Error getting table names: {str(e)}")
+        ]
 
 
 async def _run_sql(
-    db_path: str, 
-    sql: str, 
-    fetch_results: bool = True
+    db_path: str, sql: str, fetch_results: bool = True
 ) -> List[types.TextContent]:
     """Execute a SQL statement."""
     try:
         if not Path(db_path).exists():
-            return [types.TextContent(
-                type="text",
-                text=f"Database file does not exist: {db_path}"
-            )]
-        
+            return [
+                types.TextContent(
+                    type="text", text=f"Database file does not exist: {db_path}"
+                )
+            ]
+
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
-        
+
         # Sanitize SQL (basic validation)
         sql = sql.strip()
         if not sql:
-            return [types.TextContent(
-                type="text",
-                text="Empty SQL statement provided"
-            )]
-        
+            return [types.TextContent(type="text", text="Empty SQL statement provided")]
+
         # Execute the SQL
         async with cdm.async_session() as session:
             from sqlalchemy import text
-            
+
             result = await session.execute(text(sql))
-            
+
             if fetch_results and sql.lower().strip().startswith("select"):
                 # Fetch results for SELECT queries
                 rows = result.fetchall()
                 if rows:
                     # Get column names
-                    columns = list(result.keys()) if hasattr(result, 'keys') else []
-                    
+                    columns = list(result.keys()) if hasattr(result, "keys") else []
+
                     # Format results
-                    result_text = f"Query executed successfully. Found {len(rows)} rows.\n"
+                    result_text = (
+                        f"Query executed successfully. Found {len(rows)} rows.\n"
+                    )
                     if columns:
                         result_text += f"Columns: {', '.join(columns)}\n"
-                    
+
                     # Show first few rows
                     for i, row in enumerate(rows[:10]):  # Limit to first 10 rows
-                        row_dict = dict(row._mapping) if hasattr(row, '_mapping') else dict(row)
+                        row_dict = (
+                            dict(row._mapping)
+                            if hasattr(row, "_mapping")
+                            else dict(row)
+                        )
                         result_text += f"Row {i+1}: {row_dict}\n"
-                    
+
                     if len(rows) > 10:
                         result_text += f"... and {len(rows) - 10} more rows"
-                    
+
                     return [types.TextContent(type="text", text=result_text)]
                 else:
-                    return [types.TextContent(
-                        type="text",
-                        text="Query executed successfully. No rows returned."
-                    )]
+                    return [
+                        types.TextContent(
+                            type="text",
+                            text="Query executed successfully. No rows returned.",
+                        )
+                    ]
             else:
                 # For non-SELECT queries or when not fetching results
                 await session.commit()
-                return [types.TextContent(
-                    type="text",
-                    text=f"SQL statement executed successfully: {sql[:100]}..."
-                )]
-                
+                return [
+                    types.TextContent(
+                        type="text",
+                        text=f"SQL statement executed successfully: {sql[:100]}...",
+                    )
+                ]
+
     except Exception as e:
         # Return error as string without throwing exception
-        return [types.TextContent(
-            type="text",
-            text=f"SQL execution error: {str(e)}"
-        )]
+        return [types.TextContent(type="text", text=f"SQL execution error: {str(e)}")]
 
 
 async def main():
@@ -557,7 +566,7 @@ async def main():
     # Set up logging
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting pyomop MCP server")
-    
+
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
             read_stream,
