@@ -196,6 +196,62 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
   --connection-info           Display connection information for the database (For R package compatibility)
   --help                      Show this message and exit.
 ```
+
+## MCP Server
+
+pyomop includes an MCP (Model Context Protocol) server that exposes tools for interacting with OMOP CDM databases. This allows MCP clients to create databases, query table structures, and execute SQL statements.
+
+### Starting the MCP Server
+
+To start the MCP server for stdio interaction:
+
+```bash
+pyomop --mcp-server
+```
+
+### Prerequisites
+
+Install the MCP dependency:
+
+```bash
+pip install mcp
+```
+
+For full functionality including table introspection tools, also install LLM features:
+
+```bash
+pip install pyomop[llm]
+```
+
+### Available MCP Tools
+
+- **create_cdm**: Create an empty CDM database
+- **create_eunomia**: Create a CDM database with eunomia data pre-installed
+- **get_cdm**: Get CDM engine factory information
+- **get_table_columns**: Get column names for a specific table
+- **get_single_table_info**: Get detailed table information including foreign keys
+- **get_usable_table_names**: Get list of all available table names
+- **run_sql**: Execute SQL statements with error handling
+
+### Available Prompts
+
+- **query_execution_steps**: Provides step-by-step guidance for executing database queries based on free text instructions
+
+### Usage with MCP Clients
+
+The server communicates via stdio and can be used with any MCP-compatible client. Example configuration for Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "pyomop": {
+      "command": "pyomop",
+      "args": ["--mcp-server"]
+    }
+  }
+}
+```
+
 ## Updates
 
 ### Eunomia import and cohort creation

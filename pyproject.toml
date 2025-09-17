@@ -26,7 +26,8 @@ dependencies = [
     "asyncpg",
     "requests",
     "greenlet",
-    "fhiry>=5.1.1"
+    "fhiry>=5.1.1",
+    "mcp"
 ]
 
 
