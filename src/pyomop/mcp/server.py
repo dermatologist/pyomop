@@ -108,17 +108,48 @@ async def handle_list_tools() -> List[types.Tool]:
             },
         ),
         types.Tool(
-            name="get_cdm",
-            description="Get CDM engine factory for database interaction",
+            name="get_engine",
+            description="Get database engine for interaction (returns engine URL/type summary)",
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "db_path": {
+                    "db": {
                         "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    }
+                        "default": "sqlite",
+                        "description": "Database type (sqlite, mysql, pgsql)",
+                    },
+                    "host": {
+                        "type": "string",
+                        "default": "localhost",
+                        "description": "Database host (ignored for sqlite)",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "default": 5432,
+                        "description": "Database port (ignored for sqlite)",
+                    },
+                    "user": {
+                        "type": "string",
+                        "default": "root",
+                        "description": "Database user (ignored for sqlite)",
+                    },
+                    "pw": {
+                        "type": "string",
+                        "default": "pass",
+                        "description": "Database password (ignored for sqlite)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "cdm.sqlite",
+                        "description": "Database name or SQLite filename",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "default": "",
+                        "description": "PostgreSQL schema to use for CDM",
+                    },
                 },
-                "required": ["db_path"],
+                "required": ["name"],
             },
         ),
         types.Tool(
@@ -258,8 +289,12 @@ async def handle_call_tool(
             return await _create_cdm(**arguments)
         elif name == "create_eunomia":
             return await _create_eunomia(**arguments)
-        elif name == "get_cdm":
-            return await _get_cdm(**arguments)
+        elif name == "get_engine":
+            engine = await _get_engine(**arguments)
+            # Return engine URL/type summary as TextContent
+            url = getattr(engine, "url", None)
+            url_str = str(url) if url else str(engine)
+            return [types.TextContent(type="text", text=f"Engine: {url_str}")]
         elif name == "get_table_columns":
             return await _get_table_columns(**arguments)
         elif name == "get_single_table_info":
