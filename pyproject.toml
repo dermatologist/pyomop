@@ -24,6 +24,7 @@ dependencies = [
     "pandas",
     "aiosqlite",
     "asyncpg",
+    "nest_asyncio",
     "requests",
     "greenlet",
     "fhiry>=5.1.1",

@@ -465,7 +465,7 @@ async def _create_eunomia(
             input_format="csv",
             verbose=True,
         )
-
+        await eunomia.run_cohort_sql()
         return [
             types.TextContent(
                 type="text",
