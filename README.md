@@ -180,12 +180,32 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
 pyomop -help
 ```
 
+## Options
+  -c, --create                Create CDM tables (see --version).
+  -t, --dbtype TEXT           Database Type for creating CDM (sqlite, mysql or
+                              pgsql)
+  -h, --host TEXT             Database host
+  -p, --port TEXT             Database port
+  -u, --user TEXT             Database user
+  -w, --pw TEXT               Database password
+  -v, --version TEXT          CDM version (cdm54 (default) or cdm6)
+  -n, --name TEXT             Database name
+  -s, --schema TEXT           Database schema (for pgsql)
+  -i, --vocab TEXT            Folder with vocabulary files (csv) to import
+  -f, --input DIRECTORY       Input folder with FHIR bundles or ndjson files.
+  -e, --eunomia-dataset TEXT  Download and load Eunomia dataset (e.g.,
+                              'GiBleed', 'Synthea')
+  --eunomia-path TEXT         Path to store/find Eunomia datasets (uses
+                              EUNOMIA_DATA_FOLDER env var if not specified)
+  --connection-info           Display connection information for the database (For R package compatibility)
+  --help                      Show this message and exit.
+
 ## Updates
 
 ### Eunomia import and cohort creation
 ```
-pyomop -e Synthea27Nj -v 5.4
-pyomop -e GiBleed -v 5.3
+pyomop -e Synthea27Nj -v 5.4 --connection-info
+pyomop -e GiBleed -v 5.3 --connection-info
 ```
 
 ## Additional Tools

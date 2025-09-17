@@ -68,6 +68,11 @@ from .vocabulary import CdmVocabulary
     default="",
     help="Path to store/find Eunomia datasets (uses EUNOMIA_DATA_FOLDER env var if not specified)",
 )
+@click.option(
+    "--connection-info",
+    is_flag=True,
+    help="Display connection information for the database",
+)
 def cli(
     version,
     create,
@@ -82,7 +87,9 @@ def cli(
     input_path,
     eunomia_dataset,
     eunomia_path,
+    connection_info,
 ):
+    cdm = None  # ensure cdm is always defined
     # clear database name if not sqlite
     if dbtype != "sqlite" and name == "cdm.sqlite":
         name = ""
@@ -199,8 +206,9 @@ def cli(
             click.echo(f"Error creating/populating cohort table: {e}", err=True)
             raise
         click.echo("Done")
-        click.echo(click.style("Eunomia connection details:", fg="green"))
-        click.echo(eunomia.print_connection_info())
+    if cdm and connection_info:
+        click.echo(click.style("Database connection information:", fg="green"))
+        click.echo(cdm.print_connection_info())
 
 def main_routine():
     """Top-level runner used by ``python -m pyomop``."""
