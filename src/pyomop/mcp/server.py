@@ -281,8 +281,8 @@ async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextCo
         # Ensure the directory exists
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
 
-        # Create CDM engine factory
-        cdm = CdmEngineFactory(db="sqlite", name=db_path)
+        # Create engine using _get_engine
+        engine = await _get_engine(db="sqlite", name=db_path)
 
         # Initialize the models
         if version == "cdm6":
@@ -290,6 +290,9 @@ async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextCo
         else:
             from ..cdm54 import Base
 
+        # Use CdmEngineFactory to call init_models, but pass engine
+        cdm = CdmEngineFactory(db="sqlite", name=db_path)
+        cdm._engine = engine
         await cdm.init_models(Base.metadata)
 
         return [
@@ -317,7 +320,9 @@ async def _create_eunomia(
         # Load eunomia data
         from ..eunomia import EunomiaData
 
+        engine = await _get_engine(db="sqlite", name=db_path)
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
+        cdm._engine = engine
         eunomia = EunomiaData(cdm)
 
         # Download and load dataset
@@ -348,27 +353,25 @@ async def _create_eunomia(
         ]
 
 
-async def _get_cdm(db_path: str) -> List[types.TextContent]:
-    """Get CDM engine factory information."""
-    try:
-        if not Path(db_path).exists():
-            return [
-                types.TextContent(
-                    type="text", text=f"Database file does not exist: {db_path}"
-                )
-            ]
-
-        cdm = CdmEngineFactory(db="sqlite", name=db_path)
-
-        return [
-            types.TextContent(
-                type="text",
-                text=f"CDM engine factory created for database: {db_path}\n"
-                f"Engine URL: {cdm.engine.name}\n",
-            )
-        ]
-    except Exception as e:
-        return [types.TextContent(type="text", text=f"Error getting CDM: {str(e)}")]
+async def _get_engine(
+    db="sqlite",
+    host="localhost",
+    port=5432,
+    user="root",
+    pw="pass",
+    name="cdm.sqlite",
+    schema="",
+):
+    """Get a database engine based on provided parameters."""
+    return CdmEngineFactory(
+        db=db,
+        host=host,
+        port=port,
+        user=user,
+        pw=pw,
+        name=name,
+        schema=schema,
+    ).engine
 
 
 async def _get_table_columns(
@@ -387,8 +390,8 @@ async def _get_table_columns(
         try:
             from ..llm_engine import CDMDatabase
 
-            cdm = CdmEngineFactory(db="sqlite", name=db_path)
-            cdm_db = CDMDatabase(cdm.engine, version=version)  # type: ignore
+            engine = await _get_engine(db="sqlite", name=db_path)
+            cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             columns = cdm_db.get_table_columns(table_name)
 
@@ -429,8 +432,8 @@ async def _get_single_table_info(
         try:
             from ..llm_engine import CDMDatabase
 
-            cdm = CdmEngineFactory(db="sqlite", name=db_path)
-            cdm_db = CDMDatabase(cdm.engine, version=version)  # type: ignore
+            engine = await _get_engine(db="sqlite", name=db_path)
+            cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_info = cdm_db.get_single_table_info(table_name)
 
@@ -464,8 +467,8 @@ async def _get_usable_table_names(
         try:
             from ..llm_engine import CDMDatabase
 
-            cdm = CdmEngineFactory(db="sqlite", name=db_path)
-            cdm_db = CDMDatabase(cdm.engine, version=version)  # type: ignore
+            engine = await _get_engine(db="sqlite", name=db_path)
+            cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_names = cdm_db.get_usable_table_names()
 
@@ -499,7 +502,9 @@ async def _run_sql(
                 )
             ]
 
+        engine = await _get_engine(db="sqlite", name=db_path)
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
+        cdm._engine = engine
 
         # Sanitize SQL (basic validation)
         sql = sql.strip()
