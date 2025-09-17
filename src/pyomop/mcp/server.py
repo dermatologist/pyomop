@@ -25,7 +25,7 @@ import logging
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
+from sqlalchemy.ext.asyncio import AsyncEngine
 try:
     import mcp.server.stdio
     import mcp.types as types
@@ -489,7 +489,7 @@ async def _get_engine(
     pw="pass",
     name="cdm.sqlite",
     schema="",
-):
+) -> AsyncEngine:
     """Get a database engine based on provided parameters."""
     return CdmEngineFactory(
         db=db,
@@ -499,19 +499,27 @@ async def _get_engine(
         pw=pw,
         name=name,
         schema=schema,
-    ).engine
+    ).engine # type: ignore
 
 
 async def _get_table_columns(
     table_name: str,
-    engine
+    db="sqlite",
+    host="localhost",
+    port=5432,
+    user="root",
+    pw="pass",
+    name="cdm.sqlite",
+    schema="",
 ) -> List[types.TextContent]:
     """Get column names for a specific table."""
     try:
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
-
+            engine = await _get_engine(
+                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             columns = cdm_db.get_table_columns(table_name)
@@ -539,14 +547,22 @@ async def _get_table_columns(
 
 async def _get_single_table_info(
     table_name: str,
-    engine
+    db="sqlite",
+    host="localhost",
+    port=5432,
+    user="root",
+    pw="pass",
+    name="cdm.sqlite",
+    schema="",
 ) -> List[types.TextContent]:
     """Get detailed information about a single table."""
     try:
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
-
+            engine = await _get_engine(
+                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_info = cdm_db.get_single_table_info(table_name)
@@ -566,14 +582,22 @@ async def _get_single_table_info(
 
 
 async def _get_usable_table_names(
-    engine
+    db="sqlite",
+    host="localhost",
+    port=5432,
+    user="root",
+    pw="pass",
+    name="cdm.sqlite",
+    schema="",
 ) -> List[types.TextContent]:
     """Get list of all usable table names."""
     try:
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
-
+            engine = await _get_engine(
+                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_names = cdm_db.get_usable_table_names()
@@ -597,19 +621,21 @@ async def _get_usable_table_names(
 
 
 async def _run_sql(
-    db_path: str, sql: str, fetch_results: bool = True
+    sql: str,
+    fetch_results: bool = True,
+    db="sqlite",
+    host="localhost",
+    port=5432,
+    user="root",
+    pw="pass",
+    name="cdm.sqlite",
+    schema=""
 ) -> List[types.TextContent]:
     """Execute a SQL statement using engine.begin() pattern."""
     try:
-        if not Path(db_path).exists():
-            return [
-                types.TextContent(
-                    type="text", text=f"Database file does not exist: {db_path}"
-                )
-            ]
-
-        engine = await _get_engine(db="sqlite", name=db_path)
-
+        engine = await _get_engine(
+            db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+        )
         # Sanitize SQL (basic validation)
         sql = sql.strip()
         if not sql:
