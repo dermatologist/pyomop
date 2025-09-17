@@ -2,6 +2,22 @@
 
 This module implements an MCP server that exposes tools for interacting
 with OMOP CDM databases using pyomop functionality.
+
+Example usage:
+    # Start the server
+    python -m pyomop.mcp
+    
+    # Or via CLI
+    pyomop --mcp-server
+    
+    # Or via dedicated script
+    pyomop-mcp-server
+
+The server provides tools for:
+- Creating CDM databases (empty or with sample data)
+- Querying table structures and metadata
+- Executing SQL statements with error handling
+- Following guided query execution workflows
 """
 
 import asyncio
@@ -557,5 +573,10 @@ async def main():
         )
 
 
-if __name__ == "__main__":
+def main_cli():
+    """CLI entry point for the MCP server."""
     asyncio.run(main())
+
+
+if __name__ == "__main__":
+    main_cli()

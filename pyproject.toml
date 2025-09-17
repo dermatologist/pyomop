@@ -78,6 +78,7 @@ source-exclude = [
 
 [project.scripts]
 pyomop = "pyomop.main:main_routine"
+pyomop-mcp-server = "pyomop.mcp.server:main_cli"
 
 [project.optional-dependencies]
 llm = [

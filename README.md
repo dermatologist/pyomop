@@ -206,7 +206,14 @@ pyomop includes an MCP (Model Context Protocol) server that exposes tools for in
 To start the MCP server for stdio interaction:
 
 ```bash
+# Using the main CLI
 pyomop --mcp-server
+
+# Or using the dedicated MCP server command (after installation)
+pyomop-mcp-server
+
+# Or using Python module directly
+python -m pyomop.mcp
 ```
 
 ### Prerequisites
