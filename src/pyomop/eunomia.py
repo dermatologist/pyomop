@@ -139,8 +139,6 @@ class EunomiaData:
 
         Args:
             from_path: The path to the .ZIP file that contains the csv CDM source files.
-            to_path: The path to the .sqlite or .duckdb file that will be created.
-            dbms: The file based database system to use: 'sqlite' (default) or 'duckdb'.
             cdm_version: The version of the OMOP CDM that are represented in the archive files.
             input_format: The format of the files expected in the archive (csv or parquet).
             verbose: Provide additional logging details during execution.

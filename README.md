@@ -176,11 +176,7 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
 
 ### Command-line
 
-```
-pyomop -help
-```
-
-## Options
+```text
   -c, --create                Create CDM tables (see --version).
   -t, --dbtype TEXT           Database Type for creating CDM (sqlite, mysql or
                               pgsql)
@@ -199,7 +195,7 @@ pyomop -help
                               EUNOMIA_DATA_FOLDER env var if not specified)
   --connection-info           Display connection information for the database (For R package compatibility)
   --help                      Show this message and exit.
-
+```
 ## Updates
 
 ### Eunomia import and cohort creation
