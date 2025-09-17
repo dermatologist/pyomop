@@ -2,10 +2,21 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.4.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.4.1...HEAD)
+
+**Implemented enhancements:**
+
+- Provide OMOP CDM sample data sets [\#236](https://github.com/dermatologist/pyomop/issues/236)
+
+**Closed issues:**
+
+- ✨ Set up Copilot instructions [\#238](https://github.com/dermatologist/pyomop/issues/238)
 
 **Merged pull requests:**
 
+- Add OMOP CDM sample data functionality via Eunomia port [\#237](https://github.com/dermatologist/pyomop/pull/237) ([Copilot](https://github.com/apps/copilot-swe-agent))
+- \[GitHub Dependents Info\] Updated markdown file [\#234](https://github.com/dermatologist/pyomop/pull/234) ([github-actions[bot]](https://github.com/apps/github-actions))
+- \[Automated\] Dependencies upgrade [\#233](https://github.com/dermatologist/pyomop/pull/233) ([github-actions[bot]](https://github.com/apps/github-actions))
 - Feature/hot fix 3 [\#232](https://github.com/dermatologist/pyomop/pull/232) ([dermatologist](https://github.com/dermatologist))
 - Feature/docker 1 [\#230](https://github.com/dermatologist/pyomop/pull/230) ([dermatologist](https://github.com/dermatologist))
 - Feature/hotfix 2 [\#229](https://github.com/dermatologist/pyomop/pull/229) ([dermatologist](https://github.com/dermatologist))
@@ -37,6 +48,10 @@
 - build\(deps\): bump urllib3 from 1.26.6 to 1.26.18 [\#140](https://github.com/dermatologist/pyomop/pull/140) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump pygments from 2.10.0 to 2.15.0 [\#139](https://github.com/dermatologist/pyomop/pull/139) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump requests from 2.26.0 to 2.31.0 [\#138](https://github.com/dermatologist/pyomop/pull/138) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v5.4.1](https://github.com/dermatologist/pyomop/tree/v5.4.1) (2025-08-18)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.4.0...v5.4.1)
 
 ## [v5.4.0](https://github.com/dermatologist/pyomop/tree/v5.4.0) (2025-08-17)
 
