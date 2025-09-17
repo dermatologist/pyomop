@@ -410,22 +410,25 @@ async def _get_engine(
 
 
 async def _get_table_columns(
-    db_path: str, table_name: str, version: str = "cdm54"
+    table_name: str,
+    version: str = "cdm54",
+    db: str = "sqlite",
+    host: str = "localhost",
+    port: int = 5432,
+    user: str = "root",
+    pw: str = "pass",
+    name: str = "cdm.sqlite",
+    schema: str = "",
 ) -> List[types.TextContent]:
     """Get column names for a specific table."""
     try:
-        if not Path(db_path).exists():
-            return [
-                types.TextContent(
-                    type="text", text=f"Database file does not exist: {db_path}"
-                )
-            ]
-
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
 
-            engine = await _get_engine(db="sqlite", name=db_path)
+            engine = await _get_engine(
+                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             columns = cdm_db.get_table_columns(table_name)
@@ -452,22 +455,25 @@ async def _get_table_columns(
 
 
 async def _get_single_table_info(
-    db_path: str, table_name: str, version: str = "cdm54"
+    table_name: str,
+    version: str = "cdm54",
+    db: str = "sqlite",
+    host: str = "localhost",
+    port: int = 5432,
+    user: str = "root",
+    pw: str = "pass",
+    name: str = "cdm.sqlite",
+    schema: str = "",
 ) -> List[types.TextContent]:
     """Get detailed information about a single table."""
     try:
-        if not Path(db_path).exists():
-            return [
-                types.TextContent(
-                    type="text", text=f"Database file does not exist: {db_path}"
-                )
-            ]
-
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
 
-            engine = await _get_engine(db="sqlite", name=db_path)
+            engine = await _get_engine(
+                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_info = cdm_db.get_single_table_info(table_name)
@@ -487,22 +493,24 @@ async def _get_single_table_info(
 
 
 async def _get_usable_table_names(
-    db_path: str, version: str = "cdm54"
+    version: str = "cdm54",
+    db: str = "sqlite",
+    host: str = "localhost",
+    port: int = 5432,
+    user: str = "root",
+    pw: str = "pass",
+    name: str = "cdm.sqlite",
+    schema: str = "",
 ) -> List[types.TextContent]:
     """Get list of all usable table names."""
     try:
-        if not Path(db_path).exists():
-            return [
-                types.TextContent(
-                    type="text", text=f"Database file does not exist: {db_path}"
-                )
-            ]
-
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
 
-            engine = await _get_engine(db="sqlite", name=db_path)
+            engine = await _get_engine(
+                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
             table_names = cdm_db.get_usable_table_names()
