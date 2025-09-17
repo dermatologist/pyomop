@@ -10,7 +10,7 @@ create/init CDM schemas and obtain async sessions across supported backends
 # from sqlalchemy.ext.automap import automap_base
 
 import logging
-
+import os
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.automap import automap_base
 
@@ -208,3 +208,20 @@ class CdmEngineFactory(object):
     @schema.setter
     def schema(self, value):
         self._schema = value
+
+    def print_connection_info(self):
+        """Return a string with the connection details (for logging/display)."""
+        if self._db == "sqlite":
+            current_directory = os.getcwd()
+            _server = os.path.join(current_directory, "cdm.sqlite")
+            print(
+                f"connectionDetails <- DatabaseConnector::createConnectionDetails(\n"
+                f'    dbms = "sqlite", server = "{_server}")\n'
+            )
+        elif self._db == "mysql":
+            return f"MySQL database '{self._name}' on {self._host}:{self._port} as user '{self._user}'"
+        elif self._db == "pgsql":
+            schema_info = f", schema '{self._schema}'" if self._schema else ""
+            return f"PostgreSQL database '{self._name}' on {self._host}:{self._port} as user '{self._user}'{schema_info}"
+        else:
+            return "No valid database connection configured."

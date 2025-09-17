@@ -57,7 +57,39 @@ from .vocabulary import CdmVocabulary
     type=click.Path(exists=True, file_okay=False),
     help="Input folder with FHIR bundles or ndjson files.",
 )
-def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, input_path):
+@click.option(
+    "--eunomia-dataset",
+    "-e",
+    "eunomia_dataset",
+    help="Download and load Eunomia dataset (e.g., 'GiBleed', 'Synthea')",
+)
+@click.option(
+    "--eunomia-path",
+    default="",
+    help="Path to store/find Eunomia datasets (uses EUNOMIA_DATA_FOLDER env var if not specified)",
+)
+@click.option(
+    "--connection-info",
+    is_flag=True,
+    help="Display connection information for the database",
+)
+def cli(
+    version,
+    create,
+    dbtype,
+    host,
+    port,
+    user,
+    pw,
+    name,
+    schema,
+    vocab,
+    input_path,
+    eunomia_dataset,
+    eunomia_path,
+    connection_info,
+):
+    cdm = None  # ensure cdm is always defined
     # clear database name if not sqlite
     if dbtype != "sqlite" and name == "cdm.sqlite":
         name = ""
@@ -132,6 +164,51 @@ def cli(version, create, dbtype, host, port, user, pw, name, schema, vocab, inpu
         )
         click.echo("Done")
 
+    if eunomia_dataset:
+        click.echo(
+            f"Downloading and loading Eunomia dataset '{eunomia_dataset}' into {dbtype} database {name}"
+        )
+        from .eunomia import EunomiaData
+
+        cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
+        eunomia = EunomiaData(cdm)
+
+        # Download dataset
+        zip_path = eunomia.download_eunomia_data(
+            dataset_name=eunomia_dataset,
+            cdm_version=version,
+            path_to_data=eunomia_path if eunomia_path else None,
+            verbose=True,
+        )
+        click.echo(f"Downloaded dataset to: {zip_path}")
+
+        # Extract and load into the configured database
+        try:
+            asyncio.run(
+                eunomia.extract_load_data(
+                    from_path=zip_path,
+                    dataset_name=eunomia_dataset,
+                    cdm_version=version,
+                    input_format="csv",
+                    verbose=True
+                )
+            )
+            click.echo(f"Loaded dataset into configured database: {name}")
+        except Exception as e:
+            click.echo(f"Error loading dataset: {e}", err=True)
+            raise
+
+        # Run CreateCohortTable.sql to create cohort table and populate it
+        try:
+            asyncio.run(eunomia.run_cohort_sql())
+            click.echo("Cohort table created and populated.")
+        except Exception as e:
+            click.echo(f"Error creating/populating cohort table: {e}", err=True)
+            raise
+        click.echo("Done")
+    if cdm and connection_info:
+        click.echo(click.style("Database connection information:", fg="green"))
+        click.echo(cdm.print_connection_info())
 
 def main_routine():
     """Top-level runner used by ``python -m pyomop``."""

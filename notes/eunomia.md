@@ -1,0 +1,1 @@
+connectionDetails <- DatabaseConnector::createConnectionDetails(dbms = "sqlite", server = databasePath)
