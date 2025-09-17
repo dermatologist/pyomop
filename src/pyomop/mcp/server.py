@@ -158,10 +158,6 @@ async def handle_list_tools() -> List[types.Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "db_path": {
-                        "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    },
                     "table_name": {
                         "type": "string",
                         "description": "Name of the table to get columns for",
@@ -172,8 +168,43 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "cdm54",
                         "description": "CDM version",
                     },
+                    "db": {
+                        "type": "string",
+                        "default": "sqlite",
+                        "description": "Database type (sqlite, mysql, pgsql)",
+                    },
+                    "host": {
+                        "type": "string",
+                        "default": "localhost",
+                        "description": "Database host (ignored for sqlite)",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "default": 5432,
+                        "description": "Database port (ignored for sqlite)",
+                    },
+                    "user": {
+                        "type": "string",
+                        "default": "root",
+                        "description": "Database user (ignored for sqlite)",
+                    },
+                    "pw": {
+                        "type": "string",
+                        "default": "pass",
+                        "description": "Database password (ignored for sqlite)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "cdm.sqlite",
+                        "description": "Database name or SQLite filename",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "default": "",
+                        "description": "PostgreSQL schema to use for CDM",
+                    },
                 },
-                "required": ["db_path", "table_name"],
+                "required": ["table_name"],
             },
         ),
         types.Tool(
@@ -182,10 +213,6 @@ async def handle_list_tools() -> List[types.Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "db_path": {
-                        "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    },
                     "table_name": {
                         "type": "string",
                         "description": "Name of the table to get info for",
@@ -196,8 +223,43 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "cdm54",
                         "description": "CDM version",
                     },
+                    "db": {
+                        "type": "string",
+                        "default": "sqlite",
+                        "description": "Database type (sqlite, mysql, pgsql)",
+                    },
+                    "host": {
+                        "type": "string",
+                        "default": "localhost",
+                        "description": "Database host (ignored for sqlite)",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "default": 5432,
+                        "description": "Database port (ignored for sqlite)",
+                    },
+                    "user": {
+                        "type": "string",
+                        "default": "root",
+                        "description": "Database user (ignored for sqlite)",
+                    },
+                    "pw": {
+                        "type": "string",
+                        "default": "pass",
+                        "description": "Database password (ignored for sqlite)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "cdm.sqlite",
+                        "description": "Database name or SQLite filename",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "default": "",
+                        "description": "PostgreSQL schema to use for CDM",
+                    },
                 },
-                "required": ["db_path", "table_name"],
+                "required": ["table_name"],
             },
         ),
         types.Tool(
@@ -206,18 +268,49 @@ async def handle_list_tools() -> List[types.Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "db_path": {
-                        "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    },
                     "version": {
                         "type": "string",
                         "enum": ["cdm54", "cdm6"],
                         "default": "cdm54",
                         "description": "CDM version",
                     },
+                    "db": {
+                        "type": "string",
+                        "default": "sqlite",
+                        "description": "Database type (sqlite, mysql, pgsql)",
+                    },
+                    "host": {
+                        "type": "string",
+                        "default": "localhost",
+                        "description": "Database host (ignored for sqlite)",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "default": 5432,
+                        "description": "Database port (ignored for sqlite)",
+                    },
+                    "user": {
+                        "type": "string",
+                        "default": "root",
+                        "description": "Database user (ignored for sqlite)",
+                    },
+                    "pw": {
+                        "type": "string",
+                        "default": "pass",
+                        "description": "Database password (ignored for sqlite)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "cdm.sqlite",
+                        "description": "Database name or SQLite filename",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "default": "",
+                        "description": "PostgreSQL schema to use for CDM",
+                    },
                 },
-                "required": ["db_path"],
+                "required": [],
             },
         ),
         types.Tool(
