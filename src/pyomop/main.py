@@ -190,8 +190,17 @@ def cli(
         except Exception as e:
             click.echo(f"Error loading dataset: {e}", err=True)
             raise
-        click.echo("Done")
 
+        # Run CreateCohortTable.sql to create cohort table and populate it
+        try:
+            asyncio.run(eunomia.run_cohort_sql())
+            click.echo("Cohort table created and populated.")
+        except Exception as e:
+            click.echo(f"Error creating/populating cohort table: {e}", err=True)
+            raise
+        click.echo("Done")
+        click.echo(click.style("Eunomia connection details:", fg="green"))
+        click.echo(eunomia.print_connection_info())
 
 def main_routine():
     """Top-level runner used by ``python -m pyomop``."""

@@ -382,3 +382,51 @@ class EunomiaData:
 
                 if verbose:
                     _logger.info(f"Exported {table_name} to {output_file}")
+
+    async def run_cohort_sql(self, verbose=True) -> None:
+        """
+        Create Cohort table and populate it with cohort data from a SQL file.
+        The sql file is in the same folder with the name CreateCohortTable.sql
+        """
+
+        sql_file = Path(__file__).parent / "CreateCohortTable.sql"
+        if not sql_file.exists():
+            raise FileNotFoundError(f"SQL file not found: {sql_file}")
+
+        with open(sql_file, "r") as f:
+            sql_script = f.read()
+
+        # Sanitize the SQL script if needed (e.g., remove comments)
+        sql_script = "\n".join(
+            line for line in sql_script.splitlines() if not line.strip().startswith("--")
+        )
+
+        engine = self.cdm.engine
+        if engine is None:
+            raise RuntimeError("CDM engine is not initialized.")
+
+        async with engine.begin() as conn:
+            # For each statement in the script, execute it
+            statements = [stmt.strip() for stmt in sql_script.split(";") if stmt.strip()]
+            for statement in statements:
+                if statement:
+                    if statement.lower().startswith("create") or statement.lower().startswith("insert"):
+                        if verbose:
+                            _logger.info(f"Executing SQL statement: {statement[:30]}...")
+                        await conn.execute(sqlalchemy.text(statement))
+
+    def print_connection_info(self) -> None:
+        """Print connection information for the current CDM engine.
+        Format:
+        connectionDetails <- DatabaseConnector::createConnectionDetails(
+            dbms = "sqlite", server = databasePath)
+
+        where databasePath is the path to cdm.sqlite file in the current working directory.
+        """
+        if self.cdm.db == "sqlite":
+            current_directory = os.getcwd()
+            _server = os.path.join(current_directory, "cdm.sqlite")
+            print(
+                f"connectionDetails <- DatabaseConnector::createConnectionDetails(\n"
+                f'    dbms = "sqlite", server = "{_server}")\n'
+            )

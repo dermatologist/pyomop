@@ -182,7 +182,7 @@ pyomop -help
 
 ## Updates
 
-### Eunomia support
+### Eunomia import and cohort creation
 ```
 pyomop -e Synthea27Nj -v 5.4
 pyomop -e GiBleed -v 5.3
