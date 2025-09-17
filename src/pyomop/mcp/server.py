@@ -94,13 +94,13 @@ async def handle_list_tools() -> List[types.Tool]:
                     },
                     "version": {
                         "type": "string",
-                        "enum": ["cdm54", "cdm6"],
-                        "default": "cdm54",
+                        "enum": ["5.3", "5.4"],
+                        "default": "5.3",
                         "description": "CDM version to create",
                     },
                     "dataset": {
                         "type": "string",
-                        "default": "Synthea27Nj",
+                        "default": "GiBleed",
                         "description": "Eunomia dataset to load",
                     },
                 },
@@ -345,7 +345,7 @@ async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextCo
 
 
 async def _create_eunomia(
-    db_path: str, version: str = "cdm54", dataset: str = "Synthea27Nj"
+    db_path: str, version: str = "5.3", dataset: str = "GiBleed"
 ) -> List[types.TextContent]:
     """Create a CDM database with eunomia data."""
     try:
