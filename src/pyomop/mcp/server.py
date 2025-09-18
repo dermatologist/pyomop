@@ -79,7 +79,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "CDM version to create",
                     },
                 },
-                "required": ["db_path"],
+                "required": [],
             },
         ),
         types.Tool(
@@ -95,16 +95,16 @@ async def handle_list_tools() -> List[types.Tool]:
                     "version": {
                         "type": "string",
                         "enum": ["5.3", "5.4"],
-                        "default": "5.3",
+                        "default": "5.4",
                         "description": "CDM version to create",
                     },
                     "dataset": {
                         "type": "string",
-                        "default": "GiBleed",
+                        "default": "Synthea27Nj",
                         "description": "Eunomia dataset to load",
                     },
                 },
-                "required": ["db_path"],
+                "required": [],
             },
         ),
         types.Tool(
@@ -138,10 +138,10 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "pass",
                         "description": "Database password (ignored for sqlite)",
                     },
-                    "name": {
+                    "db_path": {
                         "type": "string",
                         "default": "cdm.sqlite",
-                        "description": "Database name or SQLite filename",
+                        "description": "Database path",
                     },
                     "schema": {
                         "type": "string",
@@ -149,7 +149,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["db"],
+                "required": [],
             },
         ),
         types.Tool(
@@ -193,10 +193,10 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "pass",
                         "description": "Database password (ignored for sqlite)",
                     },
-                    "name": {
+                    "db_path": {
                         "type": "string",
                         "default": "cdm.sqlite",
-                        "description": "Database name or SQLite filename",
+                        "description": "Database path",
                     },
                     "schema": {
                         "type": "string",
@@ -204,7 +204,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["table_name", "db"],
+                "required": ["table_name"],
             },
         ),
         types.Tool(
@@ -248,10 +248,10 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "pass",
                         "description": "Database password (ignored for sqlite)",
                     },
-                    "name": {
+                    "db_path": {
                         "type": "string",
                         "default": "cdm.sqlite",
-                        "description": "Database name or SQLite filename",
+                        "description": "Database path",
                     },
                     "schema": {
                         "type": "string",
@@ -259,7 +259,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["table_name", "db"],
+                "required": ["table_name"],
             },
         ),
         types.Tool(
@@ -293,10 +293,10 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "pass",
                         "description": "Database password (ignored for sqlite)",
                     },
-                    "name": {
+                    "db_path": {
                         "type": "string",
                         "default": "cdm.sqlite",
-                        "description": "Database name or SQLite filename",
+                        "description": "Database path",
                     },
                     "schema": {
                         "type": "string",
@@ -304,7 +304,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["db"],
+                "required": [],
             },
         ),
         types.Tool(
@@ -347,10 +347,10 @@ async def handle_list_tools() -> List[types.Tool]:
                         "default": "pass",
                         "description": "Database password (ignored for sqlite)",
                     },
-                    "name": {
+                    "db_path": {
                         "type": "string",
                         "default": "cdm.sqlite",
-                        "description": "Database name or SQLite filename",
+                        "description": "Database path",
                     },
                     "schema": {
                         "type": "string",
@@ -358,7 +358,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["sql", "db"],
+                "required": ["sql"],
             },
         ),
     ]
@@ -435,7 +435,7 @@ async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextCo
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
 
         # Create engine using _get_engine
-        engine = await _get_engine(db="sqlite", name=db_path)
+        engine = await _get_engine(db="sqlite", db_path=db_path)
 
         # Initialize the models
         if version == "cdm6":
@@ -473,9 +473,7 @@ async def _create_eunomia(
         # Load eunomia data
         from ..eunomia import EunomiaData
 
-        engine = await _get_engine(db="sqlite", name=db_path)
         cdm = CdmEngineFactory(db="sqlite", name=db_path)
-        cdm._engine = engine
         eunomia = EunomiaData(cdm)
 
         # Download and load dataset
@@ -512,7 +510,7 @@ async def _get_engine(
     port=5432,
     user="root",
     pw="pass",
-    name="cdm.sqlite",
+    db_path="cdm.sqlite",
     schema="",
 ) -> AsyncEngine:
     """Get a database engine based on provided parameters."""
@@ -522,9 +520,9 @@ async def _get_engine(
         port=port,
         user=user,
         pw=pw,
-        name=name,
+        name=db_path,
         schema=schema,
-    ).engine # type: ignore
+    ).engine  # type: ignore
 
 
 async def _get_table_columns(
@@ -534,7 +532,7 @@ async def _get_table_columns(
     port=5432,
     user="root",
     pw="pass",
-    name="cdm.sqlite",
+    db_path="cdm.sqlite",
     schema="",
 ) -> List[types.TextContent]:
     """Get column names for a specific table."""
@@ -543,7 +541,13 @@ async def _get_table_columns(
         try:
             from ..llm_engine import CDMDatabase
             engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+                db=db,
+                host=host,
+                port=port,
+                user=user,
+                pw=pw,
+                db_path=db_path,
+                schema=schema,
             )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
@@ -577,7 +581,7 @@ async def _get_single_table_info(
     port=5432,
     user="root",
     pw="pass",
-    name="cdm.sqlite",
+    db_path="cdm.sqlite",
     schema="",
 ) -> List[types.TextContent]:
     """Get detailed information about a single table."""
@@ -586,7 +590,7 @@ async def _get_single_table_info(
         try:
             from ..llm_engine import CDMDatabase
             engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+                db=db, host=host, port=port, user=user, pw=pw, db_path=db_path, schema=schema
             )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
@@ -612,7 +616,7 @@ async def _get_usable_table_names(
     port=5432,
     user="root",
     pw="pass",
-    name="cdm.sqlite",
+    db_path="cdm.sqlite",
     schema="",
 ) -> List[types.TextContent]:
     """Get list of all usable table names."""
@@ -621,7 +625,7 @@ async def _get_usable_table_names(
         try:
             from ..llm_engine import CDMDatabase
             engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+                db=db, host=host, port=port, user=user, pw=pw, db_path=db_path, schema=schema
             )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
@@ -653,13 +657,13 @@ async def _run_sql(
     port=5432,
     user="root",
     pw="pass",
-    name="cdm.sqlite",
+    db_path="cdm.sqlite",
     schema=""
 ) -> List[types.TextContent]:
     """Execute a SQL statement using engine.begin() pattern."""
     try:
         engine = await _get_engine(
-            db=db, host=host, port=port, user=user, pw=pw, name=name, schema=schema
+            db=db, host=host, port=port, user=user, pw=pw, db_path=db_path, schema=schema
         )
         # Sanitize SQL (basic validation)
         sql = sql.strip()
