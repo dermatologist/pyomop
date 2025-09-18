@@ -197,7 +197,11 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
 
 ## MCP Server
 
-pyomop includes an MCP (Model Context Protocol) server that exposes tools for interacting with OMOP CDM databases. This allows MCP clients to create databases, query table structures, and execute SQL statements.
+pyomop includes an MCP (Model Context Protocol) server that exposes tools for interacting with OMOP CDM databases. This allows MCP clients to create databases, load data, and execute SQL statements.
+
+<p align="center">
+  <img src="https://github.com/dermatologist/pyomop/blob/develop/notes/pyomop-mcp.gif" />
+</p>
 
 ### Starting the MCP Server
 
@@ -212,8 +216,7 @@ pyomop --mcp-server
 ### Available MCP Tools
 
 - **create_cdm**: Create an empty CDM database
-- **create_eunomia**: Create a CDM database with eunomia data pre-installed
-- **get_cdm**: Get CDM engine factory information
+- **create_eunomia**: Add Eunomia sample dataset
 - **get_table_columns**: Get column names for a specific table
 - **get_single_table_info**: Get detailed table information including foreign keys
 - **get_usable_table_names**: Get list of all available table names
@@ -237,8 +240,6 @@ The server communicates via stdio and can be used with any MCP-compatible client
   }
 }
 ```
-
-## Updates
 
 ### Eunomia import and cohort creation
 ```
