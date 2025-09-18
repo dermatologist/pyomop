@@ -73,7 +73,7 @@ class AttributeDefinition(Base):
 class Cohort(Base):
     __tablename__ = "cohort"
 
-    _id = Column(Integer, primary_key=True)
+    _id = Column(Integer, primary_key=True, autoincrement=True)
     cohort_definition_id: Mapped[int] = mapped_column(Integer, nullable=False)
     subject_id: Mapped[int] = mapped_column(Integer, nullable=False)
     cohort_start_date: Mapped[str] = mapped_column(String(30), nullable=False)
@@ -83,7 +83,7 @@ class Cohort(Base):
 class CohortAttribute(Base):
     __tablename__ = "cohort_attribute"
 
-    _id = Column(Integer, primary_key=True)
+    _id = Column(Integer, primary_key=True, autoincrement=True)
     cohort_definition_id: Mapped[int] = mapped_column(Integer, nullable=False)
     cohort_start_date: Mapped[str] = mapped_column(String(30), nullable=False)
     cohort_end_date: Mapped[str] = mapped_column(String(30), nullable=False)
