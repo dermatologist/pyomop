@@ -25,7 +25,9 @@ import logging
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
 from sqlalchemy.ext.asyncio import AsyncEngine
+
 try:
     import mcp.server.stdio
     import mcp.types as types
@@ -505,15 +507,23 @@ async def _create_eunomia(
 
 
 async def _get_engine(
-    db="sqlite",
-    host="localhost",
-    port=5432,
-    user="root",
-    pw="pass",
+    db=None,
+    host=None,
+    port=None,
+    user=None,
+    pw=None,
     db_path="cdm.sqlite",
-    schema="",
+    schema=None,
 ) -> AsyncEngine:
-    """Get a database engine based on provided parameters."""
+    """Get a database engine based on provided parameters, checking environment variables for defaults."""
+    import os
+
+    db = db or os.environ.get("PYOMOP_DB", "sqlite")
+    host = host or os.environ.get("PYOMOP_HOST", "localhost")
+    port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+    user = user or os.environ.get("PYOMOP_USER", "root")
+    pw = pw or os.environ.get("PYOMOP_PW", "pass")
+    schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
     return CdmEngineFactory(
         db=db,
         host=host,
@@ -527,19 +537,28 @@ async def _get_engine(
 
 async def _get_table_columns(
     table_name: str,
-    db="sqlite",
-    host="localhost",
-    port=5432,
-    user="root",
-    pw="pass",
+    db=None,
+    host=None,
+    port=None,
+    user=None,
+    pw=None,
     db_path="cdm.sqlite",
-    schema="",
+    schema=None,
 ) -> List[types.TextContent]:
     """Get column names for a specific table."""
+    import os
+
+    db = db or os.environ.get("PYOMOP_DB", "sqlite")
+    host = host or os.environ.get("PYOMOP_HOST", "localhost")
+    port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+    user = user or os.environ.get("PYOMOP_USER", "root")
+    pw = pw or os.environ.get("PYOMOP_PW", "pass")
+    schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
     try:
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
+
             engine = await _get_engine(
                 db=db,
                 host=host,
@@ -576,21 +595,36 @@ async def _get_table_columns(
 
 async def _get_single_table_info(
     table_name: str,
-    db="sqlite",
-    host="localhost",
-    port=5432,
-    user="root",
-    pw="pass",
+    db=None,
+    host=None,
+    port=None,
+    user=None,
+    pw=None,
     db_path="cdm.sqlite",
-    schema="",
+    schema=None,
 ) -> List[types.TextContent]:
     """Get detailed information about a single table."""
+    import os
+
+    db = db or os.environ.get("PYOMOP_DB", "sqlite")
+    host = host or os.environ.get("PYOMOP_HOST", "localhost")
+    port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+    user = user or os.environ.get("PYOMOP_USER", "root")
+    pw = pw or os.environ.get("PYOMOP_PW", "pass")
+    schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
     try:
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
+
             engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, db_path=db_path, schema=schema
+                db=db,
+                host=host,
+                port=port,
+                user=user,
+                pw=pw,
+                db_path=db_path,
+                schema=schema,
             )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
@@ -611,21 +645,36 @@ async def _get_single_table_info(
 
 
 async def _get_usable_table_names(
-    db="sqlite",
-    host="localhost",
-    port=5432,
-    user="root",
-    pw="pass",
+    db=None,
+    host=None,
+    port=None,
+    user=None,
+    pw=None,
     db_path="cdm.sqlite",
-    schema="",
+    schema=None,
 ) -> List[types.TextContent]:
     """Get list of all usable table names."""
+    import os
+
+    db = db or os.environ.get("PYOMOP_DB", "sqlite")
+    host = host or os.environ.get("PYOMOP_HOST", "localhost")
+    port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+    user = user or os.environ.get("PYOMOP_USER", "root")
+    pw = pw or os.environ.get("PYOMOP_PW", "pass")
+    schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
     try:
         # Check if LLM features are available
         try:
             from ..llm_engine import CDMDatabase
+
             engine = await _get_engine(
-                db=db, host=host, port=port, user=user, pw=pw, db_path=db_path, schema=schema
+                db=db,
+                host=host,
+                port=port,
+                user=user,
+                pw=pw,
+                db_path=db_path,
+                schema=schema,
             )
             cdm_db = CDMDatabase(engine, version=version)  # type: ignore
 
@@ -652,18 +701,32 @@ async def _get_usable_table_names(
 async def _run_sql(
     sql: str,
     fetch_results: bool = True,
-    db="sqlite",
-    host="localhost",
-    port=5432,
-    user="root",
-    pw="pass",
+    db=None,
+    host=None,
+    port=None,
+    user=None,
+    pw=None,
     db_path="cdm.sqlite",
-    schema=""
+    schema=None,
 ) -> List[types.TextContent]:
     """Execute a SQL statement using engine.begin() pattern."""
+    import os
+
+    db = db or os.environ.get("PYOMOP_DB", "sqlite")
+    host = host or os.environ.get("PYOMOP_HOST", "localhost")
+    port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+    user = user or os.environ.get("PYOMOP_USER", "root")
+    pw = pw or os.environ.get("PYOMOP_PW", "pass")
+    schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
     try:
         engine = await _get_engine(
-            db=db, host=host, port=port, user=user, pw=pw, db_path=db_path, schema=schema
+            db=db,
+            host=host,
+            port=port,
+            user=user,
+            pw=pw,
+            db_path=db_path,
+            schema=schema,
         )
         # Sanitize SQL (basic validation)
         sql = sql.strip()

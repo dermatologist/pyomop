@@ -222,6 +222,7 @@ pyomop --mcp-server
 - **get_usable_table_names**: Get list of all available table names
 - **run_sql**: Execute SQL statements with error handling
 
+* create_cdm and create_eunomia supports only local sqlite databases to avoid inadvertent data loss in production databases.
 ### Available Prompts
 
 - **query_execution_steps**: Provides step-by-step guidance for executing database queries based on free text instructions
@@ -257,6 +258,29 @@ pyomop -e GiBleed -v 5.3 --connection-info
 - PostgreSQL
 - MySQL
 - SQLite
+
+## Environment Variables for Database Connection
+
+You can configure database connection parameters using environment variables. These will be used as defaults by pyomop and the MCP server:
+
+- `PYOMOP_DB`: Database type (`sqlite`, `mysql`, `pgsql`)
+- `PYOMOP_HOST`: Database host
+- `PYOMOP_PORT`: Database port
+- `PYOMOP_USER`: Database user
+- `PYOMOP_PW`: Database password
+- `PYOMOP_SCHEMA`: Database schema (for PostgreSQL)
+
+Example usage:
+
+```bash
+export PYOMOP_DB=pgsql
+export PYOMOP_HOST=localhost
+export PYOMOP_PORT=5432
+export PYOMOP_USER=postgres
+export PYOMOP_PW=mypass
+export PYOMOP_SCHEMA=omop
+```
+These environment variables will be checked before assigning default values for database connection in pyomop and MCP server tools.
 
 ## Contributing
 
