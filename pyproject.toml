@@ -24,9 +24,11 @@ dependencies = [
     "pandas",
     "aiosqlite",
     "asyncpg",
+    "nest_asyncio",
     "requests",
     "greenlet",
-    "fhiry>=5.1.1"
+    "fhiry>=5.1.1",
+    "mcp"
 ]
 
 
@@ -77,6 +79,7 @@ source-exclude = [
 
 [project.scripts]
 pyomop = "pyomop.main:main_routine"
+pyomop-mcp-server = "pyomop.mcp.server:main_cli"
 
 [project.optional-dependencies]
 llm = [

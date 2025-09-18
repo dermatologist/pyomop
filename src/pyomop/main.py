@@ -5,6 +5,7 @@ Bulk Export data into an OMOP database.
 """
 
 import asyncio
+import sys
 
 import click
 
@@ -73,6 +74,11 @@ from .vocabulary import CdmVocabulary
     is_flag=True,
     help="Display connection information for the database",
 )
+@click.option(
+    "--mcp-server",
+    is_flag=True,
+    help="Start MCP server for stdio interaction",
+)
 def cli(
     version,
     create,
@@ -88,6 +94,7 @@ def cli(
     eunomia_dataset,
     eunomia_path,
     connection_info,
+    mcp_server,
 ):
     cdm = None  # ensure cdm is always defined
     # clear database name if not sqlite
@@ -209,6 +216,20 @@ def cli(
     if cdm and connection_info:
         click.echo(click.style("Database connection information:", fg="green"))
         click.echo(cdm.print_connection_info())
+    
+    if mcp_server:
+        click.echo("Starting pyomop MCP server...")
+        try:
+            from .mcp import mcp_server_main
+            asyncio.run(mcp_server_main())
+        except ImportError:
+            click.echo("MCP server requires 'mcp' package. Install with: pip install mcp", err=True)
+            sys.exit(1)
+        except KeyboardInterrupt:
+            click.echo("MCP server stopped.")
+        except Exception as e:
+            click.echo(f"Error starting MCP server: {e}", err=True)
+            sys.exit(1)
 
 def main_routine():
     """Top-level runner used by ``python -m pyomop``."""

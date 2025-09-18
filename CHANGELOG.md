@@ -2,18 +2,15 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.4.1...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.5.0...HEAD)
 
 **Implemented enhancements:**
 
-- Provide OMOP CDM sample data sets [\#236](https://github.com/dermatologist/pyomop/issues/236)
-
-**Closed issues:**
-
-- ✨ Set up Copilot instructions [\#238](https://github.com/dermatologist/pyomop/issues/238)
+- Feature Request: Create a mcp-server feature [\#240](https://github.com/dermatologist/pyomop/issues/240)
 
 **Merged pull requests:**
 
+- Add MCP server feature for CDM database interaction [\#241](https://github.com/dermatologist/pyomop/pull/241) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - Add OMOP CDM sample data functionality via Eunomia port [\#237](https://github.com/dermatologist/pyomop/pull/237) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - \[GitHub Dependents Info\] Updated markdown file [\#234](https://github.com/dermatologist/pyomop/pull/234) ([github-actions[bot]](https://github.com/apps/github-actions))
 - \[Automated\] Dependencies upgrade [\#233](https://github.com/dermatologist/pyomop/pull/233) ([github-actions[bot]](https://github.com/apps/github-actions))
@@ -46,8 +43,18 @@
 - build\(deps\): bump actions/checkout from 3 to 4 [\#143](https://github.com/dermatologist/pyomop/pull/143) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump certifi from 2022.12.7 to 2023.7.22 [\#141](https://github.com/dermatologist/pyomop/pull/141) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump urllib3 from 1.26.6 to 1.26.18 [\#140](https://github.com/dermatologist/pyomop/pull/140) ([dependabot[bot]](https://github.com/apps/dependabot))
-- build\(deps\): bump pygments from 2.10.0 to 2.15.0 [\#139](https://github.com/dermatologist/pyomop/pull/139) ([dependabot[bot]](https://github.com/apps/dependabot))
-- build\(deps\): bump requests from 2.26.0 to 2.31.0 [\#138](https://github.com/dermatologist/pyomop/pull/138) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v5.5.0](https://github.com/dermatologist/pyomop/tree/v5.5.0) (2025-09-17)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.4.1...v5.5.0)
+
+**Implemented enhancements:**
+
+- Provide OMOP CDM sample data sets [\#236](https://github.com/dermatologist/pyomop/issues/236)
+
+**Closed issues:**
+
+- ✨ Set up Copilot instructions [\#238](https://github.com/dermatologist/pyomop/issues/238)
 
 ## [v5.4.1](https://github.com/dermatologist/pyomop/tree/v5.4.1) (2025-08-18)
 

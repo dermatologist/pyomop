@@ -25,6 +25,7 @@ from typing import Optional
 
 from sqlalchemy import (
     BigInteger,
+    Column,
     Date,
     DateTime,
     ForeignKey,
@@ -71,17 +72,18 @@ class AttributeDefinition(Base):
 class Cohort(Base):
     __tablename__ = "cohort"
 
-    _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     cohort_definition_id: Mapped[int] = mapped_column(Integer, nullable=False)
     subject_id: Mapped[int] = mapped_column(Integer, nullable=False)
     cohort_start_date: Mapped[str] = mapped_column(String(30), nullable=False)
     cohort_end_date: Mapped[str] = mapped_column(String(30), nullable=False)
 
+    __mapper_args__ = {
+        "primary_key": [cohort_definition_id, subject_id, cohort_start_date, cohort_end_date]
+    }
 
 class CohortAttribute(Base):
     __tablename__ = "cohort_attribute"
 
-    _id: Mapped[int] = mapped_column(Integer, primary_key=True)
     cohort_definition_id: Mapped[int] = mapped_column(Integer, nullable=False)
     cohort_start_date: Mapped[str] = mapped_column(String(30), nullable=False)
     cohort_end_date: Mapped[str] = mapped_column(String(30), nullable=False)
@@ -90,7 +92,10 @@ class CohortAttribute(Base):
     value_as_number: Mapped[decimal.Decimal] = mapped_column(Numeric)
     value_as_concept_id: Mapped[int] = mapped_column(Integer)
 
-
+    __mapper_args__ = {
+        "primary_key": [cohort_definition_id, subject_id, cohort_start_date, cohort_end_date, attribute_definition_id]
+    }
+    
 class CohortDefinition(Base):
     __tablename__ = "cohort_definition"
 
