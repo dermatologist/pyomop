@@ -149,7 +149,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["name"],
+                "required": ["db"],
             },
         ),
         types.Tool(
@@ -204,7 +204,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["table_name"],
+                "required": ["table_name", "db"],
             },
         ),
         types.Tool(
@@ -259,7 +259,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": ["table_name"],
+                "required": ["table_name", "db"],
             },
         ),
         types.Tool(
@@ -268,11 +268,59 @@ async def handle_list_tools() -> List[types.Tool]:
             inputSchema={
                 "type": "object",
                 "properties": {
-                    "version": {
+                    "db": {
                         "type": "string",
-                        "enum": ["cdm54", "cdm6"],
-                        "default": "cdm54",
-                        "description": "CDM version",
+                        "default": "sqlite",
+                        "description": "Database type (sqlite, mysql, pgsql)",
+                    },
+                    "host": {
+                        "type": "string",
+                        "default": "localhost",
+                        "description": "Database host (ignored for sqlite)",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "default": 5432,
+                        "description": "Database port (ignored for sqlite)",
+                    },
+                    "user": {
+                        "type": "string",
+                        "default": "root",
+                        "description": "Database user (ignored for sqlite)",
+                    },
+                    "pw": {
+                        "type": "string",
+                        "default": "pass",
+                        "description": "Database password (ignored for sqlite)",
+                    },
+                    "name": {
+                        "type": "string",
+                        "default": "cdm.sqlite",
+                        "description": "Database name or SQLite filename",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "default": "",
+                        "description": "PostgreSQL schema to use for CDM",
+                    },
+                },
+                "required": ["db"],
+            },
+        ),
+        types.Tool(
+            name="run_sql",
+            description="Execute a SQL statement on the CDM database",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sql": {
+                        "type": "string",
+                        "description": "SQL statement to execute",
+                    },
+                    "fetch_results": {
+                        "type": "boolean",
+                        "default": True,
+                        "description": "Whether to fetch and return results for SELECT queries",
                     },
                     "db": {
                         "type": "string",
@@ -310,30 +358,7 @@ async def handle_list_tools() -> List[types.Tool]:
                         "description": "PostgreSQL schema to use for CDM",
                     },
                 },
-                "required": [],
-            },
-        ),
-        types.Tool(
-            name="run_sql",
-            description="Execute a SQL statement on the CDM database",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "db_path": {
-                        "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    },
-                    "sql": {
-                        "type": "string",
-                        "description": "SQL statement to execute",
-                    },
-                    "fetch_results": {
-                        "type": "boolean",
-                        "default": True,
-                        "description": "Whether to fetch and return results for SELECT queries",
-                    },
-                },
-                "required": ["db_path", "sql"],
+                "required": ["sql", "db"],
             },
         ),
     ]
