@@ -11,6 +11,7 @@ create/init CDM schemas and obtain async sessions across supported backends
 
 import logging
 import os
+
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.automap import automap_base
 
@@ -36,21 +37,25 @@ class CdmEngineFactory(object):
 
     def __init__(
         self,
-        db="sqlite",
-        host="localhost",
-        port=5432,
-        user="root",
-        pw="pass",
-        name="cdm.sqlite",
-        schema="",
+        db=None,
+        host=None,
+        port=None,
+        user=None,
+        pw=None,
+        name=None,
+        schema=None,
     ):
-        self._db = db
-        self._name = name
-        self._host = host
-        self._port = port
-        self._user = user
-        self._pw = pw
-        self._schema = schema
+        import os
+
+        self._db = db or os.environ.get("PYOMOP_DB", "sqlite")
+        self._name = name or os.environ.get("PYOMOP_NAME", "cdm.sqlite")
+        self._host = host or os.environ.get("PYOMOP_HOST", "localhost")
+        self._port = (
+            port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+        )
+        self._user = user or os.environ.get("PYOMOP_USER", "root")
+        self._pw = pw or os.environ.get("PYOMOP_PW", "pass")
+        self._schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
         self._engine = None
         self._base = None
 

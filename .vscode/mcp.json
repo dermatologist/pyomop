@@ -1,0 +1,8 @@
+{
+  "servers": {
+      "pyomop": {
+      "command": "uv",
+      "args": ["run", "pyomop", "--mcp-server"]
+    }
+  }
+}
