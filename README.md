@@ -241,6 +241,7 @@ The server communicates via stdio and can be used with any MCP-compatible client
   }
 }
 ```
+* *If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine [omop_mcp](https://github.com/OHNLP/omop_mcp) with PyOMOP.* 
 
 ### Eunomia import and cohort creation
 ```
