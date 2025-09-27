@@ -249,6 +249,45 @@ pyomop -e Synthea27Nj -v 5.4 --connection-info
 pyomop -e GiBleed -v 5.3 --connection-info
 ```
 
+## PyHealth Compatibility
+
+pyomop supports exporting OMOP CDM data in a format compatible with [PyHealth](https://github.com/sunlabuiuc/PyHealth), a machine learning library for healthcare data analysis.
+
+### Usage
+
+```python
+from pyomop import CdmEngineFactory
+from pyomop.pyhealth import PyHealthExport
+import asyncio
+
+async def export_for_pyhealth():
+    # Initialize CDM database connection
+    cdm = CdmEngineFactory()  # or with your database parameters
+    
+    # Create PyHealth exporter
+    # Uses PYHEALTH_DATA_FOLDER environment variable or current directory
+    exporter = PyHealthExport(cdm)
+    
+    # Export PyHealth compatible tables
+    exported_files = await exporter.export(verbose=True)
+    print(f"Exported {len(exported_files)} files for PyHealth")
+
+asyncio.run(export_for_pyhealth())
+```
+
+The exporter will create CSV files with lowercase names for the following OMOP CDM tables:
+- `person.csv`
+- `visit_occurrence.csv`
+- `death.csv`
+- `condition_occurrence.csv`
+- `procedure_occurrence.csv`
+- `drug_exposure.csv`
+- `measurement.csv`
+
+### Environment Variables
+
+- `PYHEALTH_DATA_FOLDER`: Directory path for PyHealth data exports (defaults to current working directory)
+
 ## Additional Tools
 
 - **Convert FHIR to pandas DataFrame:** [fhiry](https://github.com/dermatologist/fhiry)
