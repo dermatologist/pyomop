@@ -25,7 +25,7 @@ class PyHealthExport:
     as expected by PyHealth.
 
     Args:
-        cdm_engine: CdmEngineFactory instance with initialized engine.
+        cdm: CdmEngineFactory instance with initialized engine.
         export_path: Path to export directory. If None, uses PYHEALTH_DATA_FOLDER
                     environment variable or current working directory.
     """
@@ -41,28 +41,28 @@ class PyHealthExport:
         "measurement"
     ]
 
-    def __init__(self, cdm_engine: "CdmEngineFactory", export_path: Optional[str] = None):
+    def __init__(self, cdm: "CdmEngineFactory", export_path: Optional[str] = None):
         """Initialize PyHealthExport.
 
         Args:
-            cdm_engine: CdmEngineFactory instance with initialized engine.
+            cdm: CdmEngineFactory instance with initialized engine.
             export_path: Path to export directory. If None, uses PYHEALTH_DATA_FOLDER
                         environment variable or current working directory.
         """
-        self._cdm_engine = cdm_engine
+        self._cdm = cdm
         if export_path is None:
             export_path = os.environ.get("PYHEALTH_DATA_FOLDER", os.getcwd())
         self._export_path = export_path
 
     @property
-    def cdm_engine(self) -> "CdmEngineFactory":
+    def cdm(self) -> "CdmEngineFactory":
         """Get the CDM engine factory."""
-        return self._cdm_engine
+        return self._cdm
 
-    @cdm_engine.setter
-    def cdm_engine(self, value: "CdmEngineFactory") -> None:
+    @cdm.setter
+    def cdm(self, value: "CdmEngineFactory") -> None:
         """Set the CDM engine factory."""
-        self._cdm_engine = value
+        self._cdm = value
 
     @property
     def export_path(self) -> str:
@@ -100,7 +100,7 @@ class PyHealthExport:
         os.makedirs(self._export_path, exist_ok=True)
 
         # Get the async engine from the CDM engine factory
-        engine = self._cdm_engine.engine
+        engine = self._cdm.engine
         if engine is None:
             raise RuntimeError("CDM engine is not initialized.")
 

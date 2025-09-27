@@ -5,10 +5,7 @@ Bulk Export data into an OMOP database.
 """
 
 import asyncio
-import sys
-
 import click
-
 from . import __version__
 from .engine_factory import CdmEngineFactory
 from .vocabulary import CdmVocabulary
@@ -79,6 +76,10 @@ from .vocabulary import CdmVocabulary
     is_flag=True,
     help="Start MCP server for stdio interaction",
 )
+@click.option(
+    "--pyhealth-path",
+    help="Path to export PyHealth compatible CSV files",
+)
 def cli(
     version,
     create,
@@ -92,6 +93,7 @@ def cli(
     vocab,
     input_path,
     eunomia_dataset,
+    pyhealth_path,
     eunomia_path,
     connection_info,
     mcp_server,
@@ -216,8 +218,9 @@ def cli(
     if cdm and connection_info:
         click.echo(click.style("Database connection information:", fg="green"))
         click.echo(cdm.print_connection_info())
-    
+
     if mcp_server:
+        import sys
         click.echo("Starting pyomop MCP server...")
         try:
             from .mcp import mcp_server_main
@@ -229,6 +232,19 @@ def cli(
             click.echo("MCP server stopped.")
         except Exception as e:
             click.echo(f"Error starting MCP server: {e}", err=True)
+            sys.exit(1)
+
+    if pyhealth_path:
+        import sys
+        click.echo(f"Exporting PyHealth tables to {pyhealth_path} from {dbtype} database {name}")
+        from .pyhealth import PyHealthExport
+        cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
+        exporter = PyHealthExport(cdm, export_path=pyhealth_path)
+        try:
+            exported_files = asyncio.run(exporter.export(verbose=True))
+            click.echo(f"Exported files: {exported_files}")
+        except Exception as e:
+            click.echo(f"Error exporting PyHealth tables: {e}", err=True)
             sys.exit(1)
 
 def main_routine():

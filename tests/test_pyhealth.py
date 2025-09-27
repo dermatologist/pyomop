@@ -75,12 +75,12 @@ def test_init_defaults():
     """Test PyHealthExport initialization with defaults."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
+    cdm = DummyCdmEngineFactory(engine=DummyEngine())
 
     # Test default export path (current working directory)
     with mock.patch.dict(os.environ, {}, clear=True):
-        exporter = PyHealthExport(cdm_engine)
-        assert exporter.cdm_engine == cdm_engine
+        exporter = PyHealthExport(cdm)
+        assert exporter.cdm == cdm
         assert exporter.export_path == os.getcwd()
 
 
@@ -88,11 +88,11 @@ def test_init_with_env_var():
     """Test PyHealthExport initialization with environment variable."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory()
+    cdm = DummyCdmEngineFactory()
     test_path = "/tmp/pyhealth_data"
 
     with mock.patch.dict(os.environ, {"PYHEALTH_DATA_FOLDER": test_path}):
-        exporter = PyHealthExport(cdm_engine)
+        exporter = PyHealthExport(cdm)
         assert exporter.export_path == test_path
 
 
@@ -100,10 +100,10 @@ def test_init_with_explicit_path():
     """Test PyHealthExport initialization with explicit path."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory()
+    cdm = DummyCdmEngineFactory()
     test_path = "/tmp/explicit_path"
 
-    exporter = PyHealthExport(cdm_engine, export_path=test_path)
+    exporter = PyHealthExport(cdm, export_path=test_path)
     assert exporter.export_path == test_path
 
 
@@ -111,19 +111,19 @@ def test_getters_and_setters():
     """Test property getters and setters."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine1 = DummyCdmEngineFactory()
-    cdm_engine2 = DummyCdmEngineFactory()
-    exporter = PyHealthExport(cdm_engine1, "/tmp/test")
+    cdm1 = DummyCdmEngineFactory()
+    cdm2 = DummyCdmEngineFactory()
+    exporter = PyHealthExport(cdm1, "/tmp/test")
 
     # Test initial values
-    assert exporter.cdm_engine == cdm_engine1
+    assert exporter.cdm == cdm1
     assert exporter.export_path == "/tmp/test"
 
     # Test setters
-    exporter.cdm_engine = cdm_engine2
+    exporter.cdm = cdm2
     exporter.export_path = "/tmp/new_path"
 
-    assert exporter.cdm_engine == cdm_engine2
+    assert exporter.cdm == cdm2
     assert exporter.export_path == "/tmp/new_path"
 
 
@@ -193,8 +193,8 @@ async def test_export_success(tmp_path):
 
             return DummyConn()
 
-    cdm_engine = DummyCdmEngineFactory(engine=PatchedDummyEngine())
-    exporter = PyHealthExport(cdm_engine, str(tmp_path))
+    cdm = DummyCdmEngineFactory(engine=PatchedDummyEngine())
+    exporter = PyHealthExport(cdm, str(tmp_path))
 
     exported_files = await exporter.export(verbose=True)
 
@@ -227,8 +227,8 @@ async def test_export_no_engine():
     from src.pyomop.pyhealth import PyHealthExport
 
     # Create CDM engine factory with None engine
-    cdm_engine = DummyCdmEngineFactory(engine=None)
-    exporter = PyHealthExport(cdm_engine, "/tmp/test")
+    cdm = DummyCdmEngineFactory(engine=None)
+    exporter = PyHealthExport(cdm, "/tmp/test")
 
     with pytest.raises(RuntimeError, match="CDM engine is not initialized"):
         await exporter.export()
@@ -266,8 +266,8 @@ async def test_export_missing_tables(tmp_path):
 
             return DummyConn()
 
-    cdm_engine = DummyCdmEngineFactory(engine=PartialEngine())
-    exporter = PyHealthExport(cdm_engine, str(tmp_path))
+    cdm = DummyCdmEngineFactory(engine=PartialEngine())
+    exporter = PyHealthExport(cdm, str(tmp_path))
 
     with mock.patch("pandas.read_sql_query") as mock_read_sql:
         mock_df = Mock()
@@ -292,8 +292,8 @@ async def test_export_creates_directory():
         export_path = os.path.join(tmp_dir, "new_directory")
         assert not os.path.exists(export_path)
 
-        cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
-        exporter = PyHealthExport(cdm_engine, export_path)
+        cdm = DummyCdmEngineFactory(engine=DummyEngine())
+        exporter = PyHealthExport(cdm, export_path)
 
         with mock.patch("pandas.read_sql_query") as mock_read_sql:
             mock_df = Mock()
@@ -312,8 +312,8 @@ async def test_export_verbose_logging():
     """Test verbose logging output during export."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
-    exporter = PyHealthExport(cdm_engine, "/tmp/test")
+    cdm = DummyCdmEngineFactory(engine=DummyEngine())
+    exporter = PyHealthExport(cdm, "/tmp/test")
 
     with mock.patch("pandas.read_sql_query") as mock_read_sql:
         with mock.patch("src.pyomop.pyhealth._logger") as mock_logger:
@@ -337,9 +337,9 @@ def test_import_from_module():
     from src.pyomop.pyhealth import PyHealthExport
 
     # Should be able to create an instance
-    cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
-    exporter = PyHealthExport(cdm_engine)
+    cdm = DummyCdmEngineFactory(engine=DummyEngine())
+    exporter = PyHealthExport(cdm)
     assert exporter is not None
     assert hasattr(exporter, "export")
-    assert hasattr(exporter, "cdm_engine")
+    assert hasattr(exporter, "cdm")
     assert hasattr(exporter, "export_path")
