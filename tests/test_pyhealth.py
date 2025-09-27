@@ -35,12 +35,19 @@ class DummyEngine:
                 # Simulate table list
                 if hasattr(fn, "__name__") and fn.__name__ == "get_available_tables":
                     return {
-                        "person", "visit_occurrence", "death", "condition_occurrence",
-                        "procedure_occurrence", "drug_exposure", "measurement", "other_table"
+                        "person",
+                        "visit_occurrence",
+                        "death",
+                        "condition_occurrence",
+                        "procedure_occurrence",
+                        "drug_exposure",
+                        "measurement",
+                        "other_table",
                     }
                 # Simulate DataFrame fetch
                 if hasattr(fn, "__name__") and fn.__name__ == "fetch_df":
                     import pandas as pd
+
                     return pd.DataFrame({"id": [1, 2], "value": ["a", "b"]})
                 return None
 
@@ -51,10 +58,16 @@ class DummyCdmEngineFactory:
     """Mock CDM engine factory for testing."""
 
     def __init__(self, engine=None):
-        self._engine = engine or DummyEngine()
+        self._explicit_none = engine is None
+        if engine is None:
+            self._engine = None
+        else:
+            self._engine = engine
 
     @property
     def engine(self):
+        if self._explicit_none:
+            return None
         return self._engine
 
 
@@ -62,7 +75,7 @@ def test_init_defaults():
     """Test PyHealthExport initialization with defaults."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory()
+    cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
 
     # Test default export path (current working directory)
     with mock.patch.dict(os.environ, {}, clear=True):
@@ -125,7 +138,7 @@ def test_pyhealth_tables_constant():
         "condition_occurrence",
         "procedure_occurrence",
         "drug_exposure",
-        "measurement"
+        "measurement",
     ]
 
     assert PyHealthExport.PYHEALTH_TABLES == expected_tables
@@ -134,38 +147,78 @@ def test_pyhealth_tables_constant():
 @pytest.mark.asyncio
 async def test_export_success(tmp_path):
     """Test successful export of PyHealth tables."""
+    # Patch DummyEngine to use the mock DataFrame side effect
+    import pandas as pd
+
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory()
+    mock_dfs = []
+
+    def make_mock_df(*args, **kwargs):
+        mock_df = Mock()
+        mock_df.__len__ = Mock(return_value=2)
+        mock_df.to_csv = Mock()
+        mock_dfs.append(mock_df)
+        return mock_df
+
+    class PatchedDummyEngine(DummyEngine):
+        def begin(self):
+            self.begin_called = True
+
+            class DummyConn:
+                async def __aenter__(self):
+                    return self
+
+                async def __aexit__(self, exc_type, exc, tb):
+                    pass
+
+                async def run_sync(self, fn):
+                    if (
+                        hasattr(fn, "__name__")
+                        and fn.__name__ == "get_available_tables"
+                    ):
+                        return {
+                            "person",
+                            "visit_occurrence",
+                            "death",
+                            "condition_occurrence",
+                            "procedure_occurrence",
+                            "drug_exposure",
+                            "measurement",
+                            "other_table",
+                        }
+                    if hasattr(fn, "__name__") and fn.__name__ == "fetch_df":
+                        return make_mock_df()
+                    return None
+
+            return DummyConn()
+
+    cdm_engine = DummyCdmEngineFactory(engine=PatchedDummyEngine())
     exporter = PyHealthExport(cdm_engine, str(tmp_path))
 
-    # Mock pandas DataFrame to_csv method
-    with mock.patch("pandas.read_sql_query") as mock_read_sql:
-        import pandas as pd
+    exported_files = await exporter.export(verbose=True)
 
-        # Create a mock DataFrame
-        mock_df = Mock()
-        mock_df.__len__ = Mock(return_value=2)  # For verbose logging
-        mock_read_sql.return_value = mock_df
+    # Should export all 7 tables
+    assert len(exported_files) == 7
 
-        exported_files = await exporter.export(verbose=True)
+    # Check that all expected files are created
+    expected_files = [
+        "person.csv",
+        "visit_occurrence.csv",
+        "death.csv",
+        "condition_occurrence.csv",
+        "procedure_occurrence.csv",
+        "drug_exposure.csv",
+        "measurement.csv",
+    ]
 
-        # Should export all 7 tables
-        assert len(exported_files) == 7
+    for expected_file in expected_files:
+        expected_path = tmp_path / expected_file
+        assert str(expected_path) in exported_files
 
-        # Check that all expected files are created
-        expected_files = [
-            "person.csv", "visit_occurrence.csv", "death.csv",
-            "condition_occurrence.csv", "procedure_occurrence.csv",
-            "drug_exposure.csv", "measurement.csv"
-        ]
-
-        for expected_file in expected_files:
-            expected_path = tmp_path / expected_file
-            assert str(expected_path) in exported_files
-
-        # Verify to_csv was called for each table
-        assert mock_df.to_csv.call_count == 7
+    # Verify to_csv was called for each table
+    total_calls = sum(df.to_csv.call_count for df in mock_dfs)
+    assert total_calls == 7
 
 
 @pytest.mark.asyncio
@@ -200,10 +253,14 @@ async def test_export_missing_tables(tmp_path):
 
                 async def run_sync(self, fn):
                     # Only return a subset of tables
-                    if hasattr(fn, "__name__") and fn.__name__ == "get_available_tables":
+                    if (
+                        hasattr(fn, "__name__")
+                        and fn.__name__ == "get_available_tables"
+                    ):
                         return {"person", "visit_occurrence"}  # Missing most tables
                     if hasattr(fn, "__name__") and fn.__name__ == "fetch_df":
                         import pandas as pd
+
                         return pd.DataFrame({"id": [1, 2], "value": ["a", "b"]})
                     return None
 
@@ -235,7 +292,7 @@ async def test_export_creates_directory():
         export_path = os.path.join(tmp_dir, "new_directory")
         assert not os.path.exists(export_path)
 
-        cdm_engine = DummyCdmEngineFactory()
+        cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
         exporter = PyHealthExport(cdm_engine, export_path)
 
         with mock.patch("pandas.read_sql_query") as mock_read_sql:
@@ -255,7 +312,7 @@ async def test_export_verbose_logging():
     """Test verbose logging output during export."""
     from src.pyomop.pyhealth import PyHealthExport
 
-    cdm_engine = DummyCdmEngineFactory()
+    cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
     exporter = PyHealthExport(cdm_engine, "/tmp/test")
 
     with mock.patch("pandas.read_sql_query") as mock_read_sql:
@@ -280,9 +337,9 @@ def test_import_from_module():
     from src.pyomop.pyhealth import PyHealthExport
 
     # Should be able to create an instance
-    cdm_engine = DummyCdmEngineFactory()
+    cdm_engine = DummyCdmEngineFactory(engine=DummyEngine())
     exporter = PyHealthExport(cdm_engine)
     assert exporter is not None
-    assert hasattr(exporter, 'export')
-    assert hasattr(exporter, 'cdm_engine')
-    assert hasattr(exporter, 'export_path')
+    assert hasattr(exporter, "export")
+    assert hasattr(exporter, "cdm_engine")
+    assert hasattr(exporter, "export_path")
