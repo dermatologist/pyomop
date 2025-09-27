@@ -192,6 +192,8 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
   --eunomia-path TEXT         Path to store/find Eunomia datasets (uses
                               EUNOMIA_DATA_FOLDER env var if not specified)
   --connection-info           Display connection information for the database (For R package compatibility)
+  --mcp-server                Start MCP server for stdio interaction
+  --pyhealth-path TEXT        Path to export PyHealth compatible CSV files
   --help                      Show this message and exit.
 ```
 
@@ -241,7 +243,7 @@ The server communicates via stdio and can be used with any MCP-compatible client
   }
 }
 ```
-* *If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine [omop_mcp](https://github.com/OHNLP/omop_mcp) with PyOMOP.* 
+* *If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine [omop_mcp](https://github.com/OHNLP/omop_mcp) with PyOMOP.*
 
 ### Eunomia import and cohort creation
 ```
@@ -249,44 +251,9 @@ pyomop -e Synthea27Nj -v 5.4 --connection-info
 pyomop -e GiBleed -v 5.3 --connection-info
 ```
 
-## PyHealth Compatibility
+## PyHealth and PLP Compatibility (For Machine Learning pipelines)
 
-pyomop supports exporting OMOP CDM data in a format compatible with [PyHealth](https://github.com/sunlabuiuc/PyHealth), a machine learning library for healthcare data analysis.
-
-### Usage
-
-```python
-from pyomop import CdmEngineFactory
-from pyomop.pyhealth import PyHealthExport
-import asyncio
-
-async def export_for_pyhealth():
-    # Initialize CDM database connection
-    cdm = CdmEngineFactory()  # or with your database parameters
-    
-    # Create PyHealth exporter
-    # Uses PYHEALTH_DATA_FOLDER environment variable or current directory
-    exporter = PyHealthExport(cdm)
-    
-    # Export PyHealth compatible tables
-    exported_files = await exporter.export(verbose=True)
-    print(f"Exported {len(exported_files)} files for PyHealth")
-
-asyncio.run(export_for_pyhealth())
-```
-
-The exporter will create CSV files with lowercase names for the following OMOP CDM tables:
-- `person.csv`
-- `visit_occurrence.csv`
-- `death.csv`
-- `condition_occurrence.csv`
-- `procedure_occurrence.csv`
-- `drug_exposure.csv`
-- `measurement.csv`
-
-### Environment Variables
-
-- `PYHEALTH_DATA_FOLDER`: Directory path for PyHealth data exports (defaults to current working directory)
+pyomop supports exporting OMOP CDM data in a format compatible with [PyHealth](https://github.com/sunlabuiuc/PyHealth), a machine learning library for healthcare data analysis using `--export-pyhealth` option. Additionally, you can export the connection information for use with the PyHealth R package such as [PatientLevelPrediction](https://ohdsi.github.io/PatientLevelPrediction/) using the `--connection-info` option.
 
 ## Additional Tools
 
