@@ -6,7 +6,7 @@ with PyHealth machine learning library (https://github.com/sunlabuiuc/PyHealth).
 
 import logging
 import os
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
 import pandas as pd
 import sqlalchemy
@@ -38,7 +38,7 @@ class PyHealthExport:
         "condition_occurrence",
         "procedure_occurrence",
         "drug_exposure",
-        "measurement"
+        "measurement",
     ]
 
     def __init__(self, cdm: "CdmEngineFactory", export_path: Optional[str] = None):
@@ -74,7 +74,7 @@ class PyHealthExport:
         """Set the export path."""
         self._export_path = value
 
-    async def export(self, verbose: bool = False) -> List[str]:
+    async def export(self, verbose: bool = False, sep: str = "\t") -> List[str]:
         """Export PyHealth compatible tables as CSV files.
 
         Exports the following tables to CSV files with lowercase names:
@@ -88,6 +88,7 @@ class PyHealthExport:
 
         Args:
             verbose: If True, provides additional logging.
+            sep: Column separator to use when writing CSV files. Defaults to a tab.
 
         Returns:
             List of exported file paths.
@@ -122,7 +123,9 @@ class PyHealthExport:
             for table_name in self.PYHEALTH_TABLES:
                 if table_name not in available_tables:
                     if verbose:
-                        _logger.warning(f"Table {table_name} not found in database, skipping")
+                        _logger.warning(
+                            f"Table {table_name} not found in database, skipping"
+                        )
                     continue
 
                 if verbose:
@@ -130,19 +133,26 @@ class PyHealthExport:
 
                 # Helper to fetch the table as a DataFrame
                 def fetch_df(sync_conn):
-                    return pd.read_sql_query(f"SELECT * FROM {table_name}", sync_conn)
+                    query = sqlalchemy.text(f"SELECT * FROM {table_name}")
+                    return pd.read_sql_query(query, sync_conn)
 
                 df = await conn.run_sync(fetch_df)
 
                 # Export the DataFrame to CSV with lowercase filename
-                output_file = os.path.join(self._export_path, f"{table_name.lower()}.csv")
-                df.to_csv(output_file, index=False)
+                output_file = os.path.join(
+                    self._export_path, f"{table_name.lower()}.csv"
+                )
+                df.to_csv(output_file, index=False, sep=sep)
                 exported_files.append(output_file)
 
                 if verbose:
-                    _logger.info(f"Exported {table_name} ({len(df)} rows) to {output_file}")
+                    _logger.info(
+                        f"Exported {table_name} ({len(df)} rows) to {output_file}"
+                    )
 
         if verbose:
-            _logger.info(f"Export complete. {len(exported_files)} files exported to {self._export_path}")
+            _logger.info(
+                f"Export complete. {len(exported_files)} files exported to {self._export_path}"
+            )
 
         return exported_files

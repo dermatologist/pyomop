@@ -220,6 +220,11 @@ async def test_export_success(tmp_path):
     total_calls = sum(df.to_csv.call_count for df in mock_dfs)
     assert total_calls == 7
 
+    # Ensure tab separator is used by default
+    for table_name, df in zip(PyHealthExport.PYHEALTH_TABLES, mock_dfs):
+        expected_path = os.path.join(str(tmp_path), f"{table_name}.csv")
+        df.to_csv.assert_called_with(expected_path, index=False, sep="\t")
+
 
 @pytest.mark.asyncio
 async def test_export_no_engine():
