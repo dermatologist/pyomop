@@ -9,6 +9,7 @@ Always reference these instructions first and fallback to search or bash command
 
 ### Build and Test Commands
 - **CRITICAL: NEVER CANCEL BUILDS OR TESTS** - Always use appropriate timeouts not exceeding 10 minutes
+- Use the virtual environment at ~/venv/default
 - Run tests: `pytest tests --cov --cov-config=pyproject.toml --cov-report=xml -v` -- takes 49 seconds. NEVER CANCEL. Set timeout to 90+ minutes.
 - Run specific test: `pytest tests/test_a_pyomop.py -v`
 - Build documentation: `uv run mkdocs build` -- takes 1 second (non-strict mode works). Set timeout to 30+ minutes.
