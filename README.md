@@ -192,6 +192,8 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
   --eunomia-path TEXT         Path to store/find Eunomia datasets (uses
                               EUNOMIA_DATA_FOLDER env var if not specified)
   --connection-info           Display connection information for the database (For R package compatibility)
+  --mcp-server                Start MCP server for stdio interaction
+  --pyhealth-path TEXT        Path to export PyHealth compatible CSV files
   --help                      Show this message and exit.
 ```
 
@@ -241,12 +243,20 @@ The server communicates via stdio and can be used with any MCP-compatible client
   }
 }
 ```
-* *If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine [omop_mcp](https://github.com/OHNLP/omop_mcp) with PyOMOP.* 
+* *If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine [omop_mcp](https://github.com/OHNLP/omop_mcp) with PyOMOP.*
 
 ### Eunomia import and cohort creation
 ```
 pyomop -e Synthea27Nj -v 5.4 --connection-info
 pyomop -e GiBleed -v 5.3 --connection-info
+```
+
+## PyHealth and PLP Compatibility (For Machine Learning pipelines)
+
+pyomop supports exporting OMOP CDM data in a format compatible with [PyHealth](https://github.com/sunlabuiuc/PyHealth), a machine learning library for healthcare data analysis using `--export-pyhealth` option ([See Notebook](/examples/pyhealth.ipynb)). Additionally, you can export the connection information for use with the various R packages such as [PatientLevelPrediction](https://ohdsi.github.io/PatientLevelPrediction/) using the `--connection-info` option.
+
+```bash
+pyomop -e GiBleed -v 5.3 --connection-info --pyhealth-path ~/pyhealth
 ```
 
 ## Additional Tools
