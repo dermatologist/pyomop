@@ -2,11 +2,12 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.5.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.0.0...HEAD)
 
 **Implemented enhancements:**
 
-- Feature Request: Create a mcp-server feature [\#240](https://github.com/dermatologist/pyomop/issues/240)
+- Feature request – Add PyHealth compatible export function [\#242](https://github.com/dermatologist/pyomop/issues/242)
+- Add PyHealth compatible export function [\#243](https://github.com/dermatologist/pyomop/pull/243) ([Copilot](https://github.com/apps/copilot-swe-agent))
 
 **Merged pull requests:**
 
@@ -41,8 +42,14 @@
 - Feature/update deps 1 [\#151](https://github.com/dermatologist/pyomop/pull/151) ([dermatologist](https://github.com/dermatologist))
 - SQLAlchemy \>2 fix \#6 [\#150](https://github.com/dermatologist/pyomop/pull/150) ([dermatologist](https://github.com/dermatologist))
 - build\(deps\): bump actions/checkout from 3 to 4 [\#143](https://github.com/dermatologist/pyomop/pull/143) ([dependabot[bot]](https://github.com/apps/dependabot))
-- build\(deps\): bump certifi from 2022.12.7 to 2023.7.22 [\#141](https://github.com/dermatologist/pyomop/pull/141) ([dependabot[bot]](https://github.com/apps/dependabot))
-- build\(deps\): bump urllib3 from 1.26.6 to 1.26.18 [\#140](https://github.com/dermatologist/pyomop/pull/140) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v6.0.0](https://github.com/dermatologist/pyomop/tree/v6.0.0) (2025-09-18)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v5.5.0...v6.0.0)
+
+**Implemented enhancements:**
+
+- Feature Request: Create a mcp-server feature [\#240](https://github.com/dermatologist/pyomop/issues/240)
 
 ## [v5.5.0](https://github.com/dermatologist/pyomop/tree/v5.5.0) (2025-09-17)
 
