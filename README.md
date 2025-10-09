@@ -253,7 +253,7 @@ pyomop -e GiBleed -v 5.3 --connection-info
 
 ## PyHealth and PLP Compatibility (For Machine Learning pipelines)
 
-pyomop supports exporting OMOP CDM data in a format compatible with [PyHealth](https://github.com/sunlabuiuc/PyHealth), a machine learning library for healthcare data analysis using `--export-pyhealth` option ([See Notebook](/examples/pyhealth.ipynb)). Additionally, you can export the connection information for use with the various R packages such as [PatientLevelPrediction](https://ohdsi.github.io/PatientLevelPrediction/) using the `--connection-info` option.
+pyomop supports exporting OMOP CDM data (to `--pyhealth-path`) in a format compatible with [PyHealth](https://github.com/sunlabuiuc/PyHealth), a machine learning library for healthcare data analysis ([See Notebook](/examples/pyhealth.ipynb) and usage below). Additionally, you can export the connection information for use with the various R packages such as [PatientLevelPrediction](https://ohdsi.github.io/PatientLevelPrediction/) using the `--connection-info` option.
 
 ```bash
 pyomop -e GiBleed -v 5.3 --connection-info --pyhealth-path ~/pyhealth
