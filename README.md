@@ -213,23 +213,9 @@ To start the MCP server for stdio interaction:
 # Using the main CLI
 pyomop --mcp-server
 
+```
 
-
-### Available MCP Tools
-
-- **create_cdm**: Create an empty CDM database
-- **create_eunomia**: Add Eunomia sample dataset
-- **get_table_columns**: Get column names for a specific table
-- **get_single_table_info**: Get detailed table information including foreign keys
-- **get_usable_table_names**: Get list of all available table names
-- **run_sql**: Execute SQL statements with error handling
-
-* create_cdm and create_eunomia supports only local sqlite databases to avoid inadvertent data loss in production databases.
-### Available Prompts
-
-- **query_execution_steps**: Provides step-by-step guidance for executing database queries based on free text instructions
-
-### Usage with MCP Clients
+#### Usage with MCP Clients
 
 The server communicates via stdio and can be used with any MCP-compatible client. Example configuration for [vscode](/.vscode/mcp.json):
 
@@ -245,6 +231,21 @@ The server communicates via stdio and can be used with any MCP-compatible client
 ```
 * *If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine [omop_mcp](https://github.com/OHNLP/omop_mcp) with PyOMOP.*
 
+
+#### Available MCP Tools
+
+- **create_cdm**: Create an empty CDM database
+- **create_eunomia**: Add Eunomia sample dataset
+- **get_table_columns**: Get column names for a specific table
+- **get_single_table_info**: Get detailed table information, including foreign keys
+- **get_usable_table_names**: Get a list of all available table names
+- **run_sql**: Execute SQL statements with error handling
+
+* create_cdm and create_eunomia support only local sqlite databases to avoid inadvertent data loss in production databases.
+#### Available Prompts
+
+- **query_execution_steps**: Provides step-by-step guidance for executing database queries based on free text instructions
+  
 ### Eunomia import and cohort creation
 ```
 pyomop -e Synthea27Nj -v 5.4 --connection-info
