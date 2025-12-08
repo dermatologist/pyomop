@@ -165,13 +165,22 @@ class CdmVocabulary(object):
     async def create_vocab(self, folder, sample=None):
         """Load vocabulary CSV files from a folder into the database.
 
-        This imports the standard OMOP vocab tables (drug_strength, concept,
-        concept_relationship, concept_ancestor, concept_synonym, vocabulary,
-        relationship, concept_class, domain).
+        This imports the standard OMOP vocab tables. The folder must contain
+        the following files (tab-separated .csv):
+        - DOMAIN.csv
+        - CONCEPT_CLASS.csv
+        - CONCEPT.csv
+        - VOCABULARY.csv
+        - RELATIONSHIP.csv
+        - CONCEPT_RELATIONSHIP.csv
+        - CONCEPT_SYNONYM.csv
+        - DRUG_STRENGTH.csv
+        - CONCEPT_ANCESTOR.csv
 
         Args:
             folder: Path to the folder containing OMOP vocabulary CSVs.
-            sample: Optional number of rows to limit per file during import.
+            sample: Optional number of rows to limit per file during import
+                    (useful for testing).
         """
         try:
             # Parents first (for concept FKs): DOMAIN, CONCEPT_CLASS

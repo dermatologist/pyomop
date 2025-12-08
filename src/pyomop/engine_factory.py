@@ -66,11 +66,13 @@ class CdmEngineFactory(object):
 
         Args:
             metadata: SQLAlchemy ``MetaData`` containing table definitions.
+                      Usually comes from `pyomop.cdm54.Base.metadata` or
+                      `pyomop.cdm6.Base.metadata`.
 
         Raises:
             ValueError: If the engine has not been initialized.
         """
-        if self._engine is None:
+        if self.engine is None:
             raise ValueError("Database engine is not initialized.")
         async with self._engine.begin() as conn:
             await conn.run_sync(metadata.drop_all)

@@ -32,7 +32,8 @@ class CdmVector(object):
         Args:
             cdm: CdmEngineFactory instance.
             sqldict: Optional key from ``CDMSQL`` to pick a canned query.
-            query: Raw SQL string (used if provided).
+                     If provided, `query` argument is ignored/overwritten.
+            query: Raw SQL string (used if provided and sqldict is None).
             chunksize: Unused; kept for future streaming support.
 
         Returns:

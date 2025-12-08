@@ -50,101 +50,127 @@ See [llm_example.py](examples/llm_example.py) for usage.
 ## 🔧 Usage
 
 
+## 🔧 Usage
+
+### 1. Basic Usage: Connecting and Creating Data
+
+Initialize the CDM engine and create a session. By default, `CdmEngineFactory` creates a local SQLite database for testing.
+
 ```python
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
-# cdm6 and cdm54 are supported
-from pyomop.cdm54 import Person, Cohort, Vocabulary, Base
-from sqlalchemy.future import select
-import datetime
 import asyncio
+import datetime
+from pyomop import CdmEngineFactory
+from pyomop.cdm54 import Person, Base # Import CDM v5.4 models
 
 async def main():
-    cdm = CdmEngineFactory() # Creates SQLite database by default for fast testing
-    # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
-    #                       user='', pw='',
-    #                       name='', schema='')
-    # cdm = CdmEngineFactory(db='mysql', host='', port=3306,
-    #                       user='', pw='',
-    #                       name='')
-    engine = cdm.engine
-    # Comment the following line if using an existing database. Both cdm6 and cdm54 are supported, see the import statements above
-    await cdm.init_models(Base.metadata) # Initializes the database with the OMOP CDM tables
-    vocab = CdmVocabulary(cdm, version='cdm54') # or 'cdm6' for v6
-    # Uncomment the following line to create a new vocabulary from CSV files
-    # vocab.create_vocab('/path/to/csv/files')
+    # 1. Initialize Engine (Default: SQLite)
+    cdm = CdmEngineFactory()
+    # For Postgres/MySQL:
+    # cdm = CdmEngineFactory(db='pgsql', host='localhost', port=5432, user='...', pw='...', name='mydb', schema='omop')
 
-    # Add Persons
-    async with cdm.session() as session:  # type: ignore
+    # 2. Initialize Tables (Create Schema)
+    await cdm.init_models(Base.metadata)
+
+    # 3. Create a Session and Add Data
+    async with cdm.session() as session:
         async with session.begin():
-            session.add(
-                Person(
-                    person_id=100,
-                    gender_concept_id=8532,
-                    gender_source_concept_id=8512,
-                    year_of_birth=1980,
-                    month_of_birth=1,
-                    day_of_birth=1,
-                    birth_datetime=datetime.datetime(1980, 1, 1),
-                    race_concept_id=8552,
-                    race_source_concept_id=8552,
-                    ethnicity_concept_id=38003564,
-                    ethnicity_source_concept_id=38003564,
-                )
+            new_person = Person(
+                person_id=100,
+                year_of_birth=1990,
+                month_of_birth=1,
+                day_of_birth=1,
+                birth_datetime=datetime.datetime(1990, 1, 1),
+                gender_concept_id=8532, # Female
+                race_concept_id=8527,   # White
+                ethnicity_concept_id=38003564 # Not Hispanic
             )
-            session.add(
-                Person(
-                    person_id=101,
-                    gender_concept_id=8532,
-                    gender_source_concept_id=8512,
-                    year_of_birth=1980,
-                    month_of_birth=1,
-                    day_of_birth=1,
-                    birth_datetime=datetime.datetime(1980, 1, 1),
-                    race_concept_id=8552,
-                    race_source_concept_id=8552,
-                    ethnicity_concept_id=38003564,
-                    ethnicity_source_concept_id=38003564,
-                )
-            )
+            session.add(new_person)
         await session.commit()
 
-    # Query the Person
-    stmt = select(Person).where(Person.person_id == 100)
-    result = await session.execute(stmt)
-    for row in result.scalars():
-        print(row)
-        assert row.person_id == 100
+        # Query Data
+        person = await session.get(Person, 100)
+        print(f"Found Person: ID={person.person_id}, Year={person.year_of_birth}")
 
-    # Query the person pattern 2
-    person = await session.get(Person, 100)
-    print(person)
-    assert person.person_id == 100  # type: ignore
+        # Close session
+        await session.close()
 
-    # Convert result to a pandas dataframe
+    # Dispose engine
+    await cdm.engine.dispose()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### 2. Vocabulary Management
+
+Helper tools to load standard OMOP vocabularies and look up concepts.
+
+```python
+from pyomop import CdmVocabulary
+
+async def vocab_usage(cdm):
+    vocab = CdmVocabulary(cdm, version='cdm54')
+
+    # Load Vocabulary from Folder (containing CONCEPT.csv, etc.)
+    # await vocab.create_vocab('/path/to/vocab_csv_folder')
+
+    # Lookup Concept by ID
+    concept = await vocab.get_concept(8532)
+    print(f"Concept 8532: {concept.concept_name} ({concept.domain_id})")
+
+    # Lookup Concept by Code
+    # Note: Requires loaded vocabulary
+    # await vocab.get_concept_by_code('F', 'Gender')
+```
+
+### 3. Loading Data
+
+**Using Eunomia (Sample Data)**:
+Pyomop can download and load standard test datasets (Eunomia).
+
+```python
+from pyomop import EunomiaData
+
+async def load_sample_data():
+    eunomia = EunomiaData()
+    # Download and load 'GiBleed' dataset (CDM v5.3)
+    await eunomia.extract_load_data(
+        eunomia.download_eunomia_data(dataset_name='GiBleed', cdm_version='5.3'),
+        dataset_name='GiBleed',
+        cdm_version='5.3'
+    )
+```
+
+**Using Custom CSV Loader**:
+Load your own CVS data into OMOP tables using a JSON mapping configuration.
+
+```python
+from pyomop import CdmCsvLoader
+
+async def load_custom_data(cdm):
+    loader = CdmCsvLoader(cdm)
+    # See 'mapping.default.json' in source for format
+    await loader.load(csv_path='patients.csv', mapping_path='my_mapping.json')
+```
+
+### 4. Analysis and Export
+
+Convert SQL queries directly into Pandas DataFrames for analysis.
+
+```python
+from pyomop import CdmVector
+
+async def analyze(cdm):
     vec = CdmVector()
 
-    # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
-    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    # Execute Raw SQL -> DataFrame
+    result = await vec.execute(cdm, query="SELECT * FROM person LIMIT 5")
     df = vec.result_to_df(result)
-    print("DataFrame from result:")
     print(df.head())
 
-    result = await vec.execute(cdm, query='SELECT * from person;')
-    print("Executing custom query:")
-    df = vec.result_to_df(result)
-    print("DataFrame from result:")
-    print(df.head())
-
-    # access sqlalchemy result directly
-    for row in result:
-        print(row)
-
-    # Close session
-    await session.close()
-    await engine.dispose() # type: ignore
-
-# Run the main function
-asyncio.run(main())
+    # Use OHDSI QueryLibrary
+    # result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    # df = vec.result_to_df(result)
 ```
 
 
@@ -245,7 +271,7 @@ The server communicates via stdio and can be used with any MCP-compatible client
 #### Available Prompts
 
 - **query_execution_steps**: Provides step-by-step guidance for executing database queries based on free text instructions
-  
+
 ### Eunomia import and cohort creation
 ```
 pyomop -e Synthea27Nj -v 5.4 --connection-info
