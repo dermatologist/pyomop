@@ -33,7 +33,7 @@ jobs:
         # See documentation for variables details: https://github.com/nvuillam/github-dependents-info?tab=readme-ov-file#%EF%B8%8F-usage
         with:
           repo: ${{ github.repository }}
-          docurl: https://github.com/dermatologist/fhiry/blob/develop/docs/github-dependents-info.md
+          docurl: https://github.com/dermatologist/pyomop/blob/develop/docs/github-dependents-info.md
           # markdownfile: docs/github-dependents-info.md
           # badgemarkdownfile: README.md
           # sort: stars
