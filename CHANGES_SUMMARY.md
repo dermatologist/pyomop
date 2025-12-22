@@ -40,7 +40,7 @@ sql_only=False  # Enable query execution
 
 **Command Used:**
 ```bash
-python -m pyomop -e Synthea27Nj -v 5.4 -n cdm_synthea.sqlite
+python -m pyomop -e Synthea27Nj -v 5.4 -n cdm.sqlite
 ```
 
 **Database Statistics:**
@@ -273,20 +273,20 @@ response = query_engine.query("Show cohorts")
 from pyomop import CdmLLMQuery, CDMDatabase, CdmEngineFactory
 
 # Connect to populated database
-cdm = CdmEngineFactory(db="sqlite", name="cdm_synthea.sqlite")
+cdm = CdmEngineFactory(db="sqlite", name="cdm.sqlite")
 
 # Include all important tables
 sql_database = CDMDatabase(
     engine,
-    include_tables=["person", "observation_period", "visit_occurrence", 
+    include_tables=["person", "observation_period", "visit_occurrence",
                    "condition_occurrence", "drug_exposure", "procedure_occurrence",
                    "measurement", "observation", "death", "concept", "provider"]
 )
 
 # Configure with proper parameters
 query_engine = CdmLLMQuery(
-    sql_database, 
-    llm=llm, 
+    sql_database,
+    llm=llm,
     similarity_top_k=3
 ).query_engine
 

@@ -12,12 +12,12 @@ Prerequisites:
     pip install pyomop[llm]
 
 Environment Variables:
-    - GOOGLE_GENAI_API_KEY: Your Google Gemini API key (or use another LLM provider)
+    - GOOGLE_API_KEY: Your Google Gemini API key (or use another LLM provider)
 
 Database Setup:
     Before running this example, create and populate a database:
     ```bash
-    python -m pyomop -e Synthea27Nj -v 5.4 -n cdm_synthea.sqlite
+    python -m pyomop -e Synthea27Nj -v 5.4 -n cdm.sqlite
     ```
 
 Important OMOP CDM Tables:
@@ -42,7 +42,7 @@ import os
 import re
 
 # Import any LLMs that llama_index supports
-# Example: Using Google Gemini (requires GOOGLE_GENAI_API_KEY environment variable)
+# Example: Using Google Gemini (requires GOOGLE_API_KEY environment variable)
 from llama_index.llms.google_genai import GoogleGenAI
 from sqlalchemy import text
 
@@ -64,10 +64,10 @@ async def main() -> None:
     print("=" * 80)
 
     # Connect to the pre-populated SQLite database created by:
-    # python -m pyomop -e Synthea27Nj -v 5.4 -n cdm_synthea.sqlite
+    # python -m pyomop -e Synthea27Nj -v 5.4 -n cdm.sqlite
     cdm = CdmEngineFactory(
         db="sqlite",
-        name="cdm_synthea.sqlite",
+        name="cdm.sqlite",
     )
 
     # For PostgreSQL or MySQL:
@@ -86,7 +86,7 @@ async def main() -> None:
     # Initialize tables if needed (not necessary for pre-populated database)
     # await cdm.init_models(Base.metadata)
 
-    print("✓ Connected to database: cdm_synthea.sqlite\n")
+    print("✓ Connected to database: cdm.sqlite\n")
 
     # ============================================================================
     # Step 2: Display Database Statistics
@@ -126,10 +126,10 @@ async def main() -> None:
     print("=" * 80)
 
     # Initialize LLM (using Google Gemini as example)
-    # Requires GOOGLE_GENAI_API_KEY environment variable
+    # Requires GOOGLE_API_KEY environment variable
     llm = GoogleGenAI(
         model="gemini-2.0-flash",
-        api_key=os.getenv("GOOGLE_GENAI_API_KEY"),
+        api_key=os.getenv("GOOGLE_API_KEY"),
     )
 
     # Alternative LLM examples:
@@ -139,17 +139,17 @@ async def main() -> None:
     # Define the important OMOP CDM tables to include in the query context
     # These are the most commonly used tables for clinical research queries
     important_tables = [
-        "person",              # Patient demographics
+        "person",  # Patient demographics
         "observation_period",  # Patient observation periods
-        "visit_occurrence",    # Healthcare visits
-        "condition_occurrence",# Diagnoses
-        "drug_exposure",       # Medications
-        "procedure_occurrence",# Procedures
-        "measurement",         # Lab results and vitals
-        "observation",         # General clinical observations
-        "death",              # Mortality
-        "concept",            # Vocabularies (for lookups)
-        "provider",           # Healthcare providers
+        "visit_occurrence",  # Healthcare visits
+        "condition_occurrence",  # Diagnoses
+        "drug_exposure",  # Medications
+        "procedure_occurrence",  # Procedures
+        "measurement",  # Lab results and vitals
+        "observation",  # General clinical observations
+        "death",  # Mortality
+        "concept",  # Vocabularies (for lookups)
+        "provider",  # Healthcare providers
     ]
 
     # Create SQL database wrapper with OMOP CDM metadata
@@ -268,7 +268,9 @@ async def main() -> None:
 
                                         print(f"Results ({len(df)} rows):")
                                         if not df.empty:
-                                            print(df.to_string(index=False, max_rows=10))
+                                            print(
+                                                df.to_string(index=False, max_rows=10)
+                                            )
                                             if len(df) > 10:
                                                 print(f"... ({len(df) - 10} more rows)")
                                         else:

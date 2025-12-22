@@ -7,14 +7,14 @@ Prerequisites:
     pip install pyomop[llm]
 
 Environment Variables:
-    - GOOGLE_GENAI_API_KEY: Your Google Gemini API key (or configure another LLM)
+    - GOOGLE_API_KEY: Your Google Gemini API key (or configure another LLM)
 
 Database Setup:
     Before running this example, create and populate a database with sample data:
     ```bash
-    python -m pyomop -e Synthea27Nj -v 5.4 -n cdm_synthea.sqlite
+    python -m pyomop -e Synthea27Nj -v 5.4 -n cdm.sqlite
     ```
-    
+
     Alternatively, you can use an empty database (uncomment the table creation below).
 
 Key OMOP CDM Tables:
@@ -37,7 +37,7 @@ import os
 import re
 
 # Import any LLMs that llama_index supports
-# Example: Google Gemini (requires GOOGLE_GENAI_API_KEY)
+# Example: Google Gemini (requires GOOGLE_API_KEY)
 from llama_index.llms.google_genai import GoogleGenAI
 from sqlalchemy import text
 
@@ -53,7 +53,7 @@ async def main() -> None:
     # Connect to a pre-populated database (created using the command above)
     cdm = CdmEngineFactory(
         db="sqlite",
-        name="cdm_synthea.sqlite",
+        name="cdm.sqlite",
     )
 
     # For PostgreSQL or MySQL:
@@ -78,23 +78,23 @@ async def main() -> None:
     # Initialize LLM (using Google Gemini as example)
     llm = GoogleGenAI(
         model="gemini-2.0-flash",
-        api_key=os.getenv("GOOGLE_GENAI_API_KEY"),
+        api_key=os.getenv("GOOGLE_API_KEY"),
     )
 
     # Define important OMOP CDM tables to include in query context
     # These are the most commonly used tables for clinical research
     important_tables = [
-        "person",              # Patient demographics
+        "person",  # Patient demographics
         "observation_period",  # Patient observation periods
-        "visit_occurrence",    # Healthcare visits
-        "condition_occurrence",# Diagnoses
-        "drug_exposure",       # Medications
-        "procedure_occurrence",# Procedures
-        "measurement",         # Lab results and vitals
-        "observation",         # General clinical observations
-        "death",              # Mortality data
-        "concept",            # Standardized vocabularies
-        "provider",           # Healthcare providers
+        "visit_occurrence",  # Healthcare visits
+        "condition_occurrence",  # Diagnoses
+        "drug_exposure",  # Medications
+        "procedure_occurrence",  # Procedures
+        "measurement",  # Lab results and vitals
+        "observation",  # General clinical observations
+        "death",  # Mortality data
+        "concept",  # Standardized vocabularies
+        "provider",  # Healthcare providers
     ]
 
     # Create SQL database wrapper with OMOP CDM metadata
@@ -183,10 +183,14 @@ async def main() -> None:
                                             for row in rows[:10]:
                                                 print(row)
                                             if len(rows) > 10:
-                                                print(f"... and {len(rows) - 10} more rows")
+                                                print(
+                                                    f"... and {len(rows) - 10} more rows"
+                                                )
                                             print()
                                         except Exception as e2:
-                                            print(f"Error with alternative method: {e2}")
+                                            print(
+                                                f"Error with alternative method: {e2}"
+                                            )
                                             print()
 
         except Exception as e:

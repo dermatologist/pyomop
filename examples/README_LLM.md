@@ -17,12 +17,12 @@ Before running the examples, create a database with sample data:
 
 ```bash
 # Create and populate with Synthea synthetic data (recommended for testing)
-python -m pyomop -e Synthea27Nj -v 5.4 -n cdm_synthea.sqlite
+python -m pyomop -e Synthea27Nj -v 5.4 -n cdm.sqlite
 ```
 
 This will:
 - Download the Synthea27Nj dataset from the OHDSI EunomiaDatasets repository
-- Create a SQLite database named `cdm_synthea.sqlite`
+- Create a SQLite database named `cdm.sqlite`
 - Load approximately 28 patients with:
   - 470 condition occurrences
   - 883 drug exposures
@@ -37,7 +37,7 @@ Set up your LLM provider's API key as an environment variable:
 
 **Google Gemini** (used in examples):
 ```bash
-export GOOGLE_GENAI_API_KEY="your-api-key-here"
+export GOOGLE_API_KEY="your-api-key-here"
 ```
 
 **OpenAI** (alternative):
@@ -237,7 +237,7 @@ The LLM's query engine can:
 ```python
 cdm = CdmEngineFactory(
     db="sqlite",
-    name="cdm_synthea.sqlite",
+    name="cdm.sqlite",
 )
 ```
 
@@ -277,19 +277,19 @@ pip install pyomop[llm]
 ### "API key not found"
 Ensure your LLM provider's API key is set as an environment variable:
 ```bash
-export GOOGLE_GENAI_API_KEY="your-key"
+export GOOGLE_API_KEY="your-key"
 ```
 
 ### "Table not found" errors
 Ensure the database is properly populated:
 ```bash
-python -m pyomop -e Synthea27Nj -v 5.4 -n cdm_synthea.sqlite
+python -m pyomop -e Synthea27Nj -v 5.4 -n cdm.sqlite
 ```
 
 ### Empty query results
 Check that the database has data:
 ```bash
-sqlite3 cdm_synthea.sqlite "SELECT COUNT(*) FROM person;"
+sqlite3 cdm.sqlite "SELECT COUNT(*) FROM person;"
 ```
 
 ## Additional Resources
