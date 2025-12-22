@@ -78,8 +78,8 @@ class CdmLLMQuery:
 
         self._query_engine = SQLTableRetrieverQueryEngine(
             self._sql_database,
-            self._object_index.as_retriever(similarity_top_k=1),
-            sql_only=True,
+            self._object_index.as_retriever(similarity_top_k=self._similarity_top_k),
+            sql_only=False,  # Set to False to enable query execution
         )
 
     @property
