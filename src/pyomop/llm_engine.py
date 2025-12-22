@@ -10,10 +10,11 @@ in that case, attempting to instantiate ``CDMDatabase`` will raise a clear
 ImportError directing you to install ``pyomop[llm]``.
 """
 
-from typing import TYPE_CHECKING, Any, List, Optional
+from typing import TYPE_CHECKING
 
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.engine import Engine
+
 try:
     from sqlalchemy.ext.asyncio import AsyncEngine  # SQLAlchemy optional import
 except Exception:  # pragma: no cover
@@ -62,12 +63,12 @@ class CDMDatabase(SQLDatabase):
     def __init__(
         self,
         engine: Engine,
-        schema: Optional[str] = None,
-        ignore_tables: Optional[List[str]] = None,
-        include_tables: Optional[List[str]] = None,
+        schema: str | None = None,
+        ignore_tables: list[str] | None = None,
+        include_tables: list[str] | None = None,
         sample_rows_in_table_info: int = 3,
         indexes_in_table_info: bool = False,
-        custom_table_info: Optional[dict] = None,
+        custom_table_info: dict | None = None,
         view_support: bool = False,
         max_string_length: int = 300,
         version: str = "cdm54",
@@ -135,8 +136,12 @@ class CDMDatabase(SQLDatabase):
         self._metadata = metadata
 
         # Initialize parent so llama-index internals are configured too.
-        # llama-index expects a synchronous SQLAlchemy Engine. If an AsyncEngine
-        # is provided, create a synchronous engine from the same URL.
+        # llama-index's SQLDatabase still requires a synchronous SQLAlchemy Engine
+        # as of version 0.14.x. If an AsyncEngine is provided, we create a
+        # synchronous engine from the same URL for compatibility.
+        # Note: The query engine (SQLTableRetrieverQueryEngine) does support
+        # async queries via the aquery() method, but the underlying SQLDatabase
+        # needs a sync engine for schema inspection and metadata operations.
         parent_engine: Engine
         if AsyncEngine is not None and isinstance(self._engine, AsyncEngine):
             url_str = str(self._engine.url)
@@ -158,7 +163,7 @@ class CDMDatabase(SQLDatabase):
         )
 
     # --- llama-index compatibility helpers (use OMOP metadata directly) ---
-    def get_table_columns(self, table_name: str) -> List[str]:
+    def get_table_columns(self, table_name: str) -> list[str]:
         """Return list of column names for a table.
 
         This uses the OMOP SQLAlchemy ``MetaData`` instead of DB inspector.
@@ -173,8 +178,8 @@ class CDMDatabase(SQLDatabase):
         """
 
         template = "Table '{table_name}' has columns: {columns}, and foreign keys: {foreign_keys}."
-        columns: List[str] = []
-        foreign_keys: List[str] = []
+        columns: list[str] = []
+        foreign_keys: list[str] = []
         for column in self._metadata.tables[table_name].columns:
             columns.append(f"{column.name} ({column.type!s})")
             for fk in column.foreign_keys:
@@ -187,7 +192,7 @@ class CDMDatabase(SQLDatabase):
             table_name=table_name, columns=column_str, foreign_keys=fk_str
         )
 
-    def usable_tables(self) -> List[str]:
+    def usable_tables(self) -> list[str]:
         """Return the sorted list of tables exposed to the LLM.
 
         This respects include/ignore settings passed at initialization.
@@ -196,5 +201,5 @@ class CDMDatabase(SQLDatabase):
         return sorted(self._usable_tables)
 
     # Backwards/compat helper name used in some code paths
-    def get_usable_table_names(self) -> List[str]:  # pragma: no cover - thin wrapper
+    def get_usable_table_names(self) -> list[str]:  # pragma: no cover - thin wrapper
         return self.usable_tables()

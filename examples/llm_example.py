@@ -36,19 +36,17 @@ import asyncio
 import os
 import re
 
-from sqlalchemy import text
-
-from pyomop import CDMDatabase, CdmEngineFactory, CdmLLMQuery, CdmVector
-from pyomop.cdm54 import Base
-
 # Import any LLMs that llama_index supports
 # Example: Google Gemini (requires GOOGLE_GENAI_API_KEY)
 from llama_index.llms.google_genai import GoogleGenAI
+from sqlalchemy import text
+
+from pyomop import CDMDatabase, CdmEngineFactory, CdmLLMQuery, CdmVector
 
 
 async def main() -> None:
     """Main function demonstrating LLM-powered OMOP CDM queries."""
-    
+
     # ========================================================================
     # Step 1: Connect to OMOP CDM Database
     # ========================================================================
@@ -57,7 +55,7 @@ async def main() -> None:
         db="sqlite",
         name="cdm_synthea.sqlite",
     )
-    
+
     # For PostgreSQL or MySQL:
     # cdm = CdmEngineFactory(
     #     db='pgsql',  # or 'mysql'
@@ -70,10 +68,10 @@ async def main() -> None:
     # )
 
     engine = cdm.engine
-    
+
     # Uncomment to create tables if using an empty database:
     # await cdm.init_models(Base.metadata)
-    
+
     # ========================================================================
     # Step 2: Configure LLM and Query Engine
     # ========================================================================
@@ -82,7 +80,7 @@ async def main() -> None:
         model="gemini-2.0-flash",
         api_key=os.getenv("GOOGLE_GENAI_API_KEY"),
     )
-    
+
     # Define important OMOP CDM tables to include in query context
     # These are the most commonly used tables for clinical research
     important_tables = [
@@ -98,14 +96,14 @@ async def main() -> None:
         "concept",            # Standardized vocabularies
         "provider",           # Healthcare providers
     ]
-    
+
     # Create SQL database wrapper with OMOP CDM metadata
     sql_database = CDMDatabase(
         engine,  # type: ignore
         include_tables=important_tables,
         version="cdm54",  # Use 'cdm6' for CDM version 6.0
     )
-    
+
     # Create LLM-powered query engine
     # similarity_top_k controls how many tables are retrieved for each query
     query_engine = CdmLLMQuery(
@@ -113,11 +111,11 @@ async def main() -> None:
         llm=llm,
         similarity_top_k=3,  # Retrieve top 3 most relevant tables
     ).query_engine
-    
+
     print("✓ LLM Query Engine configured")
     print(f"  Available tables: {', '.join(important_tables)}")
     print()
-    
+
     # ========================================================================
     # Step 3: Execute Example Queries
     # ========================================================================
@@ -128,38 +126,38 @@ async def main() -> None:
         "Show me patients who have been prescribed drugs for more than 30 days.",
         "What are the most frequently prescribed drugs? Include drug name and count.",
     ]
-    
+
     for i, query_text in enumerate(queries, 1):
         print(f"{'=' * 80}")
         print(f"Query {i}: {query_text}")
         print(f"{'=' * 80}")
-        
+
         try:
             # Execute query using LLM (async version)
             response = await query_engine.aquery(query_text)
-            
+
             print(f"Response: {response}\n")
-            
+
             # Display metadata if available
             if hasattr(response, "metadata") and response.metadata:
                 print(f"Metadata: {response.metadata}\n")
-                
+
                 # Extract SQL query from metadata
                 sql_query = response.metadata.get("sql_query", "")
                 if sql_query:
                     print(f"Generated SQL:\n{sql_query}\n")
-                    
+
                     # ============================================================
                     # Manual SQL Execution (for verification and testing)
                     # ============================================================
                     # The LLM should execute queries automatically, but this
                     # provides a backup for verification and testing
-                    
+
                     print("Executing SQL manually for verification...")
-                    
+
                     # Split by newlines and filter empty statements
                     sqls = [s.strip() for s in sql_query.split("\n") if s.strip()]
-                    
+
                     vec = CdmVector()
                     async with cdm.session() as session:  # type: ignore
                         async with session.begin():
@@ -173,10 +171,10 @@ async def main() -> None:
                                         print("Results as DataFrame:")
                                         print(df.head(10))
                                         print()
-                                        
+
                                     except Exception as e:
                                         print(f"Error executing SQL: {e}")
-                                        
+
                                         # Method 2: Direct execution using session
                                         try:
                                             result = await session.execute(text(sql))
@@ -190,11 +188,11 @@ async def main() -> None:
                                         except Exception as e2:
                                             print(f"Error with alternative method: {e2}")
                                             print()
-        
+
         except Exception as e:
             print(f"Error: {e}")
             print()
-    
+
     # ========================================================================
     # Step 4: Cleanup
     # ========================================================================

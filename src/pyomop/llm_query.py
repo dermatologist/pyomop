@@ -43,15 +43,13 @@ class CdmLLMQuery:
             core_mod = importlib.import_module("llama_index.core")
             hf_mod = importlib.import_module("langchain_huggingface")
 
-            SQLTableRetrieverQueryEngine = getattr(
-                sql_query_mod, "SQLTableRetrieverQueryEngine"
-            )
-            SQLTableNodeMapping = getattr(objects_mod, "SQLTableNodeMapping")
-            ObjectIndex = getattr(objects_mod, "ObjectIndex")
-            SQLTableSchema = getattr(objects_mod, "SQLTableSchema")
-            VectorStoreIndex = getattr(core_mod, "VectorStoreIndex")
-            Settings = getattr(core_mod, "Settings")
-            HuggingFaceEmbeddings = getattr(hf_mod, "HuggingFaceEmbeddings")
+            SQLTableRetrieverQueryEngine = sql_query_mod.SQLTableRetrieverQueryEngine
+            SQLTableNodeMapping = objects_mod.SQLTableNodeMapping
+            ObjectIndex = objects_mod.ObjectIndex
+            SQLTableSchema = objects_mod.SQLTableSchema
+            VectorStoreIndex = core_mod.VectorStoreIndex
+            Settings = core_mod.Settings
+            HuggingFaceEmbeddings = hf_mod.HuggingFaceEmbeddings
         except Exception as e:  # pragma: no cover
             raise ImportError("Install 'pyomop[llm]' to use LLM query features.") from e
         self._sql_database = sql_database
