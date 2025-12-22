@@ -160,6 +160,63 @@ llm = Ollama(
 )
 ```
 
+## Customizing Embedding Models
+
+The query engine uses HuggingFace embeddings by default. You can customize the embedding model in two ways:
+
+### Option 1: Pass a Model Name (String)
+```python
+# Use a different HuggingFace model by name
+query_engine = CdmLLMQuery(
+    sql_database,
+    llm=llm,
+    similarity_top_k=3,
+    embed_model="sentence-transformers/all-MiniLM-L6-v2"  # Smaller, faster model
+).query_engine
+```
+
+### Option 2: Pass an Embedding Model Instance
+```python
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.openai import OpenAIEmbedding
+
+# Use a custom HuggingFace embedding with specific settings
+custom_embed = HuggingFaceEmbedding(
+    model_name="BAAI/bge-large-en-v1.5",
+    cache_folder="/path/to/cache"
+)
+
+query_engine = CdmLLMQuery(
+    sql_database,
+    llm=llm,
+    similarity_top_k=3,
+    embed_model=custom_embed
+).query_engine
+
+# Or use OpenAI embeddings (requires OpenAI API key)
+openai_embed = OpenAIEmbedding(
+    model="text-embedding-3-small",
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+
+query_engine = CdmLLMQuery(
+    sql_database,
+    llm=llm,
+    similarity_top_k=3,
+    embed_model=openai_embed
+).query_engine
+```
+
+### Popular Embedding Models
+
+| Model | Size | Performance | Use Case |
+|-------|------|-------------|----------|
+| `BAAI/bge-small-en-v1.5` | 33MB | Fast | Default, good balance |
+| `BAAI/bge-large-en-v1.5` | 438MB | Best | High accuracy needed |
+| `sentence-transformers/all-MiniLM-L6-v2` | 23MB | Fastest | Quick prototyping |
+| `text-embedding-3-small` (OpenAI) | API | Good | Using OpenAI already |
+```
+
 ## Understanding the Output
 
 The examples display:

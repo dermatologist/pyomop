@@ -85,13 +85,9 @@ pyomop-mcp-server = "pyomop.mcp.server:main_cli"
 llm = [
     "llama-index",
     "llama-index-experimental",
-    "langchain",
-    "langchain-community",
-    "langchain-huggingface",
-    "llama-index-embeddings-langchain",
+    "llama-index-embeddings-huggingface",
     "overrides",
     "llama-index-llms-google-genai",
-    "llama-index-llms-langchain",
 ]
 
 [tool.hatch.build.targets.wheel]
