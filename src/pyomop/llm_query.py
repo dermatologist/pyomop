@@ -41,7 +41,7 @@ class CdmLLMQuery:
         self._llm = llm
 
         # Create SQL toolkit and agent
-        toolkit = SQLDatabaseToolkit(db=sql_database, llm=llm)
+        toolkit = SQLDatabaseToolkit(db=sql_database, llm=llm) # type: ignore
         self._tools = toolkit.get_tools()
 
         # Create SQL agent using the default agent type
@@ -51,6 +51,7 @@ class CdmLLMQuery:
             llm=llm,
             toolkit=toolkit,
             verbose=True,
+            agent_type="tool-calling",
             agent_executor_kwargs={"handle_parsing_errors": True},
         )
 
