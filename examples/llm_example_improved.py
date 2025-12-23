@@ -40,9 +40,11 @@ For more information on OMOP CDM tables:
 import asyncio
 import os
 import re
-
+from dotenv import load_dotenv
+load_dotenv()
 # Import langchain LLM components
 from langchain_google_genai import ChatGoogleGenerativeAI
+from dhti_elixir_base import BaseLLM
 from sqlalchemy import text
 
 from pyomop import CDMDatabase, CdmEngineFactory, CdmLLMQuery, CdmVector
@@ -126,9 +128,15 @@ async def main() -> None:
 
     # Initialize LLM (using Google Gemini as example)
     # Requires GOOGLE_API_KEY environment variable
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.0-flash",
-        google_api_key=os.getenv("GOOGLE_API_KEY"),
+    # llm = ChatGoogleGenerativeAI(
+    #     model="gemini-2.0-flash",
+    #     google_api_key=os.getenv("GOOGLE_API_KEY"),
+    # )
+
+    llm = BaseLLM(
+        base_url=os.getenv("UIS_OLLAMA_URL"),
+        model=os.getenv("UIS_OLLAMA_MODEL"),
+        api_key=os.getenv("UIS_OLLAMA_KEY"),
     )
 
     # Alternative LLM examples:
@@ -164,7 +172,7 @@ async def main() -> None:
         llm=llm,
     ).query_engine
 
-    print(f"✓ LLM configured: {llm.model_name}")
+    # print(f"✓ LLM configured: {llm.model_name}")
     print(f"✓ Tables available for querying: {len(important_tables)}")
     print(f"  Tables: {', '.join(important_tables)}")
     print()

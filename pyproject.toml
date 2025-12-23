@@ -81,6 +81,8 @@ llm = [
     "langchain-community",
     "langchain-core",
     "langchain-huggingface",
+    "langchain_google_genai",
+    "dhti-elixir-base",
 ]
 
 [tool.hatch.build.targets.wheel]
