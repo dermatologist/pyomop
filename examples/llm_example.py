@@ -143,10 +143,13 @@ async def main() -> None:
         "person",  # Patient demographics
         "observation_period",  # Patient observation periods
         "visit_occurrence",  # Healthcare visits
+        "condition_era", # Condition era table
         "condition_occurrence",  # Diagnoses
+        "drug_era", # Drug era table
         "drug_exposure",  # Medications
         "procedure_occurrence",  # Procedures
         "measurement",  # Lab results and vitals
+        "observation_period",  # Observation periods
         "observation",  # General clinical observations
         "death",  # Mortality
         "concept",  # Vocabularies (for lookups)
