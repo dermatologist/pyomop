@@ -254,39 +254,39 @@ async def main() -> None:
                 # The agent should execute queries automatically, but this provides
                 # a backup mechanism and allows result verification
 
-                if "SELECT" in output.upper():
-                    print("📊 Executing SQL for verification...")
+                # if "SELECT" in output.upper():
+                #     print("📊 Executing SQL for verification...")
 
-                    # Extract SQL from response
-                    sql_queries = [
-                        s.strip()
-                        for s in output.split(";")
-                        if s.strip() and "SELECT" in s.upper()
-                    ]
+                #     # Extract SQL from response
+                #     sql_queries = [
+                #         s.strip()
+                #         for s in output.split(";")
+                #         if s.strip() and "SELECT" in s.upper()
+                #     ]
 
-                    vec = CdmVector()
-                    async with cdm.session() as session:  # type: ignore
-                        async with session.begin():
-                            for sql in sql_queries:
-                                try:
-                                    # Execute using CdmVector for DataFrame conversion
-                                    result = await vec.execute(cdm, query=sql)
-                                    df = vec.result_to_df(result)
+                #     vec = CdmVector()
+                #     async with cdm.session() as session:  # type: ignore
+                #         async with session.begin():
+                #             for sql in sql_queries:
+                #                 try:
+                #                     # Execute using CdmVector for DataFrame conversion
+                #                     result = await vec.execute(cdm, query=sql)
+                #                     df = vec.result_to_df(result)
 
-                                    print(f"Results ({len(df)} rows):")
-                                    if not df.empty:
-                                        print(
-                                            df.to_string(index=False, max_rows=10)
-                                        )
-                                        if len(df) > 10:
-                                            print(f"... ({len(df) - 10} more rows)")
-                                    else:
-                                        print("  (No results)")
-                                    print()
+                #                     print(f"Results ({len(df)} rows):")
+                #                     if not df.empty:
+                #                         print(
+                #                             df.to_string(index=False, max_rows=10)
+                #                         )
+                #                         if len(df) > 10:
+                #                             print(f"... ({len(df) - 10} more rows)")
+                #                     else:
+                #                         print("  (No results)")
+                #                     print()
 
-                                except Exception as e:
-                                    print(f"⚠ Error executing SQL: {e}")
-                                    print()
+                #                 except Exception as e:
+                #                     print(f"⚠ Error executing SQL: {e}")
+                #                     print()
             else:
                 print("ℹ️ Response format:", type(response))
                 print()
