@@ -46,6 +46,7 @@ load_dotenv()
 from langchain_google_genai import ChatGoogleGenerativeAI
 from dhti_elixir_base import BaseLLM, BaseChatLLM
 from sqlalchemy import text
+from langchain.chat_models import init_chat_model
 
 from pyomop import CDMDatabase, CdmEngineFactory, CdmLLMQuery, CdmVector
 
@@ -128,9 +129,16 @@ async def main() -> None:
 
     # Initialize LLM (using Google Gemini as example)
     # Requires GOOGLE_API_KEY environment variable
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-2.5-flash-lite",
-        google_api_key=os.getenv("GOOGLE_API_KEY"),
+    # llm = ChatGoogleGenerativeAI(
+    #     model="gemini-2.5-flash-lite",
+    #     google_api_key=os.getenv("GOOGLE_API_KEY"),
+    # )
+
+    llm = init_chat_model(
+        model="meta-llama/llama-3.3-70b-instruct:free",
+        model_provider="openai",
+        base_url="https://openrouter.ai/api/v1",
+        api_key=os.getenv("OPENROUTER_API_KEY"),
     )
 
     # Alternative LLM examples:
@@ -231,7 +239,7 @@ async def main() -> None:
         print()
 
         # Add a delay to avoid hitting rate limits
-        await asyncio.sleep(60)  # Wait 60 seconds between API calls
+        await asyncio.sleep(6)  # Wait 6 seconds between API calls
 
         try:
             # Execute query using LLM

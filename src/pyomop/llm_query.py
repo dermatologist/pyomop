@@ -70,11 +70,10 @@ class CdmLLMQuery:
 def dynamic_prompt_tool(table_name: str) -> str:
     """
     Generate a couple of example queries for the given table name.
-    This will help the you understand the context of the table.
+    This will help you understand the context of the table.
     Args:
         table_name: The name of the OMOP CDM table.
-        One of "person", "condition_occurrence", "condition_era",
-        "drug_exposure", "drug_era", "observation".
+        One of "person", "condition_occurrence", "condition_era", "drug_exposure", "drug_era", "observation".
     Returns:
         A string with example queries for the table.
     """

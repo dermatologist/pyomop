@@ -82,6 +82,7 @@ llm = [
     "langchain-core",
     "langchain-huggingface",
     "langchain_google_genai",
+    "langchain-openai",
     "dhti-elixir-base",
 ]
 
