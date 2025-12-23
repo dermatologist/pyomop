@@ -50,8 +50,8 @@ class CdmLLMQuery:
         # Use agent_executor_kwargs to enable error handling
         # Disable streaming for tool-calling agents to avoid "Tools not supported in streaming mode" error
         try:
-            llm.streaming = False
-        except (AttributeError, TypeError):
+            llm.streaming = False # type: ignore
+        except:
             # Some LLMs don't support setting streaming directly
             pass
         self._agent = create_sql_agent(
