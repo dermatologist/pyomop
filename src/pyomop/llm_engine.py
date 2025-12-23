@@ -1,49 +1,45 @@
 """LLM-oriented SQLDatabase wrapper for OMOP CDM.
 
-This module provides a thin wrapper around ``llama_index.core.SQLDatabase``
-that is aware of the OMOP CDM metadata reflected from this package's
-SQLAlchemy models. It enables LLM-powered query components to reason about
-available tables, columns, and foreign keys using the OMOP metadata directly.
+This module provides utilities for connecting LLMs to OMOP CDM databases
+using langchain's SQL toolkit and agents. It uses the OMOP CDM metadata
+from this package's SQLAlchemy models to enable LLM-powered query components
+to reason about available tables, columns, and foreign keys.
 
 This file is import-safe even when the optional LLM extras are not installed;
 in that case, attempting to instantiate ``CDMDatabase`` will raise a clear
 ImportError directing you to install ``pyomop[llm]``.
 """
 
-from typing import TYPE_CHECKING
+from typing import Any, cast
 
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy.engine import Engine
 
 try:
-    from sqlalchemy.ext.asyncio import AsyncEngine  # SQLAlchemy optional import
+    from sqlalchemy.ext.asyncio import AsyncEngine
 except Exception:  # pragma: no cover
-    AsyncEngine = None  # type: ignore
+    AsyncEngine = None  # type: ignore[assignment,misc]
 
 try:  # Optional dependency
-    from llama_index.core import SQLDatabase as _SQLDatabase  # type: ignore
+    from langchain_community.utilities import SQLDatabase as _SQLDatabase
     _LLM_AVAILABLE = True
-except Exception:  # pragma: no cover - fallback stub
+except Exception:  # pragma: no cover
     _LLM_AVAILABLE = False
 
-if TYPE_CHECKING:
-    # For static type checkers only; doesn't import at runtime.
-    from llama_index.core import SQLDatabase  # type: ignore
-else:
-    if _LLM_AVAILABLE:
-        # Use the real base when available so super().__init__ works.
-        SQLDatabase = _SQLDatabase  # type: ignore
-    else:
-        class SQLDatabase:  # type: ignore
-            """Minimal stub to allow import without LLM extras."""
 
-            pass
+if _LLM_AVAILABLE:
+    SQLDatabase = _SQLDatabase
+else:
+    class SQLDatabase:  # type: ignore[no-redef]
+        """Minimal stub to allow import without LLM extras."""
+
+        pass
 
 
 class CDMDatabase(SQLDatabase):
     """OMOP-aware SQLDatabase for LLM query engines.
 
-    This class adapts llama-index's ``SQLDatabase`` to use the OMOP CDM
+    This class wraps langchain's ``SQLDatabase`` to use the OMOP CDM
     SQLAlchemy metadata bundled with this package, making it easy to expose
     concise schema information to LLM components.
 
@@ -52,10 +48,7 @@ class CDMDatabase(SQLDatabase):
         schema: Optional database schema name.
         ignore_tables: Tables to hide from the LLM context.
         include_tables: Explicit subset of tables to expose.
-        sample_rows_in_table_info: Kept for API parity (unused here).
-        indexes_in_table_info: Kept for API parity (unused here).
-        custom_table_info: Optional overrides for table descriptions.
-        view_support: Whether to reflect views as well (unused here).
+        sample_rows_in_table_info: Number of sample rows to include in table info.
         max_string_length: Max length of generated descriptions.
         version: OMOP CDM version label ("cdm54" or "cdm6").
     """
@@ -67,9 +60,6 @@ class CDMDatabase(SQLDatabase):
         ignore_tables: list[str] | None = None,
         include_tables: list[str] | None = None,
         sample_rows_in_table_info: int = 3,
-        indexes_in_table_info: bool = False,
-        custom_table_info: dict | None = None,
-        view_support: bool = False,
         max_string_length: int = 300,
         version: str = "cdm54",
     ) -> None:
@@ -79,18 +69,21 @@ class CDMDatabase(SQLDatabase):
         # Basic configuration
         self._engine = engine
         self._schema = schema
+        self._max_string_length = max_string_length
 
         if include_tables and ignore_tables:
             raise ValueError("Cannot specify both include_tables and ignore_tables")
 
         # Load OMOP metadata for the chosen version
+        Base: Any
         if version == "cdm6":
             from .cdm6 import Base
         else:
             from .cdm54 import Base
-        metadata: MetaData = Base.metadata
 
-        # All known tables (no view reflection here)
+        metadata = cast(MetaData, Base.metadata)
+
+        # All known tables
         self._all_tables = set(metadata.tables.keys())
 
         # Validate include/ignore lists
@@ -117,36 +110,15 @@ class CDMDatabase(SQLDatabase):
         if not isinstance(sample_rows_in_table_info, int):
             raise TypeError("sample_rows_in_table_info must be an integer")
         self._sample_rows_in_table_info = sample_rows_in_table_info
-        self._indexes_in_table_info = indexes_in_table_info
 
-        # Optional custom descriptions
-        self._custom_table_info = custom_table_info
-        if self._custom_table_info is not None:
-            if not isinstance(self._custom_table_info, dict):
-                raise TypeError(
-                    "custom_table_info must be a dict of {table_name: description}"
-                )
-            self._custom_table_info = {
-                t: info
-                for t, info in self._custom_table_info.items()
-                if t in self._all_tables
-            }
-
-        self._max_string_length = max_string_length
         self._metadata = metadata
 
-        # Initialize parent so llama-index internals are configured too.
-        # llama-index's SQLDatabase still requires a synchronous SQLAlchemy Engine
-        # as of version 0.14.x. If an AsyncEngine is provided, we create a
-        # synchronous engine from the same URL for compatibility.
-        # Note: The query engine (SQLTableRetrieverQueryEngine) does support
-        # async queries via the aquery() method, but the underlying SQLDatabase
-        # needs a sync engine for schema inspection and metadata operations.
+        # Initialize parent SQLDatabase
+        # Convert AsyncEngine to sync if needed (langchain requires sync engine)
         parent_engine: Engine
         if AsyncEngine is not None and isinstance(self._engine, AsyncEngine):
             url_str = str(self._engine.url)
-            # Convert common async driver URLs to sync variants.
-            # This is conservative and primarily targets SQLite used in tests.
+            # Convert common async driver URLs to sync variants
             url_str = (
                 url_str.replace("+aiosqlite", "")
                 .replace("+asyncpg", "")
@@ -154,29 +126,28 @@ class CDMDatabase(SQLDatabase):
             )
             parent_engine = create_engine(url_str)
         else:
-            parent_engine = self._engine  # type: ignore[assignment]
+            parent_engine = self._engine
 
         super().__init__(
             engine=parent_engine,
             schema=schema,
             include_tables=sorted(self._usable_tables) if self._usable_tables else None,
+            sample_rows_in_table_info=sample_rows_in_table_info,
         )
 
-    # --- llama-index compatibility helpers (use OMOP metadata directly) ---
+    # --- Helper methods for LLM context ---
     def get_table_columns(self, table_name: str) -> list[str]:
         """Return list of column names for a table.
 
         This uses the OMOP SQLAlchemy ``MetaData`` instead of DB inspector.
         """
-
         return [col.name for col in self._metadata.tables[table_name].columns]
 
     def get_single_table_info(self, table_name: str) -> str:
         """Return a concise description of columns and foreign keys for a table.
 
-        The format matches what llama-index expects when building table context.
+        The format is compatible with langchain's SQL components.
         """
-
         template = "Table '{table_name}' has columns: {columns}, and foreign keys: {foreign_keys}."
         columns: list[str] = []
         foreign_keys: list[str] = []
@@ -197,9 +168,9 @@ class CDMDatabase(SQLDatabase):
 
         This respects include/ignore settings passed at initialization.
         """
-
         return sorted(self._usable_tables)
 
-    # Backwards/compat helper name used in some code paths
+    # Backwards compat helper name used in some code paths
     def get_usable_table_names(self) -> list[str]:  # pragma: no cover - thin wrapper
         return self.usable_tables()
+
