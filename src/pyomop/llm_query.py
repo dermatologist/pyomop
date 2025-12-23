@@ -46,10 +46,12 @@ class CdmLLMQuery:
 
         # Create SQL agent using the default agent type
         # This is more flexible and works with various LLM types
+        # Use agent_executor_kwargs to enable error handling
         self._agent = create_sql_agent(
             llm=llm,
             toolkit=toolkit,
-            verbose=False,
+            verbose=True,
+            agent_executor_kwargs={"handle_parsing_errors": True},
         )
 
         # The agent itself is the query engine for langchain >1.0

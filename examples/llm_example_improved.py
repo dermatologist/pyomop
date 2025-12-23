@@ -21,8 +21,8 @@ Database Setup:
     ```
 
 Important OMOP CDM Tables:
-    - person: Demographics and patient information
-    - observation_period: Time periods when patients are observed
+    - person: Demographics and person information
+    - observation_period: Time periods when persons are observed
     - visit_occurrence: Healthcare visits and encounters
     - condition_occurrence: Diagnoses and medical conditions
     - drug_exposure: Medication prescriptions and administrations
@@ -100,7 +100,7 @@ async def main() -> None:
         async with session.begin():
             # Query record counts for key tables
             stats_queries = {
-                "Patients (person)": "SELECT COUNT(*) FROM person",
+                "Persons (person)": "SELECT COUNT(*) FROM person",
                 "Observation Periods": "SELECT COUNT(*) FROM observation_period",
                 "Visit Occurrences": "SELECT COUNT(*) FROM visit_occurrence",
                 "Conditions": "SELECT COUNT(*) FROM condition_occurrence",
@@ -188,13 +188,13 @@ async def main() -> None:
     # Define example queries ranging from simple to complex
     example_queries = [
         {
-            "name": "Simple Patient Query",
-            "query": "How many patients are in the database?",
+            "name": "Simple Person Query",
+            "query": "How many persons are in the database?",
             "description": "Basic count query on person table",
         },
         {
             "name": "Age Distribution",
-            "query": "Show the distribution of patient ages by gender",
+            "query": "Show the distribution of person ages by gender",
             "description": "Demographic analysis with grouping",
         },
         {
@@ -204,12 +204,12 @@ async def main() -> None:
         },
         {
             "name": "Drug Duration Analysis",
-            "query": "Find patients who were on drug exposures for more than 30 days. Show person_id, drug_concept_id, start date, end date, and duration in days.",
+            "query": "Find persons who were on drug exposures for more than 30 days. Show person_id, drug_concept_id, start date, end date, and duration in days.",
             "description": "Drug exposure duration analysis with date calculations",
         },
         {
             "name": "Condition-Drug Association",
-            "query": "Find the most common drugs prescribed for patients with diabetes (condition_concept_id in the 201820 range). Show drug concept ID and count.",
+            "query": "Find the most common drugs prescribed for persons with diabetes (condition_concept_id in the 201820 range). Show drug concept ID and count.",
             "description": "Complex multi-table join analyzing condition-drug relationships",
         },
         {
