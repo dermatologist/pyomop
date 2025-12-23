@@ -42,7 +42,7 @@ pip install -e .
 pip install pyomop[llm]
 ```
 
-See [llm_example.py](examples/llm_example.py) for usage. **DEPRECATED**: The create_sql_agent (langchain) based LLM support has been replaced with a more flexible implementation using MCP server below. 👇 [MCP SERVER](#mcp-server)
+See [llm_example.py](examples/llm_example.py) for usage. **DEPRECATED**: MCP server is recommended. 👇 [MCP SERVER](#mcp-server)
 
 ## Docker
 

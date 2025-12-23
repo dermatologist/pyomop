@@ -128,15 +128,9 @@ async def main() -> None:
 
     # Initialize LLM (using Google Gemini as example)
     # Requires GOOGLE_API_KEY environment variable
-    # llm = ChatGoogleGenerativeAI(
-    #     model="gemini-2.0-flash",
-    #     google_api_key=os.getenv("GOOGLE_API_KEY"),
-    # )
-
-    llm = BaseChatLLM(
-        base_url=os.getenv("UIS_OLLAMA_URL"),
-        model=os.getenv("UIS_OLLAMA_MODEL"),
-        api_key=os.getenv("UIS_OLLAMA_KEY"),
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.5-flash-lite",
+        google_api_key=os.getenv("GOOGLE_API_KEY"),
     )
 
     # Alternative LLM examples:
@@ -232,6 +226,9 @@ async def main() -> None:
         print(f"Description: {example['description']}")
         print(f"Natural Language Query: \"{example['query']}\"")
         print()
+
+        # Add a delay to avoid hitting rate limits
+        await asyncio.sleep(60)  # Wait 60 seconds between API calls
 
         try:
             # Execute query using LLM
