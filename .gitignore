@@ -52,3 +52,4 @@ site/*
 .venv*/
 cdm.sqlite
 *.sqlite
+.env
