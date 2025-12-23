@@ -5,16 +5,21 @@ you can build SQL query engines that know about your CDM tables. All LLM-related
 imports are optional and performed lazily at runtime.
 """
 
-from typing import Any
 import logging
-from langchain_core.language_models import BaseLanguageModel
+import time
+from typing import Any
+
+import requests
 from langchain.tools import tool
 from langchain_community.agent_toolkits.sql.base import create_sql_agent
 from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
-import requests
+from langchain_core.language_models import BaseLanguageModel
+
 from .llm_engine import CDMDatabase
 
 logger = logging.getLogger(__name__)
+
+
 class CdmLLMQuery:
     """Helper that prepares an LLM-backed SQL query engine for OMOP.
 
@@ -37,12 +42,18 @@ class CdmLLMQuery:
         self._llm = llm
 
         # Create SQL toolkit and agent
-        toolkit = MyToolKit(db=sql_database, llm=llm) # type: ignore
+        toolkit = MyToolKit(db=sql_database, llm=llm)  # type: ignore
         self._tools = toolkit.get_tools()
 
         # Create SQL agent using the default agent type
         # This is more flexible and works with various LLM types
         # Use agent_executor_kwargs to enable error handling
+        # Disable streaming for tool-calling agents to avoid "Tools not supported in streaming mode" error
+        try:
+            llm.streaming = False
+        except (AttributeError, TypeError):
+            # Some LLMs don't support setting streaming directly
+            pass
         self._agent = create_sql_agent(
             llm=llm,
             toolkit=toolkit,
@@ -67,7 +78,7 @@ class CdmLLMQuery:
 
 # create a langchain tool
 @tool
-def dynamic_prompt_tool(table_name: str) -> str:
+def example_query_tool(table_name: str) -> str:
     """
     Generate a couple of example queries for the given table name.
     This will help you understand the context of the table.
@@ -84,6 +95,7 @@ def dynamic_prompt_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md"
             ).text
+            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE03.md"
@@ -92,6 +104,7 @@ def dynamic_prompt_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO01.md"
             ).text
+            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO05.md"
@@ -100,6 +113,7 @@ def dynamic_prompt_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE01.md"
             ).text
+            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE02.md"
@@ -108,6 +122,7 @@ def dynamic_prompt_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX01.md"
             ).text
+            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX02.md"
@@ -116,6 +131,7 @@ def dynamic_prompt_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER01.md"
             ).text
+            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER04.md"
@@ -125,20 +141,22 @@ def dynamic_prompt_tool(table_name: str) -> str:
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/observation/O01.md"
             ).text
     except Exception as e:
-        pass
+        logger.warning(f"Error fetching example queries for {table_name}: {e}")
     logger.info(f"Dynamic prompt tool called for table: {table_name}")
-    logger.info(f"Example returned: {example[:200]}...")  # Log first 200 characters
+    logger.info(
+        f"Example returned: {example[:200] if example else '(empty)'}..."
+    )  # Log first 200 characters
     return example
 
 
 class MyToolKit(SQLDatabaseToolkit):
-    """Custom toolkit that includes the dynamic prompt tool."""
+    """Custom toolkit that includes the example query tool."""
 
     def __init__(self, db: CDMDatabase, llm: BaseLanguageModel) -> None:
-        super().__init__(db=db, llm=llm) # type: ignore
+        super().__init__(db=db, llm=llm)  # type: ignore
 
     def get_tools(self) -> list[Any]:
-        """Get the list of tools including the dynamic prompt tool."""
+        """Get the list of tools including the example query tool."""
         tools = super().get_tools()
-        tools.append(dynamic_prompt_tool)
+        tools.append(example_query_tool)
         return tools

@@ -239,7 +239,7 @@ async def main() -> None:
         print()
 
         # Add a delay to avoid hitting rate limits
-        await asyncio.sleep(6)  # Wait 6 seconds between API calls
+        await asyncio.sleep(60)  # Wait 60 seconds between API calls
 
         try:
             # Execute query using LLM
