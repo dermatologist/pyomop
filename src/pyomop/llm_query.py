@@ -6,7 +6,6 @@ imports are optional and performed lazily at runtime.
 """
 
 import logging
-import time
 from typing import Any
 
 import requests
@@ -81,10 +80,10 @@ class CdmLLMQuery:
 def example_query_tool(table_name: str) -> str:
     """
     Generate a couple of example queries for the given table name.
-    This will help you understand the context of the table.
+    This will help you understand how to formulate queries for the OMOP CDM.
+    Use this when sql_db_query_checker tool flags an invalid query.
     Args:
-        table_name: The name of the OMOP CDM table.
-        One of "person", "condition_occurrence", "condition_era", "drug_exposure", "drug_era", "observation".
+        table_name: The name of the OMOP CDM table from "person", "condition_occurrence", "condition_era", "drug_exposure", "drug_era", "observation".
     Returns:
         A string with example queries for the table.
     """
@@ -95,7 +94,6 @@ def example_query_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md"
             ).text
-            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE03.md"
@@ -104,7 +102,6 @@ def example_query_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO01.md"
             ).text
-            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO05.md"
@@ -113,7 +110,6 @@ def example_query_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE01.md"
             ).text
-            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE02.md"
@@ -122,7 +118,6 @@ def example_query_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX01.md"
             ).text
-            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX02.md"
@@ -131,7 +126,6 @@ def example_query_tool(table_name: str) -> str:
             example = requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER01.md"
             ).text
-            time.sleep(0.5)  # Rate limit delay
             example += "\n"
             example += requests.get(
                 "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER04.md"

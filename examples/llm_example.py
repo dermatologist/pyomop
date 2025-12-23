@@ -135,7 +135,7 @@ async def main() -> None:
     # )
 
     llm = init_chat_model(
-        model="meta-llama/llama-3.3-70b-instruct:free",
+        model="mistralai/devstral-2512:free",
         model_provider="openai",
         base_url="https://openrouter.ai/api/v1",
         api_key=os.getenv("OPENROUTER_API_KEY"),
@@ -254,47 +254,6 @@ async def main() -> None:
                 output = response["output"]
                 print(f"Agent Output: {output}")
                 print()
-
-                # ================================================================
-                # Step 5: Manual SQL Execution (for verification and testing)
-                # ================================================================
-                # This section manually executes SQL for testing purposes
-                # The agent should execute queries automatically, but this provides
-                # a backup mechanism and allows result verification
-
-                # if "SELECT" in output.upper():
-                #     print("📊 Executing SQL for verification...")
-
-                #     # Extract SQL from response
-                #     sql_queries = [
-                #         s.strip()
-                #         for s in output.split(";")
-                #         if s.strip() and "SELECT" in s.upper()
-                #     ]
-
-                #     vec = CdmVector()
-                #     async with cdm.session() as session:  # type: ignore
-                #         async with session.begin():
-                #             for sql in sql_queries:
-                #                 try:
-                #                     # Execute using CdmVector for DataFrame conversion
-                #                     result = await vec.execute(cdm, query=sql)
-                #                     df = vec.result_to_df(result)
-
-                #                     print(f"Results ({len(df)} rows):")
-                #                     if not df.empty:
-                #                         print(
-                #                             df.to_string(index=False, max_rows=10)
-                #                         )
-                #                         if len(df) > 10:
-                #                             print(f"... ({len(df) - 10} more rows)")
-                #                     else:
-                #                         print("  (No results)")
-                #                     print()
-
-                #                 except Exception as e:
-                #                     print(f"⚠ Error executing SQL: {e}")
-                #                     print()
             else:
                 print("ℹ️ Response format:", type(response))
                 print()
