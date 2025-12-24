@@ -2,7 +2,7 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.1.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/6.2.0...HEAD)
 
 **Implemented enhancements:**
 
@@ -10,6 +10,7 @@
 
 **Merged pull requests:**
 
+- Feature/fix thread 1 [\#254](https://github.com/dermatologist/pyomop/pull/254) ([dermatologist](https://github.com/dermatologist))
 - Fix LLM query engine bugs and switch to native llama-index embeddings [\#253](https://github.com/dermatologist/pyomop/pull/253) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - \[GitHub Dependents Info\] Updated markdown file [\#252](https://github.com/dermatologist/pyomop/pull/252) ([github-actions[bot]](https://github.com/apps/github-actions))
 - build\(deps\): bump peter-evans/create-pull-request from 7 to 8 [\#251](https://github.com/dermatologist/pyomop/pull/251) ([dependabot[bot]](https://github.com/apps/dependabot))
@@ -47,6 +48,10 @@
 - build\(deps\): bump jinja2 from 3.0.1 to 3.1.3 [\#161](https://github.com/dermatologist/pyomop/pull/161) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Feature/llm llama index 1 [\#159](https://github.com/dermatologist/pyomop/pull/159) ([dermatologist](https://github.com/dermatologist))
 - build\(deps\): bump actions/setup-python from 2.3.1 to 5.0.0 [\#155](https://github.com/dermatologist/pyomop/pull/155) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [6.2.0](https://github.com/dermatologist/pyomop/tree/6.2.0) (2025-12-24)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.1.0...6.2.0)
 
 ## [v6.1.0](https://github.com/dermatologist/pyomop/tree/v6.1.0) (2025-09-29)
 
