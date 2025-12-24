@@ -18,7 +18,7 @@ async def main():
     # Create Tables if required
     await cdm.init_models(Base.metadata)
     # Create vocabulary if required
-    vocab = CdmVocabulary(cdm, version="cdm54")
+    CdmVocabulary(cdm, version="cdm54")
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
     async with cdm.session() as session:  # type: ignore
