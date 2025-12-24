@@ -52,12 +52,14 @@ pip install pyomop[llm]
 
 
 ```python
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
-# cdm6 and cdm54 are supported
-from pyomop.cdm54 import Person, Cohort, Vocabulary, Base
-from sqlalchemy.future import select
-import datetime
 import asyncio
+import datetime
+
+from sqlalchemy import select
+
+from pyomop import CdmEngineFactory, CdmVector, CdmVocabulary
+# cdm6 and cdm54 are supported
+from pyomop.cdm54 import Base, Cohort, Person, Vocabulary
 
 async def main():
     cdm = CdmEngineFactory() # Creates SQLite database by default for fast testing
@@ -74,8 +76,8 @@ async def main():
     # Uncomment the following line to create a new vocabulary from CSV files
     # vocab.create_vocab('/path/to/csv/files')
 
-    # Add Persons
     async with cdm.session() as session:  # type: ignore
+        # Add Persons
         async with session.begin():
             session.add(
                 Person(
@@ -107,19 +109,19 @@ async def main():
                     ethnicity_source_concept_id=38003564,
                 )
             )
-        await session.commit()
 
-    # Query the Person
-    stmt = select(Person).where(Person.person_id == 100)
-    result = await session.execute(stmt)
-    for row in result.scalars():
-        print(row)
-        assert row.person_id == 100
+        # Query the Person
+        stmt = select(Person).where(Person.person_id == 100)
+        result = await session.execute(stmt)
+        for row in result.scalars():
+            print(row)
+            assert row.person_id == 100
 
-    # Query the person pattern 2
-    person = await session.get(Person, 100)
-    print(person)
-    assert person.person_id == 100  # type: ignore
+        # Query the person pattern 2
+        person = await session.get(Person, 100)
+        print(person)
+        assert person is not None
+        assert person.person_id == 100
 
     # Convert result to a pandas dataframe
     vec = CdmVector()
@@ -136,12 +138,7 @@ async def main():
     print("DataFrame from result:")
     print(df.head())
 
-    # access sqlalchemy result directly
-    for row in result:
-        print(row)
-
-    # Close session
-    await session.close()
+    # Close engine
     await engine.dispose() # type: ignore
 
 # Run the main function
