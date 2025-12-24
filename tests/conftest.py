@@ -7,8 +7,20 @@ Read more about conftest.py under:
 https://pytest.org/latest/plugins.html
 """
 
-import asyncio
 import pytest
+import asyncio
+import nest_asyncio
+
+# Apply nest_asyncio to allow nested event loops
+nest_asyncio.apply()
+
+
+@pytest.fixture(scope="function")
+def event_loop():
+    """Create an instance of the default event loop for each test case."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 @pytest.fixture
