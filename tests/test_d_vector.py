@@ -129,7 +129,6 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
     assert found, "No rows returned from result2"
 
     await session.close()
-    await engine.dispose()
 
 
 async def query_library_(pyomop_fixture, vector_fixture):
