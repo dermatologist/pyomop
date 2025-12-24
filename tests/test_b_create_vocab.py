@@ -1,6 +1,7 @@
 import asyncio
-import pytest
 import os
+
+import pytest
 
 
 @staticmethod
@@ -16,6 +17,7 @@ def test_create_tables_cdm6(pyomop_fixture, cdm6_metadata_fixture, capsys):
 def test_create_vocab_cdm6(pyomop_fixture, capsys):
     engine = pyomop_fixture.engine
     create_vocab_cdm6(pyomop_fixture, engine)
+    asyncio.run(engine.dispose())
 
 
 def create_vocab_cdm6(pyomop_fixture, engine):

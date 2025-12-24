@@ -136,7 +136,11 @@ class CdmEngineFactory(object):
                     "Schema is not supported for SQLite; ignoring schema='%s'",
                     self._schema,
                 )
-            self._engine = create_async_engine("sqlite+aiosqlite:///" + self._name)
+            self._engine = create_async_engine(
+                "sqlite+aiosqlite:///" + self._name,
+                pool_pre_ping=True,
+                pool_recycle=3600,
+            )
         elif self._db == "mysql":
             # Schemas are not supported for MySQL in the same way as PostgreSQL; warn and ignore
             if self._schema and self._schema not in ("", "public"):

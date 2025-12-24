@@ -29,14 +29,14 @@ class CdmVector(object):
     async def execute(self, cdm, sqldict=None, query=None, chunksize=1000):
         """Execute a SQL query asynchronously.
 
-        Args:
-            cdm: CdmEngineFactory instance.
-            sqldict: Optional key from ``CDMSQL`` to pick a canned query.
-            query: Raw SQL string (used if provided).
-            chunksize: Unused; kept for future streaming support.
+                Args:
+                    cdm: CdmEngineFactory instance.
+                    sqldict: Optional key from ``CDMSQL`` to pick a canned query.
+                    query: Raw SQL string (used if provided).
+                    chunksize: Unused; kept for future streaming support.
 
         Returns:
-            SQLAlchemy AsyncResult.
+                    SQLAlchemy AsyncResult.
         """
         if sqldict:
             query = CDMSQL[sqldict]
@@ -45,7 +45,6 @@ class CdmVector(object):
         logger.info(f"Executing query: {query}")
         async with cdm.session() as session:
             result = await session.execute(text(query))
-        await session.close()
         return result
 
     def result_to_df(self, result):
