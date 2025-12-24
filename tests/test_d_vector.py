@@ -1,7 +1,6 @@
 import asyncio
 import os
 
-import pytest
 
 
 @staticmethod
@@ -116,9 +115,9 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
             )
         await session.commit()
 
-    # Query the cohort
-    stmt = select(Cohort).where(Cohort.subject_id == 100)
-    result = await session.execute(stmt)
+        # Query the cohort
+        stmt = select(Cohort).where(Cohort.subject_id == 100)
+        result = await session.execute(stmt)
 
     result2 = await vector_fixture.execute(pyomop_fixture, "TEST")
     found = False
