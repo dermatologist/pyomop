@@ -42,7 +42,7 @@ pip install -e .
 pip install pyomop[llm]
 ```
 
-See [llm_example.py](examples/llm_example.py) for usage. MCP server is recommended for advanced usage. 👇 [MCP SERVER](#mcp-server)
+#### ✨ See [this notebook](examples/llm_example.ipynb) or [script](examples/llm_example.py) for examples. 👇 [MCP SERVER](#mcp-server) is recommended for advanced usage.
 
 ## Docker
 
