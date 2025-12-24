@@ -2,15 +2,23 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.0.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.1.0...HEAD)
 
 **Implemented enhancements:**
 
-- Feature request – Add PyHealth compatible export function [\#242](https://github.com/dermatologist/pyomop/issues/242)
 - Add PyHealth compatible export function [\#243](https://github.com/dermatologist/pyomop/pull/243) ([Copilot](https://github.com/apps/copilot-swe-agent))
 
 **Merged pull requests:**
 
+- Fix LLM query engine bugs and switch to native llama-index embeddings [\#253](https://github.com/dermatologist/pyomop/pull/253) ([Copilot](https://github.com/apps/copilot-swe-agent))
+- \[GitHub Dependents Info\] Updated markdown file [\#252](https://github.com/dermatologist/pyomop/pull/252) ([github-actions[bot]](https://github.com/apps/github-actions))
+- build\(deps\): bump peter-evans/create-pull-request from 7 to 8 [\#251](https://github.com/dermatologist/pyomop/pull/251) ([dependabot[bot]](https://github.com/apps/dependabot))
+- build\(deps\): bump nvuillam/github-dependents-info from 1.6.3 to 2.0.2 [\#250](https://github.com/dermatologist/pyomop/pull/250) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Revise MCP Tools and Prompts sections in README [\#249](https://github.com/dermatologist/pyomop/pull/249) ([dermatologist](https://github.com/dermatologist))
+- build\(deps\): bump actions/checkout from 5 to 6 [\#248](https://github.com/dermatologist/pyomop/pull/248) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Lower coverage thresholds in codecov.yaml [\#247](https://github.com/dermatologist/pyomop/pull/247) ([dermatologist](https://github.com/dermatologist))
+- \[Automated\] Dependencies upgrade [\#246](https://github.com/dermatologist/pyomop/pull/246) ([github-actions[bot]](https://github.com/apps/github-actions))
+- build\(deps\): bump astral-sh/setup-uv from 6 to 7 [\#245](https://github.com/dermatologist/pyomop/pull/245) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Add MCP server feature for CDM database interaction [\#241](https://github.com/dermatologist/pyomop/pull/241) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - Add OMOP CDM sample data functionality via Eunomia port [\#237](https://github.com/dermatologist/pyomop/pull/237) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - \[GitHub Dependents Info\] Updated markdown file [\#234](https://github.com/dermatologist/pyomop/pull/234) ([github-actions[bot]](https://github.com/apps/github-actions))
@@ -39,9 +47,14 @@
 - build\(deps\): bump jinja2 from 3.0.1 to 3.1.3 [\#161](https://github.com/dermatologist/pyomop/pull/161) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Feature/llm llama index 1 [\#159](https://github.com/dermatologist/pyomop/pull/159) ([dermatologist](https://github.com/dermatologist))
 - build\(deps\): bump actions/setup-python from 2.3.1 to 5.0.0 [\#155](https://github.com/dermatologist/pyomop/pull/155) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Feature/update deps 1 [\#151](https://github.com/dermatologist/pyomop/pull/151) ([dermatologist](https://github.com/dermatologist))
-- SQLAlchemy \>2 fix \#6 [\#150](https://github.com/dermatologist/pyomop/pull/150) ([dermatologist](https://github.com/dermatologist))
-- build\(deps\): bump actions/checkout from 3 to 4 [\#143](https://github.com/dermatologist/pyomop/pull/143) ([dependabot[bot]](https://github.com/apps/dependabot))
+
+## [v6.1.0](https://github.com/dermatologist/pyomop/tree/v6.1.0) (2025-09-29)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.0.0...v6.1.0)
+
+**Implemented enhancements:**
+
+- Feature request – Add PyHealth compatible export function [\#242](https://github.com/dermatologist/pyomop/issues/242)
 
 ## [v6.0.0](https://github.com/dermatologist/pyomop/tree/v6.0.0) (2025-09-18)
 

@@ -28,7 +28,7 @@ dependencies = [
     "requests",
     "greenlet",
     "fhiry>=5.1.1",
-    "mcp"
+    "mcp",
 ]
 
 
@@ -69,13 +69,7 @@ explicit = true
 fallback-version = "0.1.0"
 
 [tool.uv.build-backend]
-source-exclude = [
-  "tests/*",
-  "examples/*",
-  "docs/*",
-  "notes/*",
-  "notebooks/*"
-]
+source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 
 [project.scripts]
 pyomop = "pyomop.main:main_routine"
@@ -83,15 +77,13 @@ pyomop-mcp-server = "pyomop.mcp.server:main_cli"
 
 [project.optional-dependencies]
 llm = [
-    "llama-index",
-    "llama-index-experimental",
-    "langchain",
+    "langchain>=1.0",
     "langchain-community",
+    "langchain-core",
     "langchain-huggingface",
-    "llama-index-embeddings-langchain",
-    "overrides",
-    "llama-index-llms-google-genai",
-    "llama-index-llms-langchain",
+    "langchain_google_genai",
+    "langchain-openai",
+    "dhti-elixir-base",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -141,7 +133,8 @@ select = [
     # mccabe
     "C90",
     # pycodestyle
-    "E", "W",
+    "E",
+    "W",
     # pyflakes
     "F",
     # pygrep-hooks
@@ -172,4 +165,3 @@ skip_empty = true
 [tool.coverage.run]
 branch = true
 source = ["src"]
-

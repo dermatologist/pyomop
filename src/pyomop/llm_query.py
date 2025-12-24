@@ -1,103 +1,156 @@
 """LLM query utilities over the OMOP CDM schema.
 
-This module wires llama-index components to an OMOP-aware ``CDMDatabase`` so
-you can build semantic and SQL-first query engines that know about your CDM
-tables. All LLM-related imports are optional and performed lazily at runtime.
+This module wires langchain components to an OMOP-aware ``CDMDatabase`` so
+you can build SQL query engines that know about your CDM tables. All LLM-related
+imports are optional and performed lazily at runtime.
 """
 
-import importlib
+import logging
 from typing import Any
 
+import requests
+from langchain.tools import tool
+from langchain_community.agent_toolkits.sql.base import create_sql_agent
+from langchain_community.agent_toolkits.sql.toolkit import SQLDatabaseToolkit
+from langchain_core.language_models import BaseLanguageModel
+
 from .llm_engine import CDMDatabase
+
+logger = logging.getLogger(__name__)
 
 
 class CdmLLMQuery:
     """Helper that prepares an LLM-backed SQL query engine for OMOP.
 
-    It constructs an object index of selected CDM tables and exposes a
-    retriever-backed query engine that can generate SQL or run SQL-only queries
-    depending on configuration.
+    It constructs an SQL agent that can generate and execute SQL queries
+    against OMOP CDM tables using an LLM.
 
     Args:
         sql_database: A ``CDMDatabase`` instance connected to the OMOP DB.
-        llm: Optional LLM implementation to plug into llama-index settings.
-        similarity_top_k: Top-k tables to retrieve for each query.
-        embed_model: HuggingFace embedding model name.
+        llm: A langchain LLM instance (BaseLanguageModel).
         **kwargs: Reserved for future expansion.
     """
 
     def __init__(
         self,
         sql_database: CDMDatabase,
-        llm: Any = None,  # FIXME: type
-        similarity_top_k: int = 1,
-        embed_model: str = "BAAI/bge-small-en-v1.5",
+        llm: BaseLanguageModel,
         **kwargs: Any,
-    ):
-        # Lazy import optional dependencies so the package imports without them
-        try:
-            sql_query_mod = importlib.import_module(
-                "llama_index.core.indices.struct_store.sql_query"
-            )
-            objects_mod = importlib.import_module("llama_index.core.objects")
-            core_mod = importlib.import_module("llama_index.core")
-            hf_mod = importlib.import_module("langchain_huggingface")
-
-            SQLTableRetrieverQueryEngine = getattr(
-                sql_query_mod, "SQLTableRetrieverQueryEngine"
-            )
-            SQLTableNodeMapping = getattr(objects_mod, "SQLTableNodeMapping")
-            ObjectIndex = getattr(objects_mod, "ObjectIndex")
-            SQLTableSchema = getattr(objects_mod, "SQLTableSchema")
-            VectorStoreIndex = getattr(core_mod, "VectorStoreIndex")
-            Settings = getattr(core_mod, "Settings")
-            HuggingFaceEmbeddings = getattr(hf_mod, "HuggingFaceEmbeddings")
-        except Exception as e:  # pragma: no cover
-            raise ImportError("Install 'pyomop[llm]' to use LLM query features.") from e
+    ) -> None:
         self._sql_database = sql_database
-        self._similarity_top_k = similarity_top_k
-        self._embed_model = HuggingFaceEmbeddings(model_name=embed_model)
         self._llm = llm
-        Settings.llm = llm
-        Settings.embed_model = self._embed_model
-        self._table_node_mapping = SQLTableNodeMapping(sql_database)
-        usable_tables = []
-        if hasattr(sql_database, "usable_tables"):
-            usable_tables = list(sql_database.usable_tables())  # type: ignore[attr-defined]
-        elif hasattr(sql_database, "get_usable_table_names"):
-            usable_tables = list(sql_database.get_usable_table_names())  # type: ignore[attr-defined]
-        self._table_schema_objs = [
-            SQLTableSchema(table_name=t) for t in sorted(set(usable_tables))
-        ]
 
-        self._object_index = ObjectIndex.from_objects(
-            self._table_schema_objs,
-            self._table_node_mapping,
-            VectorStoreIndex,  # type: ignore
+        # Create SQL toolkit and agent
+        toolkit = MyToolKit(db=sql_database, llm=llm)  # type: ignore
+        self._tools = toolkit.get_tools()
+
+        # Create SQL agent using the default agent type
+        # This is more flexible and works with various LLM types
+        # Use agent_executor_kwargs to enable error handling
+        # Disable streaming for tool-calling agents to avoid "Tools not supported in streaming mode" error
+        try:
+            llm.streaming = False # type: ignore
+        except:
+            # Some LLMs don't support setting streaming directly
+            pass
+        self._agent = create_sql_agent(
+            llm=llm,
+            toolkit=toolkit,
+            verbose=True,
+            agent_type="tool-calling",
+            agent_executor_kwargs={"handle_parsing_errors": True},
         )
 
-        self._query_engine = SQLTableRetrieverQueryEngine(
-            self._sql_database,
-            self._object_index.as_retriever(similarity_top_k=1),
-            sql_only=True,
-        )
+        # The agent itself is the query engine for langchain >1.0
+        self._query_engine = self._agent
 
     @property
-    def table_node_mapping(self) -> Any:
-        """Mapping between tables and nodes used by the object index."""
-        return self._table_node_mapping
-
-    @property
-    def table_schema_objs(self) -> list[Any]:
-        """List of table schema objects indexed for retrieval."""
-        return self._table_schema_objs
-
-    @property
-    def object_index(self) -> Any:
-        """The underlying llama-index object index used for retrieval."""
-        return self._object_index
+    def tools(self) -> list[Any]:
+        """List of SQL tools available in the query engine."""
+        return self._tools
 
     @property
     def query_engine(self) -> Any:
-        """A retriever-backed SQL query engine over the CDM tables."""
+        """An SQL agent executor over the CDM tables."""
         return self._query_engine
+
+
+# create a langchain tool
+@tool
+def example_query_tool(table_name: str) -> str:
+    """
+    Generate a couple of example queries for the given table name.
+    This will help you understand how to formulate queries for the OMOP CDM.
+    Use this when sql_db_query_checker tool flags an invalid query.
+    Args:
+        table_name: The name of the OMOP CDM table from "person", "condition_occurrence", "condition_era", "drug_exposure", "drug_era", "observation".
+    Returns:
+        A string with example queries for the table.
+    """
+    example = ""
+    try:
+        if table_name.lower() == "person":
+            # read the following markdown file from the website and return its content
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE03.md"
+            ).text
+        elif table_name.lower() == "condition_occurrence":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO05.md"
+            ).text
+        elif table_name.lower() == "condition_era":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE02.md"
+            ).text
+        elif table_name.lower() == "drug_exposure":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX02.md"
+            ).text
+        elif table_name.lower() == "drug_era":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER04.md"
+            ).text
+        elif table_name.lower() == "observation":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/observation/O01.md"
+            ).text
+    except Exception as e:
+        logger.warning(f"Error fetching example queries for {table_name}: {e}")
+    logger.info(f"Dynamic prompt tool called for table: {table_name}")
+    logger.info(
+        f"Example returned: {example[:200] if example else '(empty)'}..."
+    )  # Log first 200 characters
+    return example
+
+
+class MyToolKit(SQLDatabaseToolkit):
+    """Custom toolkit that includes the example query tool."""
+
+    def __init__(self, db: CDMDatabase, llm: BaseLanguageModel) -> None:
+        super().__init__(db=db, llm=llm)  # type: ignore
+
+    def get_tools(self) -> list[Any]:
+        """Get the list of tools including the example query tool."""
+        tools = super().get_tools()
+        tools.append(example_query_tool)
+        return tools
