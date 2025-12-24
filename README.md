@@ -145,7 +145,6 @@ async def main():
 asyncio.run(main())
 ```
 
-
 ## 🔥 FHIR to OMOP mapping
 
 pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
