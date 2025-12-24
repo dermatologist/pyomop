@@ -127,6 +127,8 @@ class CdmEngineFactory(object):
         Returns:
             Async engine instance bound to the configured database.
         """
+        if self._engine is not None:
+            return self._engine
         if self._db == "sqlite":
             # Schemas are not supported for SQLite; warn if a non-default schema was provided
             if self._schema and self._schema not in ("", "public"):
@@ -189,30 +191,37 @@ class CdmEngineFactory(object):
     @db.setter
     def db(self, value):
         self._db = value
+        self._engine = None
 
     @name.setter
     def name(self, value):
         self._name = value
+        self._engine = None
 
     @port.setter
     def port(self, value):
         self._port = value
+        self._engine = None
 
     @host.setter
     def host(self, value):
         self._host = value
+        self._engine = None
 
     @user.setter
     def user(self, value):
         self._user = value
+        self._engine = None
 
     @pw.setter
     def pw(self, value):
         self._pw = value
+        self._engine = None
 
     @schema.setter
     def schema(self, value):
         self._schema = value
+        self._engine = None
 
     def print_connection_info(self):
         """Return a string with the connection details (for logging/display)."""
