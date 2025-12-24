@@ -1,6 +1,6 @@
 import asyncio
-import pytest
 import os
+
 
 
 @staticmethod
@@ -15,6 +15,7 @@ def test_create_vector_cdm6(
     asyncio.run(pyomop_fixture.init_models(cdm6_metadata_fixture))
     asyncio.run(cdm6_create_vector(pyomop_fixture, vector_fixture, engine))
     asyncio.run(query_library_(pyomop_fixture, vector_fixture))
+    asyncio.run(engine.dispose())
 
 
 @staticmethod
@@ -28,12 +29,15 @@ def test_create_vector_cdm54(
     # create tables
     asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
     asyncio.run(cdm54_create_vector(pyomop_fixture, vector_fixture, engine))
+    asyncio.run(engine.dispose())
 
 
 async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
-    from src.pyomop.cdm6 import Cohort, Person
     import datetime
+
     from sqlalchemy.future import select
+
+    from src.pyomop.cdm6 import Cohort, Person
 
     # Add a cohort
     async with pyomop_fixture.session() as session:
@@ -74,14 +78,13 @@ async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
                     race_source_concept_id=8552,
                     ethnicity_concept_id=38003564,
                     ethnicity_source_concept_id=38003564,
-                    )
                 )
+            )
         await session.commit()
 
-    # Query the cohort
-    stmt = select(Cohort).where(Cohort.subject_id == 100)
-    result = await session.execute(stmt)
-
+        # Query the cohort
+        stmt = select(Cohort).where(Cohort.subject_id == 100)
+        result = await session.execute(stmt)
 
     result2 = await vector_fixture.execute(pyomop_fixture, "TEST")
     found = False
@@ -91,14 +94,13 @@ async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
         found = True
     assert found, "No rows returned from result2"
 
-    await session.close()
-    await engine.dispose()
-
 
 async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
-    from src.pyomop.cdm54 import Cohort
     import datetime
+
     from sqlalchemy.future import select
+
+    from src.pyomop.cdm54 import Cohort
 
     # Add a cohort
     async with pyomop_fixture.session() as session:
@@ -113,10 +115,9 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
             )
         await session.commit()
 
-    # Query the cohort
-    stmt = select(Cohort).where(Cohort.subject_id == 100)
-    result = await session.execute(stmt)
-
+        # Query the cohort
+        stmt = select(Cohort).where(Cohort.subject_id == 100)
+        result = await session.execute(stmt)
 
     result2 = await vector_fixture.execute(pyomop_fixture, "TEST")
     found = False
@@ -127,7 +128,7 @@ async def cdm54_create_vector(pyomop_fixture, vector_fixture, engine):
     assert found, "No rows returned from result2"
 
     await session.close()
-    await engine.dispose()
+
 
 async def query_library_(pyomop_fixture, vector_fixture):
     result = await vector_fixture.execute(pyomop_fixture, "TEST")
@@ -135,11 +136,8 @@ async def query_library_(pyomop_fixture, vector_fixture):
     assert result is not None
     df = vector_fixture.result_to_df(result)
     print(df.head())
-    result = await vector_fixture.query_library(
-        pyomop_fixture)
+    result = await vector_fixture.query_library(pyomop_fixture)
     assert result is not None
     print("Executing query library:")
     df = vector_fixture.result_to_df(result)
     print(df.head())
-
-

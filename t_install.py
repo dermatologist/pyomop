@@ -1,8 +1,11 @@
-from pyomop import CdmEngineFactory, CdmVocabulary, CdmVector
-from src.pyomop.cdm54 import Person, Cohort, Base
-from sqlalchemy.future import select
-import datetime
 import asyncio
+import datetime
+
+from sqlalchemy import select
+
+from pyomop import CdmEngineFactory, CdmVector, CdmVocabulary
+from pyomop.cdm54 import Base, Person
+
 
 async def main():
     cdm = CdmEngineFactory()  # Creates SQLite database by default
@@ -15,10 +18,9 @@ async def main():
     # Create Tables if required
     await cdm.init_models(Base.metadata)
     # Create vocabulary if required
-    vocab = CdmVocabulary(cdm)
+    CdmVocabulary(cdm, version="cdm54")
     # vocab.create_vocab('/path/to/csv/files')  # Uncomment to load vocabulary csv files
 
-    # Add Persons
     async with cdm.session() as session:  # type: ignore
         async with session.begin():
             session.add(
@@ -51,42 +53,38 @@ async def main():
                     ethnicity_source_concept_id=38003564,
                 )
             )
-        await session.commit()
 
-    # Query the Person
-    stmt = select(Person).where(Person.person_id == 100)
-    result = await session.execute(stmt)
-    for row in result.scalars():
-        print(row)
-        assert row.person_id == 100
+        # Query the Person
+        stmt = select(Person).where(Person.person_id == 100)
+        result = await session.execute(stmt)
+        for row in result.scalars():
+            print(row)
+            assert row.person_id == 100
 
-    # Query the person pattern 2
-    person = await session.get(Person, 100)
-    print(person)
-    assert person.person_id == 100  # type: ignore
+        # Query the person pattern 2
+        person = await session.get(Person, 100)
+        print(person)
+        assert person is not None
+        assert person.person_id == 100
 
     # Convert result to a pandas dataframe
     vec = CdmVector()
 
     # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
-    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    result = await vec.query_library(cdm, resource="person", query_name="PE02")
     df = vec.result_to_df(result)
     print("DataFrame from result:")
     print(df.head())
 
-    result = await vec.execute(cdm, query='SELECT * from person;')
+    result = await vec.execute(cdm, query="SELECT * from person;")
     print("Executing custom query:")
     df = vec.result_to_df(result)
     print("DataFrame from result:")
     print(df.head())
 
-    # access sqlalchemy result directly
-    for row in result:
-        print(row)
+    # Close engine
+    await engine.dispose()  # type: ignore
 
-    # Close session
-    await session.close()
-    await engine.dispose() # type: ignore
 
 # Run the main function
 asyncio.run(main())
