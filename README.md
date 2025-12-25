@@ -237,8 +237,38 @@ The server communicates via stdio and can be used with any MCP-compatible client
 - **get_single_table_info**: Get detailed table information, including foreign keys
 - **get_usable_table_names**: Get a list of all available table names
 - **run_sql**: Execute SQL statements with error handling
+- **example_query**: Get example queries for specific OMOP CDM tables from OHDSI QueryLibrary
+- **check_sql**: Validate SQL query syntax before execution
 
 * create_cdm and create_eunomia support only local sqlite databases to avoid inadvertent data loss in production databases.
+
+#### HTTP Transport Support
+
+The MCP server now supports both stdio (default) and HTTP transports:
+
+**Stdio transport (default):**
+```bash
+pyomop --mcp-server
+# or
+pyomop-mcp-server
+```
+
+**HTTP transport:**
+```bash
+pyomop-mcp-server-http
+# or with custom host/port
+pyomop-mcp-server-http --host 0.0.0.0 --port 8000
+# or via Python module
+python -m pyomop.mcp.server --http --host 0.0.0.0 --port 8000
+```
+
+To use HTTP transport, install additional dependencies:
+```bash
+pip install pyomop[http]
+# or for both LLM and HTTP features
+pip install pyomop[llm,http]
+```
+
 #### Available Prompts
 
 - **query_execution_steps**: Provides step-by-step guidance for executing database queries based on free text instructions
