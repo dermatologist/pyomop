@@ -2,7 +2,6 @@ import asyncio
 import os
 
 
-
 @staticmethod
 def test_create_vector_cdm6(
     pyomop_fixture, cdm6_metadata_fixture, vector_fixture, capsys
@@ -12,10 +11,12 @@ def test_create_vector_cdm6(
     if os.path.exists("cdm.sqlite"):
         os.remove("cdm.sqlite")
     # create tables
-    asyncio.run(pyomop_fixture.init_models(cdm6_metadata_fixture))
-    asyncio.run(cdm6_create_vector(pyomop_fixture, vector_fixture, engine))
-    asyncio.run(query_library_(pyomop_fixture, vector_fixture))
-    asyncio.run(engine.dispose())
+    try:
+        asyncio.run(pyomop_fixture.init_models(cdm6_metadata_fixture))
+        asyncio.run(cdm6_create_vector(pyomop_fixture, vector_fixture, engine))
+        asyncio.run(query_library_(pyomop_fixture, vector_fixture))
+    finally:
+        asyncio.run(pyomop_fixture.dispose())
 
 
 @staticmethod
@@ -27,9 +28,11 @@ def test_create_vector_cdm54(
     if os.path.exists("cdm.sqlite"):
         os.remove("cdm.sqlite")
     # create tables
-    asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
-    asyncio.run(cdm54_create_vector(pyomop_fixture, vector_fixture, engine))
-    asyncio.run(engine.dispose())
+    try:
+        asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
+        asyncio.run(cdm54_create_vector(pyomop_fixture, vector_fixture, engine))
+    finally:
+        asyncio.run(pyomop_fixture.dispose())
 
 
 async def cdm6_create_vector(pyomop_fixture, vector_fixture, engine):
