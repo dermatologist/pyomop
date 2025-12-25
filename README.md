@@ -214,7 +214,7 @@ pyomop --mcp-server
 
 #### Usage with MCP Clients
 
-The server communicates via stdio and can be used with any MCP-compatible client. Example configuration for [vscode](/.vscode/mcp.json):
+The server can be used with any MCP-compatible client. Example configuration for [VSCODE](/.vscode/mcp.json) as below is already provided in the repository. So if you are viewing this in VSCODE, you can start server and enable tools directly in VSCODE copilot.
 
 ```json
 {

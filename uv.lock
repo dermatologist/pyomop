@@ -2952,6 +2952,10 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+http = [
+    { name = "starlette" },
+    { name = "uvicorn" },
+]
 llm = [
     { name = "dhti-elixir-base" },
     { name = "langchain" },
@@ -2996,8 +3000,10 @@ requires-dist = [
     { name = "pandas" },
     { name = "requests" },
     { name = "sqlalchemy", specifier = ">=1.4" },
+    { name = "starlette", marker = "extra == 'http'" },
+    { name = "uvicorn", marker = "extra == 'http'" },
 ]
-provides-extras = ["llm"]
+provides-extras = ["http", "llm"]
 
 [package.metadata.requires-dev]
 dev = [
