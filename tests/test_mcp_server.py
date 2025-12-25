@@ -74,25 +74,31 @@ class TestMCPServer:
         with tempfile.TemporaryDirectory() as temp_dir:
             db_path = Path(temp_dir) / "test.sqlite"
             
-            with patch('src.pyomop.mcp.server.CdmEngineFactory') as mock_factory:
-                mock_cdm = MagicMock()
-                mock_cdm.init_models = AsyncMock()
-                mock_factory.return_value = mock_cdm
-                
-                with patch('src.pyomop.mcp.server.Base') as mock_base:
-                    mock_base.metadata = MagicMock()
+            with patch('src.pyomop.mcp.server._get_engine') as mock_get_engine:
+                with patch('src.pyomop.mcp.server.CdmEngineFactory') as mock_factory:
+                    mock_engine = MagicMock()
+                    mock_get_engine.return_value = mock_engine
                     
-                    result = await _create_cdm(str(db_path), "cdm54")
+                    mock_cdm = MagicMock()
+                    mock_cdm._engine = mock_engine
+                    mock_cdm.init_models = AsyncMock()
+                    mock_factory.return_value = mock_cdm
                     
-                    assert len(result) == 1
-                    assert "Successfully created CDM" in result[0].text
-                    assert str(db_path) in result[0].text
+                    with patch('src.pyomop.cdm54.Base') as mock_base:
+                        mock_base.metadata = MagicMock()
+                        
+                        result = await _create_cdm(str(db_path), "cdm54")
+                        
+                        assert len(result) == 1
+                        assert "Successfully created CDM" in result[0].text
+                        assert str(db_path) in result[0].text
 
     @pytest.mark.asyncio
     async def test_get_table_columns_no_llm(self):
         """Test get_table_columns without LLM features."""
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as temp_file:
-            with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+            # Patch the import to make CDMDatabase unavailable
+            with patch.dict('sys.modules', {'src.pyomop.llm_engine': None}):
                 result = await _get_table_columns("person", db_path=temp_file.name)
                 
                 assert len(result) == 1
@@ -102,7 +108,8 @@ class TestMCPServer:
     async def test_get_single_table_info_no_llm(self):
         """Test get_single_table_info without LLM features."""
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as temp_file:
-            with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+            # Patch the import to make CDMDatabase unavailable
+            with patch.dict('sys.modules', {'src.pyomop.llm_engine': None}):
                 result = await _get_single_table_info("person", db_path=temp_file.name)
                 
                 assert len(result) == 1
@@ -112,7 +119,8 @@ class TestMCPServer:
     async def test_get_usable_table_names_no_llm(self):
         """Test get_usable_table_names without LLM features."""
         with tempfile.NamedTemporaryFile(suffix=".sqlite") as temp_file:
-            with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+            # Patch the import to make CDMDatabase unavailable
+            with patch.dict('sys.modules', {'src.pyomop.llm_engine': None}):
                 result = await _get_usable_table_names(db_path=temp_file.name)
                 
                 assert len(result) == 1
@@ -156,18 +164,23 @@ class TestMCPIntegration:
             db_path = Path(temp_dir) / "integration_test.sqlite"
             
             # This would require actual database setup, so we'll mock it
-            with patch('src.pyomop.mcp.server.CdmEngineFactory') as mock_factory:
-                # Mock successful CDM creation
-                mock_cdm = MagicMock()
-                mock_cdm.init_models = AsyncMock()
-                mock_factory.return_value = mock_cdm
-                
-                with patch('src.pyomop.mcp.server.Base') as mock_base:
-                    mock_base.metadata = MagicMock()
+            with patch('src.pyomop.mcp.server._get_engine') as mock_get_engine:
+                with patch('src.pyomop.mcp.server.CdmEngineFactory') as mock_factory:
+                    mock_engine = MagicMock()
+                    mock_get_engine.return_value = mock_engine
                     
-                    # Test CDM creation
-                    result = await _create_cdm(str(db_path), "cdm54")
-                    assert "Successfully created CDM" in result[0].text
+                    # Mock successful CDM creation
+                    mock_cdm = MagicMock()
+                    mock_cdm._engine = mock_engine
+                    mock_cdm.init_models = AsyncMock()
+                    mock_factory.return_value = mock_cdm
+                    
+                    with patch('src.pyomop.cdm54.Base') as mock_base:
+                        mock_base.metadata = MagicMock()
+                        
+                        # Test CDM creation
+                        result = await _create_cdm(str(db_path), "cdm54")
+                        assert "Successfully created CDM" in result[0].text
 
     def test_mcp_server_import(self):
         """Test that MCP server can be imported."""
@@ -182,7 +195,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_example_query_person(self):
         """Test example_query tool for person table."""
-        with patch('src.pyomop.mcp.server.requests.get') as mock_get:
+        with patch('requests.get') as mock_get:
             # Mock the requests to return sample content
             mock_response = Mock()
             mock_response.text = "# Example Query\nSELECT * FROM person;"
@@ -197,7 +210,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_example_query_condition_occurrence(self):
         """Test example_query tool for condition_occurrence table."""
-        with patch('src.pyomop.mcp.server.requests.get') as mock_get:
+        with patch('requests.get') as mock_get:
             mock_response = Mock()
             mock_response.text = "# Condition Query\nSELECT * FROM condition_occurrence;"
             mock_get.return_value = mock_response
@@ -211,7 +224,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_example_query_error_handling(self):
         """Test example_query tool error handling."""
-        with patch('src.pyomop.mcp.server.requests.get') as mock_get:
+        with patch('requests.get') as mock_get:
             mock_get.side_effect = Exception("Network error")
             
             result = await _example_query("person")
@@ -223,7 +236,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_example_query_no_examples(self):
         """Test example_query tool when no examples are returned."""
-        with patch('src.pyomop.mcp.server.requests.get') as mock_get:
+        with patch('requests.get') as mock_get:
             mock_response = Mock()
             mock_response.text = ""
             mock_get.return_value = mock_response
@@ -236,7 +249,8 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_check_sql_basic_validation(self):
         """Test check_sql tool with basic validation (no LLM)."""
-        with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+        # Patch the import to make it fail
+        with patch.dict('sys.modules', {'langchain_community.tools.sql_database.tool': None}):
             # Test valid SQL
             result = await _check_sql("SELECT * FROM person")
             assert len(result) == 1
@@ -245,7 +259,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_check_sql_invalid_parentheses(self):
         """Test check_sql with unbalanced parentheses."""
-        with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+        with patch.dict('sys.modules', {'langchain_community.tools.sql_database.tool': None}):
             result = await _check_sql("SELECT * FROM person WHERE (id = 1")
             
             assert len(result) == 1
@@ -254,7 +268,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_check_sql_invalid_quotes(self):
         """Test check_sql with unbalanced quotes."""
-        with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+        with patch.dict('sys.modules', {'langchain_community.tools.sql_database.tool': None}):
             result = await _check_sql("SELECT * FROM person WHERE name = 'John")
             
             assert len(result) == 1
@@ -263,7 +277,7 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_check_sql_no_keywords(self):
         """Test check_sql with no SQL keywords."""
-        with patch('src.pyomop.mcp.server.CDMDatabase', side_effect=ImportError):
+        with patch.dict('sys.modules', {'langchain_community.tools.sql_database.tool': None}):
             result = await _check_sql("INVALID STATEMENT")
             
             assert len(result) == 1
@@ -272,9 +286,12 @@ class TestNewMCPTools:
     @pytest.mark.asyncio
     async def test_check_sql_with_llm(self):
         """Test check_sql with LLM features available."""
+        # Skip if LLM dependencies are not available
+        pytest.importorskip("langchain_community.tools.sql_database.tool")
+        
         with patch('src.pyomop.mcp.server._get_engine') as mock_engine:
-            with patch('src.pyomop.mcp.server.CDMDatabase') as mock_cdm_db:
-                with patch('src.pyomop.mcp.server.QuerySQLCheckerTool') as mock_checker:
+            with patch('src.pyomop.llm_engine.CDMDatabase') as mock_cdm_db:
+                with patch('langchain_community.tools.sql_database.tool.QuerySQLCheckerTool') as mock_checker:
                     # Mock the checker tool
                     mock_checker_instance = Mock()
                     mock_checker_instance.run.return_value = "Query is valid"
@@ -317,19 +334,7 @@ class TestHTTPTransport:
         except ImportError:
             pytest.skip("HTTP transport dependencies not available")
 
-    @pytest.mark.asyncio
-    async def test_http_server_startup(self):
-        """Test that HTTP server can be initialized (mocked)."""
-        with patch('src.pyomop.mcp.server.uvicorn.Server') as mock_server:
-            with patch('src.pyomop.mcp.server.SseServerTransport'):
-                with patch('src.pyomop.mcp.server.Starlette'):
-                    mock_server_instance = Mock()
-                    mock_server_instance.serve = AsyncMock()
-                    mock_server.return_value = mock_server_instance
-                    
-                    try:
-                        from src.pyomop.mcp.server import main_http
-                        # Don't actually run the server, just test initialization
-                        # The actual serve() would block, so we won't call it
-                    except ImportError:
-                        pytest.skip("HTTP transport dependencies not available")
+    def test_http_cli_entry_point(self):
+        """Test that HTTP CLI entry point exists."""
+        from src.pyomop.mcp.server import main_http_cli
+        assert callable(main_http_cli)

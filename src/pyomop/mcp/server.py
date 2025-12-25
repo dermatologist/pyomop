@@ -914,7 +914,8 @@ async def _example_query(table_name: str) -> List[types.TextContent]:
     logger.info(f"Example query tool called for table: {table_name}")
     logger.info(f"Example returned: {example[:200] if example else '(empty)'}...")
     
-    if not example:
+    # Strip whitespace to check if we really have content
+    if not example.strip():
         return [
             types.TextContent(
                 type="text",
