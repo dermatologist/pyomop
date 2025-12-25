@@ -202,19 +202,9 @@ pyomop includes an MCP (Model Context Protocol) server that exposes tools for in
   <img src="https://github.com/dermatologist/pyomop/blob/develop/notes/pyomop-mcp.gif" />
 </p>
 
-### Starting the MCP Server
-
-To start the MCP server for stdio interaction:
-
-```bash
-# Using the main CLI
-pyomop --mcp-server
-
-```
-
 #### Usage with MCP Clients
 
-The server can be used with any MCP-compatible client. Example configuration for [VSCODE](/.vscode/mcp.json) as below is already provided in the repository. So if you are viewing this in VSCODE, you can start server and enable tools directly in VSCODE copilot.
+The MCP server can be used with any MCP-compatible client such as Claude desktop. Example configuration for [VSCODE](/.vscode/mcp.json) as below is already provided in the repository. So if you are viewing this in VSCODE, you can start server and enable tools directly in Copilot.
 
 ```json
 {
