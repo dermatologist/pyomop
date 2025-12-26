@@ -192,6 +192,16 @@ class CdmEngineFactory(object):
             return async_session
         return None
 
+    async def dispose(self) -> None:
+        """Dispose of the engine and close all connections.
+
+        This should be called when done with database operations to
+        ensure proper cleanup and avoid hanging.
+        """
+        if self._engine is not None:
+            await self._engine.dispose()
+            self._engine = None
+
     @db.setter
     def db(self, value):
         self._db = value
