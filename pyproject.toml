@@ -74,6 +74,7 @@ source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 [project.scripts]
 pyomop = "pyomop.main:main_routine"
 pyomop-mcp-server = "pyomop.mcp.server:main_cli"
+pyomop-mcp-server-http = "pyomop.mcp.server:main_http_cli"
 
 [project.optional-dependencies]
 llm = [
@@ -84,6 +85,10 @@ llm = [
     "langchain_google_genai",
     "langchain-openai",
     "dhti-elixir-base",
+]
+http = [
+    "starlette",
+    "uvicorn",
 ]
 
 [tool.hatch.build.targets.wheel]

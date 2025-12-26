@@ -11,8 +11,11 @@ def test_create_person_cdm6(pyomop_fixture, cdm6_metadata_fixture, capsys):
     if os.path.exists("cdm.sqlite"):
         os.remove("cdm.sqlite")
     # create tables
-    asyncio.run(pyomop_fixture.init_models(cdm6_metadata_fixture))
-    asyncio.run(cdm6_create_person(pyomop_fixture, engine))
+    try:
+        asyncio.run(pyomop_fixture.init_models(cdm6_metadata_fixture))
+        asyncio.run(cdm6_create_person(pyomop_fixture, engine))
+    finally:
+        asyncio.run(pyomop_fixture.dispose())
 
 
 @staticmethod
@@ -22,8 +25,11 @@ def test_create_person_cdm54(pyomop_fixture, cdm54_metadata_fixture, capsys):
     if os.path.exists("cdm.sqlite"):
         os.remove("cdm.sqlite")
     # create tables
-    asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
-    asyncio.run(cdm54_create_person(pyomop_fixture, engine))
+    try:
+        asyncio.run(pyomop_fixture.init_models(cdm54_metadata_fixture))
+        asyncio.run(cdm54_create_person(pyomop_fixture, engine))
+    finally:
+        asyncio.run(pyomop_fixture.dispose())
 
 
 def cdm6_test_create_person(pyomop_fixture, cdm6_metadata_fixture, capsys):
@@ -73,7 +79,6 @@ async def cdm6_create_person(pyomop_fixture, engine):
     assert person.person_id == 100
 
     await session.close()
-    await engine.dispose()
 
 
 async def cdm54_create_person(pyomop_fixture, engine):
@@ -116,4 +121,3 @@ async def cdm54_create_person(pyomop_fixture, engine):
     assert person.person_id == 100
 
     await session.close()
-    await engine.dispose()

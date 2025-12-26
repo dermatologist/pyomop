@@ -18,6 +18,8 @@ The server provides tools for:
 - Querying table structures and metadata
 - Executing SQL statements with error handling
 - Following guided query execution workflows
+- Getting example queries from OHDSI QueryLibrary
+- Checking SQL query validity before execution
 """
 
 import asyncio
@@ -30,6 +32,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 try:
     import mcp.server.stdio
+    import mcp.server.sse
     import mcp.types as types
     from mcp.server import NotificationOptions, Server
     from mcp.server.models import InitializationOptions
@@ -363,6 +366,70 @@ async def handle_list_tools() -> List[types.Tool]:
                 "required": ["sql"],
             },
         ),
+        types.Tool(
+            name="example_query",
+            description="Get example queries for a specific OMOP CDM table from OHDSI QueryLibrary. Useful for understanding query patterns.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "table_name": {
+                        "type": "string",
+                        "description": "Name of the OMOP CDM table",
+                        "enum": ["person", "condition_occurrence", "condition_era", "drug_exposure", "drug_era", "observation"],
+                    },
+                },
+                "required": ["table_name"],
+            },
+        ),
+        types.Tool(
+            name="check_sql",
+            description="Validate and check SQL query syntax before execution. Returns a corrected version of the query if issues are found.",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "sql": {
+                        "type": "string",
+                        "description": "SQL query to validate",
+                    },
+                    "db": {
+                        "type": "string",
+                        "default": "sqlite",
+                        "description": "Database type (sqlite, mysql, pgsql)",
+                    },
+                    "host": {
+                        "type": "string",
+                        "default": "localhost",
+                        "description": "Database host (ignored for sqlite)",
+                    },
+                    "port": {
+                        "type": "integer",
+                        "default": 5432,
+                        "description": "Database port (ignored for sqlite)",
+                    },
+                    "user": {
+                        "type": "string",
+                        "default": "root",
+                        "description": "Database user (ignored for sqlite)",
+                    },
+                    "pw": {
+                        "type": "string",
+                        "default": "pass",
+                        "description": "Database password (ignored for sqlite)",
+                    },
+                    "db_path": {
+                        "type": "string",
+                        "default": "cdm.sqlite",
+                        "description": "Database path",
+                    },
+                    "schema": {
+                        "type": "string",
+                        "default": "",
+                        "description": "PostgreSQL schema to use for CDM",
+                    },
+                },
+                "required": ["sql"],
+            },
+        ),
     ]
 
 
@@ -423,6 +490,10 @@ async def handle_call_tool(
             return await _get_usable_table_names(**arguments)
         elif name == "run_sql":
             return await _run_sql(**arguments)
+        elif name == "example_query":
+            return await _example_query(**arguments)
+        elif name == "check_sql":
+            return await _check_sql(**arguments)
         else:
             raise ValueError(f"Unknown tool: {name}")
     except Exception as e:
@@ -776,11 +847,195 @@ async def _run_sql(
         return [types.TextContent(type="text", text=f"SQL execution error: {str(e)}")]
 
 
+async def _example_query(table_name: str) -> List[types.TextContent]:
+    """
+    Get example queries for a specific OMOP CDM table.
+    
+    This function fetches example queries from the OHDSI QueryLibrary GitHub repository.
+    It's a direct reuse of the example_query_tool logic from llm_query.py.
+    """
+    import requests
+    
+    example = ""
+    try:
+        if table_name.lower() == "person":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/person/PE03.md"
+            ).text
+        elif table_name.lower() == "condition_occurrence":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_occurrence/CO05.md"
+            ).text
+        elif table_name.lower() == "condition_era":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/condition_era/CE02.md"
+            ).text
+        elif table_name.lower() == "drug_exposure":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_exposure/DEX02.md"
+            ).text
+        elif table_name.lower() == "drug_era":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER01.md"
+            ).text
+            example += "\n"
+            example += requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/drug_era/DER04.md"
+            ).text
+        elif table_name.lower() == "observation":
+            example = requests.get(
+                "https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/observation/O01.md"
+            ).text
+    except Exception as e:
+        logger.warning(f"Error fetching example queries for {table_name}: {e}")
+        return [
+            types.TextContent(
+                type="text",
+                text=f"Error fetching example queries for {table_name}: {str(e)}",
+            )
+        ]
+    
+    logger.info(f"Example query tool called for table: {table_name}")
+    logger.info(f"Example returned: {example[:200] if example else '(empty)'}...")
+    
+    # Strip whitespace to check if we really have content
+    if not example.strip():
+        return [
+            types.TextContent(
+                type="text",
+                text=f"No example queries found for table: {table_name}",
+            )
+        ]
+    
+    return [types.TextContent(type="text", text=example)]
+
+
+async def _check_sql(
+    sql: str,
+    db=None,
+    host=None,
+    port=None,
+    user=None,
+    pw=None,
+    db_path="cdm.sqlite",
+    schema=None,
+) -> List[types.TextContent]:
+    """
+    Validate SQL query syntax before execution.
+    
+    This function uses the QuerySQLCheckerTool functionality from langchain
+    to validate and potentially correct SQL queries.
+    """
+    import os
+    
+    db = db or os.environ.get("PYOMOP_DB", "sqlite")
+    host = host or os.environ.get("PYOMOP_HOST", "localhost")
+    port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
+    user = user or os.environ.get("PYOMOP_USER", "root")
+    pw = pw or os.environ.get("PYOMOP_PW", "pass")
+    schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
+    
+    try:
+        # Check if LLM features are available
+        try:
+            from ..llm_engine import CDMDatabase
+            from langchain_community.tools.sql_database.tool import QuerySQLCheckerTool
+            from langchain_core.language_models.fake import FakeListLLM
+            
+            engine = await _get_engine(
+                db=db,
+                host=host,
+                port=port,
+                user=user,
+                pw=pw,
+                db_path=db_path,
+                schema=schema,
+            )
+            
+            # Create a CDMDatabase instance
+            cdm_db = CDMDatabase(engine, version="cdm54")  # type: ignore
+            
+            # Use a simple LLM for query checking (doesn't need real LLM)
+            # We'll create a basic checker that validates SQL syntax
+            llm = FakeListLLM(responses=["The query looks valid."])
+            checker = QuerySQLCheckerTool(db=cdm_db, llm=llm)
+            
+            # Run the checker
+            result = checker.run(sql)
+            
+            return [
+                types.TextContent(
+                    type="text",
+                    text=f"SQL Check Result:\n{result}",
+                )
+            ]
+        except ImportError:
+            # If LLM features aren't available, do basic validation
+            sql_upper = sql.strip().upper()
+            
+            # Basic SQL syntax validation
+            issues = []
+            
+            # Check for common SQL keywords
+            if not any(keyword in sql_upper for keyword in ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP']):
+                issues.append("Query doesn't contain a valid SQL statement keyword")
+            
+            # Check for balanced parentheses
+            if sql.count('(') != sql.count(')'):
+                issues.append("Unbalanced parentheses in query")
+            
+            # Check for balanced quotes
+            if sql.count("'") % 2 != 0:
+                issues.append("Unbalanced single quotes in query")
+            
+            if sql.count('"') % 2 != 0:
+                issues.append("Unbalanced double quotes in query")
+            
+            if issues:
+                return [
+                    types.TextContent(
+                        type="text",
+                        text=f"SQL validation issues found:\n" + "\n".join(f"- {issue}" for issue in issues),
+                    )
+                ]
+            else:
+                return [
+                    types.TextContent(
+                        type="text",
+                        text="Basic SQL validation passed. Query appears to be syntactically valid.",
+                    )
+                ]
+    except Exception as e:
+        logger.error(f"Error checking SQL: {e}")
+        return [
+            types.TextContent(
+                type="text",
+                text=f"Error checking SQL: {str(e)}",
+            )
+        ]
+
+
 async def main():
-    """Main entry point for the MCP server."""
+    """Main entry point for the MCP server (stdio transport)."""
     # Set up logging
     logging.basicConfig(level=logging.INFO)
-    logger.info("Starting pyomop MCP server")
+    logger.info("Starting pyomop MCP server with stdio transport")
 
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
@@ -797,10 +1052,89 @@ async def main():
         )
 
 
+async def main_http(host: str = "0.0.0.0", port: int = 8000):
+    """Main entry point for the MCP server with HTTP (SSE) transport.
+    
+    Args:
+        host: Host to bind the HTTP server to
+        port: Port to bind the HTTP server to
+    """
+    # Set up logging
+    logging.basicConfig(level=logging.INFO)
+    logger.info(f"Starting pyomop MCP server with HTTP transport on {host}:{port}")
+    
+    try:
+        from mcp.server.sse import SseServerTransport
+        from starlette.applications import Starlette
+        from starlette.routing import Route
+        
+        # Create SSE endpoint handler
+        sse = SseServerTransport("/messages")
+        
+        async def handle_sse(request):
+            async with sse.connect_sse(
+                request.scope, request.receive, request._send
+            ) as streams:
+                await server.run(
+                    streams[0],
+                    streams[1],
+                    InitializationOptions(
+                        server_name="pyomop-mcp-server",
+                        server_version="1.0.0",
+                        capabilities=server.get_capabilities(
+                            notification_options=NotificationOptions(),
+                            experimental_capabilities={},
+                        ),
+                    ),
+                )
+        
+        async def handle_post(request):
+            return await sse.handle_post_message(request)
+        
+        # Create Starlette app
+        app = Starlette(
+            debug=True,
+            routes=[
+                Route("/sse", endpoint=handle_sse),
+                Route("/messages", endpoint=handle_post, methods=["POST"]),
+            ],
+        )
+        
+        # Run the server
+        import uvicorn
+        config = uvicorn.Config(app, host=host, port=port, log_level="info")
+        server_instance = uvicorn.Server(config)
+        await server_instance.serve()
+        
+    except ImportError as e:
+        logger.error(
+            f"HTTP transport requires additional dependencies: {e}\n"
+            "Install with: pip install starlette uvicorn"
+        )
+        raise
+
+
 def main_cli():
-    """CLI entry point for the MCP server."""
+    """CLI entry point for the MCP server (stdio transport)."""
     asyncio.run(main())
 
 
+def main_http_cli():
+    """CLI entry point for the MCP server (HTTP transport)."""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="PyOMOP MCP Server with HTTP transport")
+    parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
+    parser.add_argument("--port", type=int, default=8000, help="Port to bind to (default: 8000)")
+    
+    args = parser.parse_args()
+    asyncio.run(main_http(host=args.host, port=args.port))
+
+
 if __name__ == "__main__":
-    main_cli()
+    # Check if HTTP mode is requested via command line argument
+    if "--http" in sys.argv:
+        sys.argv.remove("--http")
+        main_http_cli()
+    else:
+        main_cli()

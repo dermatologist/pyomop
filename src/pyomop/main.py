@@ -5,7 +5,9 @@ Bulk Export data into an OMOP database.
 """
 
 import asyncio
+
 import click
+
 from . import __version__
 from .engine_factory import CdmEngineFactory
 from .vocabulary import CdmVocabulary
@@ -105,23 +107,29 @@ def cli(
     if create:
         click.echo(f"Creating CDM {version} tables in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
-        # initialize default engine
-        engine = cdm.engine
-        if version == "cdm54":
-            from .cdm54 import Base
+        try:
+            # initialize default engine
+            engine = cdm.engine
+            if version == "cdm54":
+                from .cdm54 import Base
 
-            asyncio.run(cdm.init_models(Base.metadata))
-        else:  # default cdm6
-            from .cdm6 import Base
+                asyncio.run(cdm.init_models(Base.metadata))
+            else:  # default cdm6
+                from .cdm6 import Base
 
-            asyncio.run(cdm.init_models(Base.metadata))
-        click.echo("Done")
+                asyncio.run(cdm.init_models(Base.metadata))
+            click.echo("Done")
+        finally:
+            asyncio.run(cdm.dispose())
     if vocab != "":
         click.echo(f"Creating CDM {version} vocabulary in {dbtype} database {name}")
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
-        _vocab = CdmVocabulary(cdm)
-        asyncio.run(_vocab.create_vocab(vocab))
-        click.echo("Done")
+        try:
+            _vocab = CdmVocabulary(cdm)
+            asyncio.run(_vocab.create_vocab(vocab))
+            click.echo("Done")
+        finally:
+            asyncio.run(cdm.dispose())
 
     if input_path:
         click.echo(f"Loading FHIR data from {input_path} into {dbtype} database {name}")
@@ -165,13 +173,16 @@ def cli(
                 click.echo(f"Data written to temporary file: {temp_file.name}")
         # Load CSV into OMOP tables using mapping
         loader = CdmCsvLoader(cdm)
-        asyncio.run(
-            loader.load(
-                csv_path=temp_file.name,
-                chunk_size=500,
+        try:
+            asyncio.run(
+                loader.load(
+                    csv_path=temp_file.name,
+                    chunk_size=500,
+                )
             )
-        )
-        click.echo("Done")
+            click.echo("Done")
+        finally:
+            asyncio.run(cdm.dispose())
 
     if eunomia_dataset:
         click.echo(
@@ -199,7 +210,7 @@ def cli(
                     dataset_name=eunomia_dataset,
                     cdm_version=version,
                     input_format="csv",
-                    verbose=True
+                    verbose=True,
                 )
             )
             click.echo(f"Loaded dataset into configured database: {name}")
@@ -214,6 +225,8 @@ def cli(
         except Exception as e:
             click.echo(f"Error creating/populating cohort table: {e}", err=True)
             raise
+        finally:
+            asyncio.run(cdm.dispose())
         click.echo("Done")
     if cdm and connection_info:
         click.echo(click.style("Database connection information:", fg="green"))
@@ -221,12 +234,17 @@ def cli(
 
     if mcp_server:
         import sys
+
         click.echo("Starting pyomop MCP server...")
         try:
             from .mcp import mcp_server_main
+
             asyncio.run(mcp_server_main())
         except ImportError:
-            click.echo("MCP server requires 'mcp' package. Install with: pip install mcp", err=True)
+            click.echo(
+                "MCP server requires 'mcp' package. Install with: pip install mcp",
+                err=True,
+            )
             sys.exit(1)
         except KeyboardInterrupt:
             click.echo("MCP server stopped.")
@@ -236,8 +254,12 @@ def cli(
 
     if pyhealth_path:
         import sys
-        click.echo(f"Exporting PyHealth tables to {pyhealth_path} from {dbtype} database {name}")
+
+        click.echo(
+            f"Exporting PyHealth tables to {pyhealth_path} from {dbtype} database {name}"
+        )
         from .pyhealth import PyHealthExport
+
         cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
         exporter = PyHealthExport(cdm, export_path=pyhealth_path)
         try:
@@ -246,6 +268,9 @@ def cli(
         except Exception as e:
             click.echo(f"Error exporting PyHealth tables: {e}", err=True)
             sys.exit(1)
+        finally:
+            asyncio.run(cdm.dispose())
+
 
 def main_routine():
     """Top-level runner used by ``python -m pyomop``."""
