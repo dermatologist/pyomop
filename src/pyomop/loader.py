@@ -11,6 +11,7 @@ import json
 
 # setup logging
 import logging
+import time
 from contextlib import asynccontextmanager
 from datetime import date, datetime, timezone
 from decimal import Decimal
@@ -341,6 +342,8 @@ class CdmCsvLoader:
             chunk_size: Batch size for INSERT statements.
         """
         # If mapping path is None, load mapping.default.json from the current directory
+        # Step 1: Load CSV and mapping
+        start_time = time.time()
         logger.info(f"Loading CSV data from {csv_path}")
         if mapping_path is None:
             mapping_path = str(Path(__file__).parent / "mapping.default.json")
@@ -464,6 +467,10 @@ class CdmCsvLoader:
                     for i in range(0, len(records), chunk_size):
                         batch = records[i : i + chunk_size]
                         await session.execute(stmt, batch)
+                # Step 1 complete: all data loaded into target tables
+                elapsed = time.time() - start_time
+                logger.info(f"Data loaded into target tables (elapsed: {elapsed:.2f}s)")
+                step_time = time.time()
 
                 # Step 2: Normalize person_id FKs using person.person_id (not person_source_value)
                 logger.info("Normalizing person_id foreign keys")
@@ -471,18 +478,31 @@ class CdmCsvLoader:
 
                 # Drop the temporary person_id_text columns now that person_id has been normalized
                 await self._drop_person_id_text_columns(session)
+                elapsed = time.time() - step_time
+                logger.info(
+                    f"Person_id foreign keys normalized (elapsed: {elapsed:.2f}s)"
+                )
+                step_time = time.time()
 
                 # Step 3: Backfill year/month/day of birth from birth_datetime where missing or zero
                 logger.info("Backfilling person birth fields")
                 await self.backfill_person_birth_fields(session, automap)
+                elapsed = time.time() - step_time
+                logger.info(f"Person birth fields backfilled (elapsed: {elapsed:.2f}s)")
+                step_time = time.time()
 
                 # Step 4: Set gender_concept_id from gender_source_value using standard IDs
                 logger.info("Setting person.gender_concept_id from gender_source_value")
                 await self.update_person_gender_concept_id(session, automap)
+                elapsed = time.time() - step_time
+                logger.info(f"Person gender_concept_id set (elapsed: {elapsed:.2f}s)")
+                step_time = time.time()
 
                 # Step 5: Apply concept mappings defined in the JSON mapping
                 logger.info("Applying concept mappings")
                 await self.apply_concept_mappings(session, automap, mapping)
+                elapsed = time.time() - step_time
+                logger.info(f"Concept mappings applied (elapsed: {elapsed:.2f}s)")
 
                 await session.commit()
             finally:

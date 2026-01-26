@@ -183,6 +183,7 @@ class CdmVocabulary(object):
                 low_memory=False,
             )
             await self.write_vocab(df, "domain", "replace")
+            logger.info("DOMAIN.csv loaded and processed.")
 
             df = pd.read_csv(
                 folder + "/CONCEPT_CLASS.csv",
@@ -192,6 +193,7 @@ class CdmVocabulary(object):
                 low_memory=False,
             )
             await self.write_vocab(df, "concept_class", "replace")
+            logger.info("CONCEPT_CLASS.csv loaded and processed.")
 
             # Then CONCEPT (uses domain_id and concept_class_id)
             df = pd.read_csv(
@@ -206,6 +208,7 @@ class CdmVocabulary(object):
             )
             df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
             await self.write_vocab(df, "concept", "replace")
+            logger.info("CONCEPT.csv loaded and processed.")
 
             # Then VOCABULARY (uses vocabulary_concept_id -> concept)
             df = pd.read_csv(
@@ -216,6 +219,7 @@ class CdmVocabulary(object):
                 low_memory=False,
             )
             await self.write_vocab(df, "vocabulary", "replace")
+            logger.info("VOCABULARY.csv loaded and processed.")
 
             # Relationship depends on concept for relationship_concept_id
             df = pd.read_csv(
@@ -226,6 +230,7 @@ class CdmVocabulary(object):
                 low_memory=False,
             )
             await self.write_vocab(df, "relationship", "replace")
+            logger.info("RELATIONSHIP.csv loaded and processed.")
 
             # Post-concept tables
             df = pd.read_csv(
@@ -240,6 +245,7 @@ class CdmVocabulary(object):
             )
             df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
             await self.write_vocab(df, "concept_relationship", "replace")
+            logger.info("CONCEPT_RELATIONSHIP.csv loaded and processed.")
 
             df = pd.read_csv(
                 folder + "/CONCEPT_SYNONYM.csv",
@@ -249,6 +255,7 @@ class CdmVocabulary(object):
                 low_memory=False,
             )
             await self.write_vocab(df, "concept_synonym", "replace")
+            logger.info("CONCEPT_SYNONYM.csv loaded and processed.")
 
             df = pd.read_csv(
                 folder + "/DRUG_STRENGTH.csv",
@@ -262,6 +269,7 @@ class CdmVocabulary(object):
             )
             df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
             await self.write_vocab(df, "drug_strength", "replace")
+            logger.info("DRUG_STRENGTH.csv loaded and processed.")
 
             df = pd.read_csv(
                 folder + "/CONCEPT_ANCESTOR.csv",
@@ -271,6 +279,7 @@ class CdmVocabulary(object):
                 low_memory=False,
             )
             await self.write_vocab(df, "concept_ancestor", "replace")
+            logger.info("CONCEPT_ANCESTOR.csv loaded and processed.")
         except Exception as e:
             logger.error(f"An error occurred while creating the vocabulary: {e}")
 
