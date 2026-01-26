@@ -80,7 +80,10 @@ class CdmVector(object):
         if markdown.status_code != 200:
             markdown = requests.get(alternate_url)
         if markdown.status_code != 200:
-            raise ValueError(f"Could not fetch query {query_name} from QueryLibrary.")
+            raise ValueError(
+                f"Could not fetch query {query_name} from QueryLibrary "
+                f"(status code {markdown.status_code})."
+            )
         # extract SQL code block
         query = markdown.text.split("```sql")[1].split("```")[0].strip()
         # remove @cdm. and @vocab. references
