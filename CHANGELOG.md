@@ -2,15 +2,15 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.2.3...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.3.0...HEAD)
 
 **Implemented enhancements:**
 
-- Update MCP server [\#255](https://github.com/dermatologist/pyomop/issues/255)
 - Add PyHealth compatible export function [\#243](https://github.com/dermatologist/pyomop/pull/243) ([Copilot](https://github.com/apps/copilot-swe-agent))
 
 **Merged pull requests:**
 
+- Feature/fix time query 1 [\#258](https://github.com/dermatologist/pyomop/pull/258) ([dermatologist](https://github.com/dermatologist))
 - Add missing MCP tools and HTTP transport support [\#256](https://github.com/dermatologist/pyomop/pull/256) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - Feature/fix thread 1 [\#254](https://github.com/dermatologist/pyomop/pull/254) ([dermatologist](https://github.com/dermatologist))
 - Fix LLM query engine bugs and switch to native llama-index embeddings [\#253](https://github.com/dermatologist/pyomop/pull/253) ([Copilot](https://github.com/apps/copilot-swe-agent))
@@ -49,6 +49,14 @@
 - build\(deps\): bump urllib3 from 1.26.18 to 1.26.19 [\#167](https://github.com/dermatologist/pyomop/pull/167) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump jinja2 from 3.0.1 to 3.1.3 [\#161](https://github.com/dermatologist/pyomop/pull/161) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Feature/llm llama index 1 [\#159](https://github.com/dermatologist/pyomop/pull/159) ([dermatologist](https://github.com/dermatologist))
+
+## [v6.3.0](https://github.com/dermatologist/pyomop/tree/v6.3.0) (2025-12-26)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.2.3...v6.3.0)
+
+**Implemented enhancements:**
+
+- Update MCP server [\#255](https://github.com/dermatologist/pyomop/issues/255)
 
 ## [v6.2.3](https://github.com/dermatologist/pyomop/tree/v6.2.3) (2025-12-24)
 
