@@ -74,10 +74,17 @@ class CdmVector(object):
             SQLAlchemy AsyncResult.
         """
         # Get the markdown from the query library repository: https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
-        url = f"https://raw.githubusercontent.com/OHDSI/QueryLibrary/master/inst/shinyApps/QueryLibrary/queries/{resource}/{query_name}.md"
+        url = f"https://raw.githubusercontent.com/OHDSI/QueryLibrary/refs/heads/master/inst/shinyApps/QueryLibrary/queries/{resource}/{query_name}.md"
+        alternate_url = f"https://raw.githubusercontent.com/OHDSI/QueryLibrary/master/inst/shinyApps/QueryLibrary/queries/{resource}/{query_name}.md"
         markdown = requests.get(url)
         if markdown.status_code != 200:
-            raise ValueError(f"Query {query_name} not found in the Query Library.")
+            markdown = requests.get(alternate_url)
+        if markdown.status_code != 200:
+            raise ValueError(
+                f"Could not fetch query {query_name} from QueryLibrary "
+                f"(status code {markdown.status_code})."
+            )
+        # extract SQL code block
         query = markdown.text.split("```sql")[1].split("```")[0].strip()
         # remove @cdm. and @vocab. references
         query = query.replace("@cdm.", "").replace("@vocab.", "")
