@@ -144,6 +144,85 @@ steps as `CdmCsvLoader`:
 4. **`apply_concept_mappings`** – Looks up `concept.concept_id` for each
    source-value code defined in the `"concept"` section of the mapping.
 
+## Command-line Usage (`--migrate`)
+
+`CdmGenericLoader` is also available directly from the `pyomop` CLI via the
+`--migrate` flag.  Source-database connection details are provided with
+`--src-*` options; the target OMOP CDM database uses the standard `--dbtype`,
+`--host`, `--port`, `--user`, `--pw`, `--name`, and `--schema` options.
+
+```
+pyomop --migrate [OPTIONS]
+```
+
+### Required options
+
+| Option | Description |
+|---|---|
+| `--mapping FILE` / `-m FILE` | Path to the JSON mapping file |
+
+### Target database options (OMOP CDM)
+
+| Option | Default | Description |
+|---|---|---|
+| `--dbtype` | `sqlite` | Target DB type: `sqlite`, `mysql`, or `pgsql` |
+| `--host` | `localhost` | Target DB host |
+| `--port` | `5432` | Target DB port |
+| `--user` | `root` | Target DB user |
+| `--pw` | `pass` | Target DB password |
+| `--name` | `cdm.sqlite` | Target DB name or SQLite file path |
+| `--schema` | _(empty)_ | Target DB schema (PostgreSQL) |
+| `--version` | `cdm54` | OMOP CDM version (`cdm54` or `cdm6`) |
+
+### Source database options
+
+| Option | Default | Description |
+|---|---|---|
+| `--src-dbtype` | `sqlite` | Source DB type: `sqlite`, `mysql`, or `pgsql` |
+| `--src-host` | `localhost` | Source DB host |
+| `--src-port` | `5432` | Source DB port |
+| `--src-user` | `root` | Source DB user |
+| `--src-pw` | `pass` | Source DB password |
+| `--src-name` | `source.sqlite` | Source DB name or SQLite file path |
+| `--src-schema` | _(empty)_ | Source DB schema (PostgreSQL) |
+
+### Tuning
+
+| Option | Default | Description |
+|---|---|---|
+| `--batch-size` | `1000` | Rows per INSERT batch |
+
+### Examples
+
+**SQLite → SQLite**
+
+```bash
+pyomop --migrate \
+  --src-dbtype sqlite --src-name /data/hospital_ehr.sqlite \
+  --dbtype sqlite --name /data/omop.sqlite \
+  --mapping /etc/pyomop/ehr_to_omop.json
+```
+
+**PostgreSQL source → PostgreSQL OMOP target**
+
+```bash
+pyomop --migrate \
+  --src-dbtype pgsql --src-host srchost --src-port 5432 \
+  --src-user readonly --src-pw secret --src-name ehr_db \
+  --dbtype pgsql --host omophost --port 5432 \
+  --user omop_writer --pw secret --name omop_db --schema cdm \
+  --mapping ehr_to_omop.json --batch-size 500
+```
+
+**MySQL source → SQLite OMOP target**
+
+```bash
+pyomop --migrate \
+  --src-dbtype mysql --src-host 192.168.1.10 --src-user reader --src-pw pass --src-name clinic \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping clinic_to_omop.json
+```
+
 ## API Reference
 
 ::: generic_loader.CdmGenericLoader

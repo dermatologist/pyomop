@@ -192,6 +192,26 @@ The mapping JSON specifies which source table maps to which OMOP CDM table:
 See the [bundled example mapping](src/pyomop/mapping.generic.example.json) and
 the [full documentation](docs/generic_loader.md) for all supported options.
 
+### Command-line migration
+
+Use `--migrate` to run the generic loader from the command line.  Provide
+source-database connection details with `--src-*` options; target-database
+details use the standard `--dbtype` / `--host` / … options.
+
+```bash
+# SQLite source → SQLite OMOP target
+pyomop --migrate \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping mapping.json
+
+# PostgreSQL source → PostgreSQL OMOP target
+pyomop --migrate \
+  --src-dbtype pgsql --src-host srchost --src-user reader --src-pw secret --src-name ehr \
+  --dbtype pgsql --host omophost --user writer --pw secret --name omop \
+  --mapping ehr_to_omop.json --batch-size 500
+```
+
 ## 🔥 FHIR to OMOP mapping
 
 pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
@@ -238,6 +258,17 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
   --connection-info           Display connection information for the database (For R package compatibility)
   --mcp-server                Start MCP server for stdio interaction
   --pyhealth-path TEXT        Path to export PyHealth compatible CSV files
+  --migrate                   Migrate data from a source database into the
+                              target OMOP CDM database using a mapping file.
+  --src-dbtype TEXT           Source database type (sqlite, mysql or pgsql).
+  --src-host TEXT             Source database host.
+  --src-port TEXT             Source database port.
+  --src-user TEXT             Source database user.
+  --src-pw TEXT               Source database password.
+  --src-name TEXT             Source database name or SQLite file path.
+  --src-schema TEXT           Source database schema (PostgreSQL).
+  -m, --mapping FILE          Path to the JSON mapping file. Used with --migrate.
+  --batch-size INTEGER        Number of rows per INSERT batch. [default: 1000]
   --help                      Show this message and exit.
 ```
 

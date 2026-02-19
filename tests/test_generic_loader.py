@@ -554,3 +554,102 @@ def test_generic_loader_example_mapping_is_valid():
         assert "source_table" in tbl
         assert "name" in tbl
         assert "columns" in tbl
+
+
+def test_migrate_cli_option(tmp_path):
+    """The --migrate CLI option runs CdmGenericLoader end-to-end."""
+    import asyncio
+    from click.testing import CliRunner
+    from sqlalchemy.ext.asyncio import create_async_engine
+    from src.pyomop.main import cli
+
+    async def _setup():
+        src_path = tmp_path / "cli_source.sqlite"
+        src_engine = create_async_engine(f"sqlite+aiosqlite:///{src_path}")
+        async with src_engine.begin() as conn:
+            await conn.execute(text(_make_source_patients_ddl()))
+            await conn.execute(
+                text(
+                    "INSERT INTO patients (id, patient_key, gender, date_of_birth, race, ethnicity)"
+                    " VALUES (1, 'cli1', 'male', '1985-06-15', '', ''),"
+                    "        (2, 'cli2', 'female', '1990-11-30', '', '')"
+                )
+            )
+        await src_engine.dispose()
+        return str(src_path)
+
+    src_db = asyncio.run(_setup())
+    tgt_db = str(tmp_path / "cli_target.sqlite")
+    mapping_path = _minimal_mapping(tmp_path)
+
+    # First create the target OMOP CDM tables
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--create",
+            "--dbtype", "sqlite",
+            "--name", tgt_db,
+        ],
+    )
+    assert result.exit_code == 0, f"--create failed: {result.output}"
+
+    # Now migrate
+    result = runner.invoke(
+        cli,
+        [
+            "--migrate",
+            "--src-dbtype", "sqlite",
+            "--src-name", src_db,
+            "--dbtype", "sqlite",
+            "--name", tgt_db,
+            "--mapping", mapping_path,
+            "--batch-size", "10",
+        ],
+    )
+    assert result.exit_code == 0, f"--migrate failed: {result.output}\n{result.exception}"
+    assert "Migration complete" in result.output
+
+
+def test_migrate_cli_requires_mapping(tmp_path):
+    """--migrate without --mapping exits with an error."""
+    from click.testing import CliRunner
+    from src.pyomop.main import cli
+
+    tgt_db = str(tmp_path / "no_mapping.sqlite")
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--migrate",
+            "--src-dbtype", "sqlite",
+            "--src-name", "source.sqlite",
+            "--dbtype", "sqlite",
+            "--name", tgt_db,
+        ],
+    )
+    assert result.exit_code != 0
+    assert "--mapping is required" in result.output
+
+
+def test_migrate_cli_bad_src_dbtype(tmp_path):
+    """--migrate with an unknown --src-dbtype exits with an error."""
+    from click.testing import CliRunner
+    from src.pyomop.main import cli
+
+    mapping_path = _minimal_mapping(tmp_path)
+    tgt_db = str(tmp_path / "bad_src.sqlite")
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--migrate",
+            "--src-dbtype", "oracle",
+            "--src-name", "source.sqlite",
+            "--dbtype", "sqlite",
+            "--name", tgt_db,
+            "--mapping", mapping_path,
+        ],
+    )
+    assert result.exit_code != 0
+    assert "Unknown --src-dbtype" in result.output

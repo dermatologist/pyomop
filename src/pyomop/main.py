@@ -82,6 +82,59 @@ from .vocabulary import CdmVocabulary
     "--pyhealth-path",
     help="Path to export PyHealth compatible CSV files",
 )
+@click.option(
+    "--migrate",
+    is_flag=True,
+    help="Migrate data from a source database into the target OMOP CDM database using a mapping file.",
+)
+@click.option(
+    "--src-dbtype",
+    default="sqlite",
+    help="Source database type (sqlite, mysql or pgsql). Used with --migrate.",
+)
+@click.option(
+    "--src-host",
+    default="localhost",
+    help="Source database host. Used with --migrate.",
+)
+@click.option(
+    "--src-port",
+    default="5432",
+    help="Source database port. Used with --migrate.",
+)
+@click.option(
+    "--src-user",
+    default="root",
+    help="Source database user. Used with --migrate.",
+)
+@click.option(
+    "--src-pw",
+    default="pass",
+    help="Source database password. Used with --migrate.",
+)
+@click.option(
+    "--src-name",
+    default="source.sqlite",
+    help="Source database name or SQLite file path. Used with --migrate.",
+)
+@click.option(
+    "--src-schema",
+    default="",
+    help="Source database schema (PostgreSQL). Used with --migrate.",
+)
+@click.option(
+    "--mapping",
+    "-m",
+    "mapping_path",
+    type=click.Path(exists=True, dir_okay=False),
+    help="Path to the JSON mapping file. Used with --migrate.",
+)
+@click.option(
+    "--batch-size",
+    default=1000,
+    show_default=True,
+    help="Number of rows per INSERT batch. Used with --migrate.",
+)
 def cli(
     version,
     create,
@@ -99,6 +152,16 @@ def cli(
     eunomia_path,
     connection_info,
     mcp_server,
+    migrate,
+    src_dbtype,
+    src_host,
+    src_port,
+    src_user,
+    src_pw,
+    src_name,
+    src_schema,
+    mapping_path,
+    batch_size,
 ):
     cdm = None  # ensure cdm is always defined
     # clear database name if not sqlite
@@ -228,6 +291,46 @@ def cli(
         finally:
             asyncio.run(cdm.dispose())
         click.echo("Done")
+    if migrate:
+        import sys
+
+        if not mapping_path:
+            click.echo("--mapping is required when using --migrate.", err=True)
+            sys.exit(1)
+
+        click.echo(
+            f"Migrating data from {src_dbtype} database '{src_name}' "
+            f"into {dbtype} database '{name}' using mapping '{mapping_path}'"
+        )
+
+        from .generic_loader import CdmGenericLoader, create_source_engine
+
+        # Build the async URL for the source database
+        if src_dbtype == "sqlite":
+            src_url = f"sqlite+aiosqlite:///{src_name}"
+        elif src_dbtype == "mysql":
+            src_url = f"mysql+aiomysql://{src_user}:{src_pw}@{src_host}:{src_port}/{src_name}"
+        elif src_dbtype == "pgsql":
+            src_url = f"postgresql+asyncpg://{src_user}:{src_pw}@{src_host}:{src_port}/{src_name}"
+        else:
+            click.echo(f"Unknown --src-dbtype '{src_dbtype}'. Use sqlite, mysql, or pgsql.", err=True)
+            sys.exit(1)
+
+        source_engine = create_source_engine(src_url)
+        cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
+        _ = cdm.engine  # initialise target engine
+
+        loader = CdmGenericLoader(source_engine, cdm, version=version)
+        try:
+            asyncio.run(loader.load(mapping_path, batch_size=batch_size))
+            click.echo("Migration complete.")
+        except Exception as e:
+            click.echo(f"Error during migration: {e}", err=True)
+            sys.exit(1)
+        finally:
+            asyncio.run(source_engine.dispose())
+            asyncio.run(cdm.dispose())
+
     if cdm and connection_info:
         click.echo(click.style("Database connection information:", fg="green"))
         click.echo(cdm.print_connection_info())
