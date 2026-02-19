@@ -10,6 +10,7 @@ copyright: Maintained by <a href="https://github.com/dermatologist">dermatologis
 nav:
   - Home: index.md
   - Modules: modules.md
+  - Generic Loader: generic_loader.md
   - Contributing: contributing.md
   - Changelog: changelog.md
 plugins:

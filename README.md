@@ -145,6 +145,53 @@ async def main():
 asyncio.run(main())
 ```
 
+## 🗄️ Generic Database-to-OMOP Loader
+
+`CdmGenericLoader` reads from **any** SQLAlchemy-compatible source database and
+loads the data into an OMOP CDM target database using a JSON mapping file.
+
+```python
+import asyncio
+from sqlalchemy.ext.asyncio import create_async_engine
+from pyomop import CdmEngineFactory, CdmGenericLoader
+from pyomop.cdm54 import Base
+
+async def main():
+    source_engine = create_async_engine("sqlite+aiosqlite:///source.sqlite")
+    target = CdmEngineFactory(db="sqlite", name="omop.sqlite")
+    _ = target.engine
+    await target.init_models(Base.metadata)
+
+    loader = CdmGenericLoader(source_engine, target)
+    await loader.load("mapping.json", batch_size=500)
+
+asyncio.run(main())
+```
+
+The mapping JSON specifies which source table maps to which OMOP CDM table:
+
+```json
+{
+  "tables": [
+    {
+      "source_table": "patients",
+      "name": "person",
+      "columns": {
+        "person_id":           "id",
+        "gender_source_value": "gender",
+        "gender_concept_id":   {"const": 0},
+        "year_of_birth":       {"const": 0},
+        "race_concept_id":     {"const": 0},
+        "ethnicity_concept_id":{"const": 0}
+      }
+    }
+  ]
+}
+```
+
+See the [bundled example mapping](src/pyomop/mapping.generic.example.json) and
+the [full documentation](docs/generic_loader.md) for all supported options.
+
 ## 🔥 FHIR to OMOP mapping
 
 pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
