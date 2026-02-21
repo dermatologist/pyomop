@@ -151,6 +151,34 @@ steps as `CdmCsvLoader`:
 `--src-*` options; the target OMOP CDM database uses the standard `--dbtype`,
 `--host`, `--port`, `--user`, `--pw`, `--name`, and `--schema` options.
 
+### Environment variables for source connection
+
+As an alternative to CLI flags, all source-database connection parameters can
+be set as environment variables.  This is recommended for production use
+because credentials are never part of the shell history:
+
+| Environment variable | Equivalent CLI option |
+|---|---|
+| `SRC_DB_HOST` | `--src-host` |
+| `SRC_DB_PORT` | `--src-port` |
+| `SRC_DB_USER` | `--src-user` |
+| `SRC_DB_PASSWORD` | `--src-pw` |
+| `SRC_DB_NAME` | `--src-name` |
+
+CLI flags take precedence over environment variables.
+
+```bash
+export SRC_DB_HOST=db.hospital.org
+export SRC_DB_USER=readonly
+export SRC_DB_PASSWORD=secret
+export SRC_DB_NAME=ehr_db
+
+pyomop --migrate \
+  --src-dbtype pgsql \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping ehr_to_omop.json
+```
+
 ```
 pyomop --migrate [OPTIONS]
 ```
@@ -176,15 +204,15 @@ pyomop --migrate [OPTIONS]
 
 ### Source database options
 
-| Option | Default | Description |
-|---|---|---|
-| `--src-dbtype` | `sqlite` | Source DB type: `sqlite`, `mysql`, or `pgsql` |
-| `--src-host` | `localhost` | Source DB host |
-| `--src-port` | `5432` | Source DB port |
-| `--src-user` | `root` | Source DB user |
-| `--src-pw` | `pass` | Source DB password |
-| `--src-name` | `source.sqlite` | Source DB name or SQLite file path |
-| `--src-schema` | _(empty)_ | Source DB schema (PostgreSQL) |
+| Option | Env var | Default | Description |
+|---|---|---|---|
+| `--src-dbtype` | — | `sqlite` | Source DB type: `sqlite`, `mysql`, or `pgsql` |
+| `--src-host` | `SRC_DB_HOST` | `localhost` | Source DB host |
+| `--src-port` | `SRC_DB_PORT` | `5432` | Source DB port |
+| `--src-user` | `SRC_DB_USER` | `root` | Source DB user |
+| `--src-pw` | `SRC_DB_PASSWORD` | `pass` | Source DB password |
+| `--src-name` | `SRC_DB_NAME` | `source.sqlite` | Source DB name or SQLite file path |
+| `--src-schema` | — | _(empty)_ | Source DB schema (PostgreSQL) |
 
 ### Tuning
 
@@ -221,6 +249,67 @@ pyomop --migrate \
   --src-dbtype mysql --src-host 192.168.1.10 --src-user reader --src-pw pass --src-name clinic \
   --dbtype sqlite --name omop.sqlite \
   --mapping clinic_to_omop.json
+```
+
+## Schema Extraction (`--extract-schema`)
+
+Before writing a mapping file you need to understand the structure of your
+source database.  The `--extract-schema` option introspects the source database
+and writes a Markdown document containing:
+
+- A summary table listing all tables with row counts and primary keys.
+- Per-table column details: name, data type, nullable, default value, and
+  PK/FK annotations.
+- Foreign key relationship sections.
+
+You can feed this Markdown directly to an AI assistant and ask it to generate
+the appropriate mapping JSON.
+
+### Usage
+
+```bash
+pyomop --extract-schema \
+  --src-dbtype sqlite --src-name hospital.sqlite \
+  --schema-output hospital_schema.md
+```
+
+The same `SRC_DB_*` environment variables apply here too:
+
+```bash
+export SRC_DB_HOST=db.hospital.org
+export SRC_DB_USER=readonly
+export SRC_DB_PASSWORD=secret
+export SRC_DB_NAME=ehr_db
+
+pyomop --extract-schema \
+  --src-dbtype pgsql \
+  --schema-output ehr_schema.md
+```
+
+### CLI options
+
+| Option | Default | Description |
+|---|---|---|
+| `--src-dbtype` | `sqlite` | Source DB type |
+| `--src-host` / `SRC_DB_HOST` | `localhost` | Source DB host |
+| `--src-port` / `SRC_DB_PORT` | `5432` | Source DB port |
+| `--src-user` / `SRC_DB_USER` | `root` | Source DB user |
+| `--src-pw` / `SRC_DB_PASSWORD` | `pass` | Source DB password |
+| `--src-name` / `SRC_DB_NAME` | `source.sqlite` | Source DB name |
+| `--schema-output` | `schema.md` | Output Markdown file path |
+
+### Python API
+
+```python
+import asyncio
+from pyomop.generic_loader import create_source_engine, extract_schema_to_markdown
+
+async def run():
+    engine = create_source_engine("sqlite+aiosqlite:///source.sqlite")
+    path = await extract_schema_to_markdown(engine, "schema.md")
+    print(f"Schema written to {path}")
+
+asyncio.run(run())
 ```
 
 ## API Reference

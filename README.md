@@ -212,6 +212,24 @@ pyomop --migrate \
   --mapping ehr_to_omop.json --batch-size 500
 ```
 
+Source connection credentials can also be provided via environment variables
+(`SRC_DB_HOST`, `SRC_DB_PORT`, `SRC_DB_USER`, `SRC_DB_PASSWORD`, `SRC_DB_NAME`)
+to avoid exposing passwords in the shell history.
+
+### Schema extraction
+
+Use `--extract-schema` to generate a Markdown document describing the source
+database schema (tables, columns, types, PK/FK relationships).  This is
+especially useful for feeding to an AI agent to generate the mapping JSON.
+
+```bash
+pyomop --extract-schema \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --schema-output schema.md
+```
+
+The same `SRC_DB_*` environment variables are supported for credentials.
+
 ## 🔥 FHIR to OMOP mapping
 
 pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
@@ -260,15 +278,19 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
   --pyhealth-path TEXT        Path to export PyHealth compatible CSV files
   --migrate                   Migrate data from a source database into the
                               target OMOP CDM database using a mapping file.
+  --extract-schema            Introspect the source database and write its
+                              schema to a Markdown file.
   --src-dbtype TEXT           Source database type (sqlite, mysql or pgsql).
-  --src-host TEXT             Source database host.
-  --src-port TEXT             Source database port.
-  --src-user TEXT             Source database user.
-  --src-pw TEXT               Source database password.
-  --src-name TEXT             Source database name or SQLite file path.
+  --src-host TEXT             Source DB host (env: SRC_DB_HOST).
+  --src-port TEXT             Source DB port (env: SRC_DB_PORT).
+  --src-user TEXT             Source DB user (env: SRC_DB_USER).
+  --src-pw TEXT               Source DB password (env: SRC_DB_PASSWORD).
+  --src-name TEXT             Source DB name or SQLite path (env: SRC_DB_NAME).
   --src-schema TEXT           Source database schema (PostgreSQL).
   -m, --mapping FILE          Path to the JSON mapping file. Used with --migrate.
   --batch-size INTEGER        Number of rows per INSERT batch. [default: 1000]
+  --schema-output TEXT        Output path for the schema Markdown file.
+                              [default: schema.md]
   --help                      Show this message and exit.
 ```
 

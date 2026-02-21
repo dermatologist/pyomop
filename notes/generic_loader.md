@@ -68,7 +68,7 @@ the existing loader's behaviour for empty/filtered DataFrames.
 
 ```
 src/pyomop/
-├── generic_loader.py             # CdmGenericLoader class + helpers
+├── generic_loader.py             # CdmGenericLoader + extract_schema_to_markdown + helpers
 ├── mapping.generic.example.json  # annotated example mapping file
 ```
 
@@ -90,6 +90,37 @@ external service dependencies.  Each test covers a distinct behaviour:
 | `test_create_source_engine` | Convenience factory |
 | `test_load_mapping` | JSON parsing helper |
 | `test_generic_loader_example_mapping_is_valid` | Bundled example file validity |
+| `test_migrate_cli_option` | End-to-end CLI migrate |
+| `test_migrate_cli_requires_mapping` | Missing mapping error |
+| `test_migrate_cli_bad_src_dbtype` | Unsupported source DB type |
+| `test_extract_schema_to_markdown_basic` | Schema Markdown file content |
+| `test_extract_schema_to_markdown_pk_fk` | PK/FK rendering |
+| `test_extract_schema_cli_option` | End-to-end `--extract-schema` CLI |
+| `test_extract_schema_cli_bad_dbtype` | Unsupported source DB type |
+| `test_build_source_url_sqlite` | URL building for SQLite |
+| `test_build_source_url_mysql` | URL building for MySQL |
+| `test_build_source_url_pgsql` | URL building for PostgreSQL |
+| `test_build_source_url_invalid` | ValueError for unknown dbtype |
+| `test_build_source_url_env_vars` | Env var override via `SRC_DB_*` |
+
+## Schema Extraction Design
+
+`extract_schema_to_markdown` runs entirely through `conn.run_sync` so it can
+use the synchronous `sqlalchemy.inspect` API (which is more complete for FK
+introspection than the async equivalents).  The resulting Markdown is useful
+both for human review and for feeding to AI assistants to generate mapping JSON.
+
+### Environment variable security model
+
+Source database credentials can be supplied via environment variables
+(`SRC_DB_HOST`, `SRC_DB_PORT`, `SRC_DB_USER`, `SRC_DB_PASSWORD`, `SRC_DB_NAME`)
+rather than CLI flags.  This prevents passwords appearing in shell history or
+`ps aux` output.  The `build_source_url` helper reads these variables via
+`os.environ.get`, falling back to the CLI-supplied defaults.  CLI flags always
+take precedence when they are explicitly set to non-default values; however,
+since Click defaults are applied before the function is called, both mechanisms
+are honoured in order: env var → default.  Users who need strict CLI-override
+semantics should unset the env vars.
 
 ## Future Work
 
@@ -105,8 +136,8 @@ external service dependencies.  Each test covers a distinct behaviour:
   useful for validating mappings before production runs.
 - **Parallel table loading**: Load independent OMOP tables concurrently using
   `asyncio.gather` for throughput on large datasets.
-- **CLI integration**: Add a `--generic-load` flag to the `pyomop` CLI that
-  accepts a source URL and mapping file path.
+- **Schema-to-mapping AI integration**: Pipe the output of `--extract-schema`
+  directly into an LLM prompt to auto-generate a first-pass mapping JSON.
 - **Shared base class**: Extract common post-load methods
   (`fix_person_id`, `backfill_person_birth_fields`, etc.) into a
   `BaseCdmLoader` to reduce code duplication between `CdmCsvLoader` and

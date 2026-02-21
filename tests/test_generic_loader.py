@@ -653,3 +653,184 @@ def test_migrate_cli_bad_src_dbtype(tmp_path):
     )
     assert result.exit_code != 0
     assert "Unknown --src-dbtype" in result.output
+
+
+# ---------------------------------------------------------------------------
+# Schema extraction tests
+# ---------------------------------------------------------------------------
+
+
+def test_extract_schema_to_markdown_basic(tmp_path):
+    """extract_schema_to_markdown produces a Markdown file with table/column info."""
+    import asyncio as _asyncio
+    from src.pyomop.generic_loader import extract_schema_to_markdown
+
+    async def run():
+        src_path = tmp_path / "schema_src.sqlite"
+        src_engine = create_async_engine(f"sqlite+aiosqlite:///{src_path}")
+        async with src_engine.begin() as conn:
+            await conn.execute(text(_make_source_patients_ddl()))
+            await conn.execute(text(_make_source_encounters_ddl()))
+
+        out_path = tmp_path / "schema.md"
+        result_path = await extract_schema_to_markdown(src_engine, str(out_path))
+        await src_engine.dispose()
+        return result_path, out_path.read_text(encoding="utf-8")
+
+    result_path, content = asyncio.run(run())
+
+    # File should exist
+    assert Path(result_path).exists()
+
+    # Header present
+    assert "# Source Database Schema" in content
+
+    # Both tables should appear
+    assert "patients" in content
+    assert "encounters" in content
+
+    # Column names should be listed
+    assert "patient_key" in content
+    assert "encounter_type" in content
+
+    # Table summary section present
+    assert "## Table Summary" in content
+
+
+def test_extract_schema_to_markdown_pk_fk(tmp_path):
+    """PK and FK information is captured in the markdown output."""
+    import asyncio as _asyncio
+    from src.pyomop.generic_loader import extract_schema_to_markdown
+
+    fk_ddl = (
+        "CREATE TABLE IF NOT EXISTS orders ("
+        "  order_id INTEGER PRIMARY KEY,"
+        "  patient_id INTEGER REFERENCES patients(id),"
+        "  order_date TEXT"
+        ")"
+    )
+
+    async def run():
+        src_path = tmp_path / "fk_src.sqlite"
+        src_engine = create_async_engine(f"sqlite+aiosqlite:///{src_path}")
+        async with src_engine.begin() as conn:
+            await conn.execute(text(_make_source_patients_ddl()))
+            await conn.execute(text(fk_ddl))
+
+        out_path = tmp_path / "fk_schema.md"
+        await extract_schema_to_markdown(src_engine, str(out_path))
+        await src_engine.dispose()
+        return out_path.read_text(encoding="utf-8")
+
+    content = asyncio.run(run())
+
+    # PK marker present
+    assert "PK" in content
+    # FK section should be rendered
+    assert "Foreign Keys" in content or "FK" in content
+
+
+def test_extract_schema_cli_option(tmp_path):
+    """--extract-schema writes a schema file and exits cleanly."""
+    from click.testing import CliRunner
+    from src.pyomop.main import cli
+
+    async def _setup():
+        src_path = tmp_path / "es_source.sqlite"
+        src_engine = create_async_engine(f"sqlite+aiosqlite:///{src_path}")
+        async with src_engine.begin() as conn:
+            await conn.execute(text(_make_source_patients_ddl()))
+        await src_engine.dispose()
+        return str(src_path)
+
+    src_db = asyncio.run(_setup())
+    out_md = str(tmp_path / "out_schema.md")
+
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--extract-schema",
+            "--src-dbtype", "sqlite",
+            "--src-name", src_db,
+            "--schema-output", out_md,
+        ],
+    )
+    assert result.exit_code == 0, f"--extract-schema failed: {result.output}\n{result.exception}"
+    assert "Schema written to" in result.output
+    assert Path(out_md).exists()
+    content = Path(out_md).read_text(encoding="utf-8")
+    assert "patients" in content
+
+
+def test_extract_schema_cli_bad_dbtype(tmp_path):
+    """--extract-schema with an unknown --src-dbtype exits with an error."""
+    from click.testing import CliRunner
+    from src.pyomop.main import cli
+
+    out_md = str(tmp_path / "bad.md")
+    runner = CliRunner()
+    result = runner.invoke(
+        cli,
+        [
+            "--extract-schema",
+            "--src-dbtype", "oracle",
+            "--src-name", "irrelevant.db",
+            "--schema-output", out_md,
+        ],
+    )
+    assert result.exit_code != 0
+    assert "Unknown --src-dbtype" in result.output
+
+
+def test_build_source_url_sqlite():
+    """build_source_url produces a valid sqlite+aiosqlite URL."""
+    from src.pyomop.generic_loader import build_source_url
+
+    url = build_source_url("sqlite", "/tmp/test.sqlite")
+    assert url == "sqlite+aiosqlite:////tmp/test.sqlite"
+
+
+def test_build_source_url_mysql():
+    """build_source_url produces a valid mysql+aiomysql URL."""
+    from src.pyomop.generic_loader import build_source_url
+
+    url = build_source_url("mysql", "mydb", host="db.host", port="3306", user="usr", pw="s3cr3t")
+    assert url.startswith("mysql+aiomysql://usr:s3cr3t@db.host:3306/mydb")
+
+
+def test_build_source_url_pgsql():
+    """build_source_url produces a valid postgresql+asyncpg URL."""
+    from src.pyomop.generic_loader import build_source_url
+
+    url = build_source_url("pgsql", "pgdb", host="pg.host", port="5432", user="admin", pw="pw")
+    assert url.startswith("postgresql+asyncpg://admin:pw@pg.host:5432/pgdb")
+
+
+def test_build_source_url_invalid():
+    """build_source_url raises ValueError for an unsupported database type."""
+    from src.pyomop.generic_loader import build_source_url
+
+    try:
+        build_source_url("oracle", "mydb")
+        assert False, "Expected ValueError"
+    except ValueError as e:
+        assert "oracle" in str(e)
+
+
+def test_build_source_url_env_vars(tmp_path, monkeypatch):
+    """build_source_url picks up SRC_DB_* environment variables."""
+    from src.pyomop.generic_loader import build_source_url
+
+    monkeypatch.setenv("SRC_DB_HOST", "envhost")
+    monkeypatch.setenv("SRC_DB_PORT", "9999")
+    monkeypatch.setenv("SRC_DB_USER", "envuser")
+    monkeypatch.setenv("SRC_DB_PASSWORD", "envpass")
+    monkeypatch.setenv("SRC_DB_NAME", "envdb")
+
+    url = build_source_url("pgsql", "default_name")
+    assert "envhost" in url
+    assert "9999" in url
+    assert "envuser" in url
+    assert "envpass" in url
+    assert "envdb" in url

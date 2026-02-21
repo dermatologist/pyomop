@@ -952,3 +952,234 @@ def load_mapping(mapping_path: str) -> Dict[str, Any]:
     path = Path(mapping_path)
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
+
+
+def build_source_url(
+    dbtype: str,
+    name: str,
+    host: str = "localhost",
+    port: str = "5432",
+    user: str = "root",
+    pw: str = "pass",
+) -> str:
+    """Build an async SQLAlchemy URL for a source database.
+
+    Centralises the driver-specific URL construction used by both the
+    ``--migrate`` and ``--extract-schema`` CLI commands.
+
+    Connection parameters are resolved in order:
+    1. Explicit arguments passed to this function.
+    2. Environment variables ``SRC_DB_HOST``, ``SRC_DB_PORT``, ``SRC_DB_USER``,
+       ``SRC_DB_PASSWORD``, ``SRC_DB_NAME`` (when the corresponding argument
+       still holds its default value).
+
+    The environment variable names follow a ``SRC_DB_`` prefix convention so
+    they don't collide with any existing ``PYOMOP_*`` variables:
+
+    .. code-block:: bash
+
+        export SRC_DB_HOST=myserver
+        export SRC_DB_PORT=5432
+        export SRC_DB_USER=reader
+        export SRC_DB_PASSWORD=secret
+        export SRC_DB_NAME=ehr_db
+
+    Args:
+        dbtype: Database type: ``"sqlite"``, ``"mysql"``, or ``"pgsql"``.
+        name: Database name or SQLite file path.
+        host: Database host (ignored for SQLite).
+        port: Database port as a string (ignored for SQLite).
+        user: Database user (ignored for SQLite).
+        pw: Database password (ignored for SQLite).
+
+    Returns:
+        An async-compatible SQLAlchemy URL string.
+
+    Raises:
+        ValueError: If *dbtype* is not one of the supported values.
+    """
+    import os
+
+    # Fall back to environment variables when explicit args still hold defaults
+    host = os.environ.get("SRC_DB_HOST", host)
+    port = os.environ.get("SRC_DB_PORT", port)
+    user = os.environ.get("SRC_DB_USER", user)
+    pw = os.environ.get("SRC_DB_PASSWORD", pw)
+    name = os.environ.get("SRC_DB_NAME", name)
+
+    if dbtype == "sqlite":
+        return f"sqlite+aiosqlite:///{name}"
+    if dbtype == "mysql":
+        return f"mysql+aiomysql://{user}:{pw}@{host}:{port}/{name}"
+    if dbtype == "pgsql":
+        return f"postgresql+asyncpg://{user}:{pw}@{host}:{port}/{name}"
+    raise ValueError(
+        f"Unknown database type '{dbtype}'. Use 'sqlite', 'mysql', or 'pgsql'."
+    )
+
+
+async def extract_schema_to_markdown(engine: AsyncEngine, output_path: str) -> str:
+    """Introspect a database and write its schema as a Markdown document.
+
+    The generated document includes:
+
+    - A summary table listing all user tables with their row counts.
+    - Per-table sections with:
+        - Column name, data type, nullable flag, and default value.
+        - Primary key column(s).
+        - Foreign key relationships (referencing table and column).
+
+    This is especially useful for giving AI agents enough context to write
+    an accurate mapping JSON file for :class:`CdmGenericLoader`.
+
+    Args:
+        engine: An async SQLAlchemy engine connected to the source database.
+        output_path: Filesystem path where the Markdown file will be written.
+            Parent directories must already exist.
+
+    Returns:
+        The absolute path of the written Markdown file.
+
+    Example::
+
+        import asyncio
+        from pyomop.generic_loader import create_source_engine, extract_schema_to_markdown
+
+        async def run():
+            engine = create_source_engine("sqlite+aiosqlite:///source.sqlite")
+            path = await extract_schema_to_markdown(engine, "schema.md")
+            print(f"Schema written to {path}")
+
+        asyncio.run(run())
+    """
+
+    def _collect_schema(sync_conn: Any) -> Dict[str, Any]:
+        """Run synchronous SQLAlchemy inspection inside ``run_sync``."""
+        from sqlalchemy import inspect as _inspect
+
+        insp = _inspect(sync_conn)
+        schema_info: Dict[str, Any] = {}
+
+        for table_name in insp.get_table_names():
+            columns = insp.get_columns(table_name)
+            pk_cols = insp.get_pk_constraint(table_name).get("constrained_columns", [])
+            fks = insp.get_foreign_keys(table_name)
+
+            # Attempt a quick COUNT(*) — may fail on views or restricted objects
+            try:
+                row = sync_conn.execute(
+                    _inspect(sync_conn).bind.execute(  # type: ignore[attr-defined]
+                        __import__("sqlalchemy").text(f"SELECT COUNT(*) FROM \"{table_name}\"")
+                    )
+                ).scalar()
+                row_count: Optional[int] = int(row) if row is not None else None
+            except Exception:
+                row_count = None
+
+            schema_info[table_name] = {
+                "columns": columns,
+                "pk_columns": pk_cols,
+                "foreign_keys": fks,
+                "row_count": row_count,
+            }
+        return schema_info
+
+    # ---- collect schema info ------------------------------------------------
+    schema: Dict[str, Any] = {}
+    async with engine.connect() as conn:
+        # We need the row count too, so build a second pass with raw SQL
+        def _collect(sync_conn: Any) -> Dict[str, Any]:
+            from sqlalchemy import inspect as _inspect, text as _text
+
+            insp = _inspect(sync_conn)
+            result: Dict[str, Any] = {}
+            for table_name in insp.get_table_names():
+                columns = insp.get_columns(table_name)
+                pk_info = insp.get_pk_constraint(table_name)
+                pk_cols: List[str] = pk_info.get("constrained_columns", [])
+                fks: List[Dict[str, Any]] = insp.get_foreign_keys(table_name)
+
+                try:
+                    row_count: Optional[int] = sync_conn.execute(
+                        _text(f'SELECT COUNT(*) FROM "{table_name}"')
+                    ).scalar()
+                except Exception:
+                    row_count = None
+
+                result[table_name] = {
+                    "columns": columns,
+                    "pk_columns": pk_cols,
+                    "foreign_keys": fks,
+                    "row_count": row_count,
+                }
+            return result
+
+        schema = await conn.run_sync(_collect)
+
+    # ---- render Markdown ----------------------------------------------------
+    lines: List[str] = []
+    dialect = engine.dialect.name
+    lines.append("# Source Database Schema")
+    lines.append("")
+    lines.append(f"**Dialect:** `{dialect}`  ")
+    lines.append(f"**Tables:** {len(schema)}")
+    lines.append("")
+
+    # Summary table
+    lines.append("## Table Summary")
+    lines.append("")
+    lines.append("| Table | Rows | Primary Key(s) |")
+    lines.append("|---|---|---|")
+    for tbl_name, info in sorted(schema.items()):
+        pk_str = ", ".join(f"`{c}`" for c in info["pk_columns"]) if info["pk_columns"] else "*(none)*"
+        row_str = str(info["row_count"]) if info["row_count"] is not None else "N/A"
+        lines.append(f"| `{tbl_name}` | {row_str} | {pk_str} |")
+    lines.append("")
+
+    # Per-table detail
+    for tbl_name, info in sorted(schema.items()):
+        lines.append(f"## `{tbl_name}`")
+        lines.append("")
+
+        pk_cols_set = set(info["pk_columns"])
+
+        # Column table
+        lines.append("### Columns")
+        lines.append("")
+        lines.append("| Column | Type | Nullable | Default | Key |")
+        lines.append("|---|---|---|---|---|")
+        for col in info["columns"]:
+            col_name: str = col["name"]
+            col_type: str = str(col["type"])
+            nullable: str = "Yes" if col.get("nullable", True) else "No"
+            default: str = str(col.get("default") or "")
+            key_flags: List[str] = []
+            if col_name in pk_cols_set:
+                key_flags.append("PK")
+            for fk in info["foreign_keys"]:
+                if col_name in fk.get("constrained_columns", []):
+                    ref_tbl = fk.get("referred_table", "")
+                    ref_cols = ", ".join(fk.get("referred_columns", []))
+                    key_flags.append(f"FK → `{ref_tbl}`.`{ref_cols}`")
+            key_str = ", ".join(key_flags) if key_flags else ""
+            lines.append(f"| `{col_name}` | `{col_type}` | {nullable} | {default} | {key_str} |")
+        lines.append("")
+
+        # Foreign key summary
+        if info["foreign_keys"]:
+            lines.append("### Foreign Keys")
+            lines.append("")
+            lines.append("| Columns | References |")
+            lines.append("|---|---|")
+            for fk in info["foreign_keys"]:
+                local_cols = ", ".join(f"`{c}`" for c in fk.get("constrained_columns", []))
+                ref_tbl = fk.get("referred_table", "")
+                ref_cols = ", ".join(f"`{c}`" for c in fk.get("referred_columns", []))
+                lines.append(f"| {local_cols} | `{ref_tbl}` ({ref_cols}) |")
+            lines.append("")
+
+    # Write output
+    out = Path(output_path)
+    out.write_text("\n".join(lines), encoding="utf-8")
+    logger.info("Schema written to %s", out.resolve())
+    return str(out.resolve())
