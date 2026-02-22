@@ -145,91 +145,6 @@ async def main():
 asyncio.run(main())
 ```
 
-## 🗄️ Generic Database-to-OMOP Loader
-
-`CdmGenericLoader` reads from **any** SQLAlchemy-compatible source database and
-loads the data into an OMOP CDM target database using a JSON mapping file.
-
-```python
-import asyncio
-from sqlalchemy.ext.asyncio import create_async_engine
-from pyomop import CdmEngineFactory, CdmGenericLoader
-from pyomop.cdm54 import Base
-
-async def main():
-    source_engine = create_async_engine("sqlite+aiosqlite:///source.sqlite")
-    target = CdmEngineFactory(db="sqlite", name="omop.sqlite")
-    _ = target.engine
-    await target.init_models(Base.metadata)
-
-    loader = CdmGenericLoader(source_engine, target)
-    await loader.load("mapping.json", batch_size=500)
-
-asyncio.run(main())
-```
-
-The mapping JSON specifies which source table maps to which OMOP CDM table:
-
-```json
-{
-  "tables": [
-    {
-      "source_table": "patients",
-      "name": "person",
-      "columns": {
-        "person_id":           "id",
-        "gender_source_value": "gender",
-        "gender_concept_id":   {"const": 0},
-        "year_of_birth":       {"const": 0},
-        "race_concept_id":     {"const": 0},
-        "ethnicity_concept_id":{"const": 0}
-      }
-    }
-  ]
-}
-```
-
-See the [bundled example mapping](src/pyomop/mapping.generic.example.json) and
-the [full documentation](docs/generic_loader.md) for all supported options.
-
-### Command-line migration
-
-Use `--migrate` to run the generic loader from the command line.  Provide
-source-database connection details with `--src-*` options; target-database
-details use the standard `--dbtype` / `--host` / … options.
-
-```bash
-# SQLite source → SQLite OMOP target
-pyomop --migrate \
-  --src-dbtype sqlite --src-name source.sqlite \
-  --dbtype sqlite --name omop.sqlite \
-  --mapping mapping.json
-
-# PostgreSQL source → PostgreSQL OMOP target
-pyomop --migrate \
-  --src-dbtype pgsql --src-host srchost --src-user reader --src-pw secret --src-name ehr \
-  --dbtype pgsql --host omophost --user writer --pw secret --name omop \
-  --mapping ehr_to_omop.json --batch-size 500
-```
-
-Source connection credentials can also be provided via environment variables
-(`SRC_DB_HOST`, `SRC_DB_PORT`, `SRC_DB_USER`, `SRC_DB_PASSWORD`, `SRC_DB_NAME`)
-to avoid exposing passwords in the shell history.
-
-### Schema extraction
-
-Use `--extract-schema` to generate a Markdown document describing the source
-database schema (tables, columns, types, PK/FK relationships).  This is
-especially useful for feeding to an AI agent to generate the mapping JSON.
-
-```bash
-pyomop --extract-schema \
-  --src-dbtype sqlite --src-name source.sqlite \
-  --schema-output schema.md
-```
-
-The same `SRC_DB_*` environment variables are supported for credentials.
-
 ## 🔥 FHIR to OMOP mapping
 
 pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.
@@ -410,6 +325,52 @@ export PYOMOP_PW=mypass
 export PYOMOP_SCHEMA=omop
 ```
 These environment variables will be checked before assigning default values for database connection in pyomop and MCP server tools.
+
+
+
+## 🗄️ Agent Assisted ETL - Work in progress
+
+Use `--migrate` to run the generic loader from the command line.  Provide
+source-database connection details with `--src-*` options; target-database
+details use the standard `--dbtype` / `--host` / … options.
+
+```bash
+# SQLite source → SQLite OMOP target
+pyomop --migrate \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping mapping.json
+
+# PostgreSQL source → PostgreSQL OMOP target
+pyomop --migrate \
+  --src-dbtype pgsql --src-host srchost --src-user reader --src-pw secret --src-name ehr \
+  --dbtype pgsql --host omophost --user writer --pw secret --name omop \
+  --mapping ehr_to_omop.json --batch-size 500
+```
+
+Source connection credentials can also be provided via environment variables
+(`SRC_DB_HOST`, `SRC_DB_PORT`, `SRC_DB_USER`, `SRC_DB_PASSWORD`, `SRC_DB_NAME`)
+to avoid exposing passwords in the shell history.
+
+### Schema extraction
+
+Use `--extract-schema` to generate a Markdown document describing the source
+database schema (tables, columns, types, PK/FK relationships).  This is
+especially useful for feeding to an AI agent to generate the mapping JSON.
+
+```bash
+pyomop --extract-schema \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --schema-output schema.md
+```
+
+The same `SRC_DB_*` environment variables are supported for credentials.
+
+#### Plan
+* Use the extracted schema to generate a mapping JSON using an appropriate agentic skill.
+
+See the [bundled example mapping](src/pyomop/mapping.generic.example.json) and
+the [full documentation](docs/generic_loader.md) for all supported options.
 
 ## Contributing
 
