@@ -13,44 +13,6 @@ JSON mapping file.
 | Mapping | JSON file describing which source tables/columns map to which OMOP tables/columns |
 | Post-processing | Automatic `person_id` FK normalisation, birth-date backfill, gender concept mapping, concept-code lookups |
 
-## Installation
-
-`CdmGenericLoader` is included in the standard `pyomop` package – no extra
-dependencies are required beyond what is already installed.
-
-## Quick Start
-
-```python
-import asyncio
-from sqlalchemy.ext.asyncio import create_async_engine
-
-from pyomop import CdmEngineFactory, CdmGenericLoader
-from pyomop.cdm54 import Base
-
-async def main():
-    # 1. Connect to the source database (read-only is fine)
-    source_engine = create_async_engine("sqlite+aiosqlite:///source.sqlite")
-
-    # 2. Create / connect to the target OMOP CDM database
-    target_cdm = CdmEngineFactory(db="sqlite", name="omop.sqlite")
-    _ = target_cdm.engine                       # initialise engine
-    await target_cdm.init_models(Base.metadata) # create CDM tables
-
-    # 3. Run the loader
-    loader = CdmGenericLoader(source_engine, target_cdm)
-    await loader.load("mapping.json", batch_size=500)
-
-asyncio.run(main())
-```
-
-The convenience factory `create_source_engine` is available as an alias for
-`sqlalchemy.ext.asyncio.create_async_engine`:
-
-```python
-from pyomop.migrate.pyomop_migrate import create_source_engine
-
-source_engine = create_source_engine("postgresql+asyncpg://user:pass@host/sourcedb")
-```
 
 ## Mapping File Format
 
@@ -297,24 +259,6 @@ pyomop-migrate --extract-schema \
 | `--src-pw` / `SRC_DB_PASSWORD` | `pass` | Source DB password |
 | `--src-name` / `SRC_DB_NAME` | `source.sqlite` | Source DB name |
 | `--schema-output` | `schema.md` | Output Markdown file path |
-
-### Python API
-
-```python
-import asyncio
-from pyomop.migrate.pyomop_migrate import create_source_engine, extract_schema_to_markdown
-
-async def run():
-    engine = create_source_engine("sqlite+aiosqlite:///source.sqlite")
-    path = await extract_schema_to_markdown(engine, "schema.md")
-    print(f"Schema written to {path}")
-
-asyncio.run(run())
-```
-
-## API Reference
-
-::: pyomop_migrate.CdmGenericLoader
 
 ## Supported Databases
 
