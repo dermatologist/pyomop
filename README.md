@@ -194,9 +194,6 @@ pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --v
   --help                      Show this message and exit.
 ```
 
-The `--migrate` and `--extract-schema` commands are available via the separate
-`pyomop-migrate` script (see the [pyomop-migrate docs](docs/pyomop_migrate.md)).
-
 ## MCP Server
 
 pyomop includes an MCP (Model Context Protocol) server that exposes tools for interacting with OMOP CDM databases. This allows MCP clients to create databases, load data, and execute SQL statements.
