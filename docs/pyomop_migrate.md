@@ -1,4 +1,4 @@
-# Generic Database Loader (`CdmGenericLoader`)
+# pyomop-migrate
 
 The `CdmGenericLoader` lets you read data from **any** SQLAlchemy-compatible
 source database and write it into an OMOP CDM target database, guided by a
@@ -47,7 +47,7 @@ The convenience factory `create_source_engine` is available as an alias for
 `sqlalchemy.ext.asyncio.create_async_engine`:
 
 ```python
-from pyomop.generic_loader import create_source_engine
+from pyomop.migrate.pyomop_migrate import create_source_engine
 
 source_engine = create_source_engine("postgresql+asyncpg://user:pass@host/sourcedb")
 ```
@@ -173,14 +173,14 @@ export SRC_DB_USER=readonly
 export SRC_DB_PASSWORD=secret
 export SRC_DB_NAME=ehr_db
 
-pyomop --migrate \
+pyomop-migrate --migrate \
   --src-dbtype pgsql \
   --dbtype sqlite --name omop.sqlite \
   --mapping ehr_to_omop.json
 ```
 
 ```
-pyomop --migrate [OPTIONS]
+pyomop-migrate --migrate [OPTIONS]
 ```
 
 ### Required options
@@ -225,7 +225,7 @@ pyomop --migrate [OPTIONS]
 **SQLite → SQLite**
 
 ```bash
-pyomop --migrate \
+pyomop-migrate --migrate \
   --src-dbtype sqlite --src-name /data/hospital_ehr.sqlite \
   --dbtype sqlite --name /data/omop.sqlite \
   --mapping /etc/pyomop/ehr_to_omop.json
@@ -234,7 +234,7 @@ pyomop --migrate \
 **PostgreSQL source → PostgreSQL OMOP target**
 
 ```bash
-pyomop --migrate \
+pyomop-migrate --migrate \
   --src-dbtype pgsql --src-host srchost --src-port 5432 \
   --src-user readonly --src-pw secret --src-name ehr_db \
   --dbtype pgsql --host omophost --port 5432 \
@@ -245,7 +245,7 @@ pyomop --migrate \
 **MySQL source → SQLite OMOP target**
 
 ```bash
-pyomop --migrate \
+pyomop-migrate --migrate \
   --src-dbtype mysql --src-host 192.168.1.10 --src-user reader --src-pw pass --src-name clinic \
   --dbtype sqlite --name omop.sqlite \
   --mapping clinic_to_omop.json
@@ -268,7 +268,7 @@ the appropriate mapping JSON.
 ### Usage
 
 ```bash
-pyomop --extract-schema \
+pyomop-migrate --extract-schema \
   --src-dbtype sqlite --src-name hospital.sqlite \
   --schema-output hospital_schema.md
 ```
@@ -281,7 +281,7 @@ export SRC_DB_USER=readonly
 export SRC_DB_PASSWORD=secret
 export SRC_DB_NAME=ehr_db
 
-pyomop --extract-schema \
+pyomop-migrate --extract-schema \
   --src-dbtype pgsql \
   --schema-output ehr_schema.md
 ```
@@ -302,7 +302,7 @@ pyomop --extract-schema \
 
 ```python
 import asyncio
-from pyomop.generic_loader import create_source_engine, extract_schema_to_markdown
+from pyomop.migrate.pyomop_migrate import create_source_engine, extract_schema_to_markdown
 
 async def run():
     engine = create_source_engine("sqlite+aiosqlite:///source.sqlite")
@@ -314,7 +314,7 @@ asyncio.run(run())
 
 ## API Reference
 
-::: generic_loader.CdmGenericLoader
+::: pyomop_migrate.CdmGenericLoader
 
 ## Supported Databases
 
@@ -351,7 +351,7 @@ Both the source and target can independently use any of the above backends.
 import asyncio
 from pyomop import CdmEngineFactory
 from pyomop.cdm54 import Base
-from pyomop.generic_loader import CdmGenericLoader, create_source_engine
+from pyomop.migrate.pyomop_migrate import CdmGenericLoader, create_source_engine
 
 async def main():
     source = create_source_engine(

@@ -82,76 +82,6 @@ from .vocabulary import CdmVocabulary
     "--pyhealth-path",
     help="Path to export PyHealth compatible CSV files",
 )
-@click.option(
-    "--migrate",
-    is_flag=True,
-    help="Migrate data from a source database into the target OMOP CDM database using a mapping file.",
-)
-@click.option(
-    "--src-dbtype",
-    default="sqlite",
-    help="Source database type (sqlite, mysql or pgsql). Used with --migrate and --extract-schema.",
-)
-@click.option(
-    "--src-host",
-    default="localhost",
-    envvar="SRC_DB_HOST",
-    help="Source database host. Used with --migrate and --extract-schema. Env: SRC_DB_HOST.",
-)
-@click.option(
-    "--src-port",
-    default="5432",
-    envvar="SRC_DB_PORT",
-    help="Source database port. Used with --migrate and --extract-schema. Env: SRC_DB_PORT.",
-)
-@click.option(
-    "--src-user",
-    default="root",
-    envvar="SRC_DB_USER",
-    help="Source database user. Used with --migrate and --extract-schema. Env: SRC_DB_USER.",
-)
-@click.option(
-    "--src-pw",
-    default="pass",
-    envvar="SRC_DB_PASSWORD",
-    help="Source database password. Used with --migrate and --extract-schema. Env: SRC_DB_PASSWORD.",
-)
-@click.option(
-    "--src-name",
-    default="source.sqlite",
-    envvar="SRC_DB_NAME",
-    help="Source database name or SQLite file path. Used with --migrate and --extract-schema. Env: SRC_DB_NAME.",
-)
-@click.option(
-    "--src-schema",
-    default="",
-    help="Source database schema (PostgreSQL). Used with --migrate and --extract-schema.",
-)
-@click.option(
-    "--mapping",
-    "-m",
-    "mapping_path",
-    type=click.Path(exists=True, dir_okay=False),
-    help="Path to the JSON mapping file. Used with --migrate.",
-)
-@click.option(
-    "--batch-size",
-    default=1000,
-    show_default=True,
-    help="Number of rows per INSERT batch. Used with --migrate.",
-)
-@click.option(
-    "--extract-schema",
-    "extract_schema",
-    is_flag=True,
-    help="Introspect the source database and write its schema to a Markdown file.",
-)
-@click.option(
-    "--schema-output",
-    default="schema.md",
-    show_default=True,
-    help="Output path for the schema Markdown file. Used with --extract-schema.",
-)
 def cli(
     version,
     create,
@@ -169,18 +99,6 @@ def cli(
     eunomia_path,
     connection_info,
     mcp_server,
-    migrate,
-    src_dbtype,
-    src_host,
-    src_port,
-    src_user,
-    src_pw,
-    src_name,
-    src_schema,
-    mapping_path,
-    batch_size,
-    extract_schema,
-    schema_output,
 ):
     cdm = None  # ensure cdm is always defined
     # clear database name if not sqlite
@@ -310,66 +228,6 @@ def cli(
         finally:
             asyncio.run(cdm.dispose())
         click.echo("Done")
-    if migrate:
-        import sys
-
-        if not mapping_path:
-            click.echo("--mapping is required when using --migrate.", err=True)
-            sys.exit(1)
-
-        click.echo(
-            f"Migrating data from {src_dbtype} database '{src_name}' "
-            f"into {dbtype} database '{name}' using mapping '{mapping_path}'"
-        )
-
-        from .generic_loader import CdmGenericLoader, build_source_url, create_source_engine
-
-        try:
-            src_url = build_source_url(src_dbtype, src_name, src_host, src_port, src_user, src_pw)
-        except ValueError as exc:
-            click.echo(f"Unknown --src-dbtype '{src_dbtype}'. Use sqlite, mysql, or pgsql.", err=True)
-            sys.exit(1)
-
-        source_engine = create_source_engine(src_url)
-        cdm = CdmEngineFactory(dbtype, host, port, user, pw, name, schema)
-        _ = cdm.engine  # initialise target engine
-
-        loader = CdmGenericLoader(source_engine, cdm, version=version)
-        try:
-            asyncio.run(loader.load(mapping_path, batch_size=batch_size))
-            click.echo("Migration complete.")
-        except Exception as e:
-            click.echo(f"Error during migration: {e}", err=True)
-            sys.exit(1)
-        finally:
-            asyncio.run(source_engine.dispose())
-            asyncio.run(cdm.dispose())
-
-    if extract_schema:
-        import sys
-
-        click.echo(
-            f"Extracting schema from {src_dbtype} database '{src_name}' to '{schema_output}'"
-        )
-
-        from .generic_loader import build_source_url, create_source_engine, extract_schema_to_markdown
-
-        try:
-            src_url = build_source_url(src_dbtype, src_name, src_host, src_port, src_user, src_pw)
-        except ValueError:
-            click.echo(f"Unknown --src-dbtype '{src_dbtype}'. Use sqlite, mysql, or pgsql.", err=True)
-            sys.exit(1)
-
-        source_engine = create_source_engine(src_url)
-        try:
-            output = asyncio.run(extract_schema_to_markdown(source_engine, schema_output))
-            click.echo(f"Schema written to {output}")
-        except Exception as e:
-            click.echo(f"Error extracting schema: {e}", err=True)
-            sys.exit(1)
-        finally:
-            asyncio.run(source_engine.dispose())
-
     if cdm and connection_info:
         click.echo(click.style("Database connection information:", fg="green"))
         click.echo(cdm.print_connection_info())

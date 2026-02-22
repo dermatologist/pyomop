@@ -1,11 +1,11 @@
-# Generic Loader – Implementation Notes
+# pyomop-migrate – Implementation Notes
 
 ## Motivation
 
-`loader.py` / `CdmCsvLoader` is tightly coupled to a flat CSV source
+`loader.py` / `CdmCsvLoader` (in `loader.py`) is tightly coupled to a flat CSV source
 (produced by FHIR Bulk Export via *fhiry*).  Many real-world ETL pipelines need
 to pull from an existing relational database rather than an intermediate file.
-`CdmGenericLoader` fills this gap.
+`CdmGenericLoader` (in `pyomop.migrate.pyomop_migrate`) fills this gap.
 
 ## Design Decisions
 
@@ -68,13 +68,13 @@ the existing loader's behaviour for empty/filtered DataFrames.
 
 ```
 src/pyomop/
-├── generic_loader.py             # CdmGenericLoader + extract_schema_to_markdown + helpers
+├── pyomop_migrate.py             # CdmGenericLoader + extract_schema_to_markdown + helpers
 ├── mapping.generic.example.json  # annotated example mapping file
 ```
 
 ## Testing Strategy
 
-Tests live in `tests/test_generic_loader.py` and use two in-memory (or
+Tests live in `tests/test_pyomop_migrate.py` and use two in-memory (or
 `tmp_path`) SQLite databases – one source and one OMOP CDM target – to avoid
 external service dependencies.  Each test covers a distinct behaviour:
 

@@ -148,7 +148,7 @@ def test_generic_loader_loads_persons(tmp_path):
     """Persons from the source database are loaded into the target OMOP person table."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         # --- Source DB ---
@@ -200,7 +200,7 @@ def test_generic_loader_gender_concept_id_set(tmp_path):
     """gender_concept_id is set correctly from gender_source_value."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         src_path = tmp_path / "source_g.sqlite"
@@ -248,7 +248,7 @@ def test_generic_loader_birth_fields_backfilled(tmp_path):
     """year_of_birth / month_of_birth / day_of_birth are backfilled from birth_datetime."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         src_path = tmp_path / "source_b.sqlite"
@@ -296,7 +296,7 @@ def test_generic_loader_filter_applied(tmp_path):
     """Row-level filters on source table are respected."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         src_path = tmp_path / "source_f.sqlite"
@@ -346,7 +346,7 @@ def test_generic_loader_missing_source_table_skipped(tmp_path):
     """A mapping entry referencing a non-existent source table is skipped gracefully."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         src_path = tmp_path / "source_skip.sqlite"
@@ -413,7 +413,7 @@ def test_generic_loader_multi_table_mapping(tmp_path):
     """Multiple source tables can be mapped to multiple OMOP CDM tables."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         src_path = tmp_path / "source_multi.sqlite"
@@ -475,7 +475,7 @@ def test_generic_loader_batch_size_respected(tmp_path):
     """All rows are inserted correctly regardless of batch_size."""
     from src.pyomop import CdmEngineFactory
     from src.pyomop.cdm54 import Base
-    from src.pyomop.generic_loader import CdmGenericLoader
+    from src.pyomop.migrate.pyomop_migrate import CdmGenericLoader
 
     async def run():
         src_path = tmp_path / "source_batch.sqlite"
@@ -521,7 +521,7 @@ def test_generic_loader_batch_size_respected(tmp_path):
 
 def test_create_source_engine():
     """create_source_engine returns a usable async engine."""
-    from src.pyomop.generic_loader import create_source_engine
+    from src.pyomop.migrate.pyomop_migrate import create_source_engine
 
     engine = create_source_engine("sqlite+aiosqlite:///:memory:")
     assert engine is not None
@@ -531,7 +531,7 @@ def test_create_source_engine():
 
 def test_load_mapping(tmp_path):
     """load_mapping parses a valid JSON mapping file."""
-    from src.pyomop.generic_loader import load_mapping
+    from src.pyomop.migrate.pyomop_migrate import load_mapping
 
     mapping_data = {"tables": [], "concept": []}
     p = tmp_path / "sample.json"
@@ -543,7 +543,7 @@ def test_load_mapping(tmp_path):
 
 def test_generic_loader_example_mapping_is_valid():
     """The bundled example mapping file is valid JSON with the expected structure."""
-    from src.pyomop.generic_loader import load_mapping
+    from src.pyomop.migrate.pyomop_migrate import load_mapping
 
     example_path = Path("src/pyomop/mapping.generic.example.json")
     mapping = load_mapping(str(example_path))
@@ -562,6 +562,7 @@ def test_migrate_cli_option(tmp_path):
     from click.testing import CliRunner
     from sqlalchemy.ext.asyncio import create_async_engine
     from src.pyomop.main import cli
+    from src.pyomop.migrate.pyomop_migrate import migrate_cli
 
     async def _setup():
         src_path = tmp_path / "cli_source.sqlite"
@@ -582,7 +583,7 @@ def test_migrate_cli_option(tmp_path):
     tgt_db = str(tmp_path / "cli_target.sqlite")
     mapping_path = _minimal_mapping(tmp_path)
 
-    # First create the target OMOP CDM tables
+    # First create the target OMOP CDM tables using the main pyomop CLI
     runner = CliRunner()
     result = runner.invoke(
         cli,
@@ -594,9 +595,9 @@ def test_migrate_cli_option(tmp_path):
     )
     assert result.exit_code == 0, f"--create failed: {result.output}"
 
-    # Now migrate
+    # Now migrate using pyomop-migrate CLI
     result = runner.invoke(
-        cli,
+        migrate_cli,
         [
             "--migrate",
             "--src-dbtype", "sqlite",
@@ -614,12 +615,12 @@ def test_migrate_cli_option(tmp_path):
 def test_migrate_cli_requires_mapping(tmp_path):
     """--migrate without --mapping exits with an error."""
     from click.testing import CliRunner
-    from src.pyomop.main import cli
+    from src.pyomop.migrate.pyomop_migrate import migrate_cli
 
     tgt_db = str(tmp_path / "no_mapping.sqlite")
     runner = CliRunner()
     result = runner.invoke(
-        cli,
+        migrate_cli,
         [
             "--migrate",
             "--src-dbtype", "sqlite",
@@ -635,13 +636,13 @@ def test_migrate_cli_requires_mapping(tmp_path):
 def test_migrate_cli_bad_src_dbtype(tmp_path):
     """--migrate with an unknown --src-dbtype exits with an error."""
     from click.testing import CliRunner
-    from src.pyomop.main import cli
+    from src.pyomop.migrate.pyomop_migrate import migrate_cli
 
     mapping_path = _minimal_mapping(tmp_path)
     tgt_db = str(tmp_path / "bad_src.sqlite")
     runner = CliRunner()
     result = runner.invoke(
-        cli,
+        migrate_cli,
         [
             "--migrate",
             "--src-dbtype", "oracle",
@@ -663,7 +664,7 @@ def test_migrate_cli_bad_src_dbtype(tmp_path):
 def test_extract_schema_to_markdown_basic(tmp_path):
     """extract_schema_to_markdown produces a Markdown file with table/column info."""
     import asyncio as _asyncio
-    from src.pyomop.generic_loader import extract_schema_to_markdown
+    from src.pyomop.migrate.pyomop_migrate import extract_schema_to_markdown
 
     async def run():
         src_path = tmp_path / "schema_src.sqlite"
@@ -700,7 +701,7 @@ def test_extract_schema_to_markdown_basic(tmp_path):
 def test_extract_schema_to_markdown_pk_fk(tmp_path):
     """PK and FK information is captured in the markdown output."""
     import asyncio as _asyncio
-    from src.pyomop.generic_loader import extract_schema_to_markdown
+    from src.pyomop.migrate.pyomop_migrate import extract_schema_to_markdown
 
     fk_ddl = (
         "CREATE TABLE IF NOT EXISTS orders ("
@@ -733,7 +734,7 @@ def test_extract_schema_to_markdown_pk_fk(tmp_path):
 def test_extract_schema_cli_option(tmp_path):
     """--extract-schema writes a schema file and exits cleanly."""
     from click.testing import CliRunner
-    from src.pyomop.main import cli
+    from src.pyomop.migrate.pyomop_migrate import migrate_cli
 
     async def _setup():
         src_path = tmp_path / "es_source.sqlite"
@@ -748,7 +749,7 @@ def test_extract_schema_cli_option(tmp_path):
 
     runner = CliRunner()
     result = runner.invoke(
-        cli,
+        migrate_cli,
         [
             "--extract-schema",
             "--src-dbtype", "sqlite",
@@ -766,12 +767,12 @@ def test_extract_schema_cli_option(tmp_path):
 def test_extract_schema_cli_bad_dbtype(tmp_path):
     """--extract-schema with an unknown --src-dbtype exits with an error."""
     from click.testing import CliRunner
-    from src.pyomop.main import cli
+    from src.pyomop.migrate.pyomop_migrate import migrate_cli
 
     out_md = str(tmp_path / "bad.md")
     runner = CliRunner()
     result = runner.invoke(
-        cli,
+        migrate_cli,
         [
             "--extract-schema",
             "--src-dbtype", "oracle",
@@ -785,7 +786,7 @@ def test_extract_schema_cli_bad_dbtype(tmp_path):
 
 def test_build_source_url_sqlite():
     """build_source_url produces a valid sqlite+aiosqlite URL."""
-    from src.pyomop.generic_loader import build_source_url
+    from src.pyomop.migrate.pyomop_migrate import build_source_url
 
     url = build_source_url("sqlite", "/tmp/test.sqlite")
     assert url == "sqlite+aiosqlite:////tmp/test.sqlite"
@@ -793,7 +794,7 @@ def test_build_source_url_sqlite():
 
 def test_build_source_url_mysql():
     """build_source_url produces a valid mysql+aiomysql URL."""
-    from src.pyomop.generic_loader import build_source_url
+    from src.pyomop.migrate.pyomop_migrate import build_source_url
 
     url = build_source_url("mysql", "mydb", host="db.host", port="3306", user="usr", pw="s3cr3t")
     assert url.startswith("mysql+aiomysql://usr:s3cr3t@db.host:3306/mydb")
@@ -801,7 +802,7 @@ def test_build_source_url_mysql():
 
 def test_build_source_url_pgsql():
     """build_source_url produces a valid postgresql+asyncpg URL."""
-    from src.pyomop.generic_loader import build_source_url
+    from src.pyomop.migrate.pyomop_migrate import build_source_url
 
     url = build_source_url("pgsql", "pgdb", host="pg.host", port="5432", user="admin", pw="pw")
     assert url.startswith("postgresql+asyncpg://admin:pw@pg.host:5432/pgdb")
@@ -809,7 +810,7 @@ def test_build_source_url_pgsql():
 
 def test_build_source_url_invalid():
     """build_source_url raises ValueError for an unsupported database type."""
-    from src.pyomop.generic_loader import build_source_url
+    from src.pyomop.migrate.pyomop_migrate import build_source_url
 
     try:
         build_source_url("oracle", "mydb")
@@ -820,7 +821,7 @@ def test_build_source_url_invalid():
 
 def test_build_source_url_env_vars(tmp_path, monkeypatch):
     """build_source_url picks up SRC_DB_* environment variables."""
-    from src.pyomop.generic_loader import build_source_url
+    from src.pyomop.migrate.pyomop_migrate import build_source_url
 
     monkeypatch.setenv("SRC_DB_HOST", "envhost")
     monkeypatch.setenv("SRC_DB_PORT", "9999")

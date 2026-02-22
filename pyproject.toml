@@ -73,6 +73,7 @@ source-exclude = ["tests/*", "examples/*", "docs/*", "notes/*", "notebooks/*"]
 
 [project.scripts]
 pyomop = "pyomop.main:main_routine"
+pyomop-migrate = "pyomop.migrate.pyomop_migrate:main"
 pyomop-mcp-server = "pyomop.mcp.server:main_cli"
 pyomop-mcp-server-http = "pyomop.mcp.server:main_http_cli"
 
