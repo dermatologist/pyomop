@@ -2,14 +2,16 @@
 
 ## [Unreleased](https://github.com/dermatologist/pyomop/tree/HEAD)
 
-[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.3.0...HEAD)
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.3.1...HEAD)
 
 **Implemented enhancements:**
 
+- Generate a generic database loader for OMOP CDM. [\#259](https://github.com/dermatologist/pyomop/issues/259)
 - Add PyHealth compatible export function [\#243](https://github.com/dermatologist/pyomop/pull/243) ([Copilot](https://github.com/apps/copilot-swe-agent))
 
 **Merged pull requests:**
 
+- Add CdmGenericLoader: database-to-OMOP CDM ETL via JSON mapping and `pyomop-migrate` CLI [\#260](https://github.com/dermatologist/pyomop/pull/260) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - Feature/fix time query 1 [\#258](https://github.com/dermatologist/pyomop/pull/258) ([dermatologist](https://github.com/dermatologist))
 - Add missing MCP tools and HTTP transport support [\#256](https://github.com/dermatologist/pyomop/pull/256) ([Copilot](https://github.com/apps/copilot-swe-agent))
 - Feature/fix thread 1 [\#254](https://github.com/dermatologist/pyomop/pull/254) ([dermatologist](https://github.com/dermatologist))
@@ -48,7 +50,10 @@
 - build\(deps\): bump requests from 2.31.0 to 2.32.2 [\#168](https://github.com/dermatologist/pyomop/pull/168) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump urllib3 from 1.26.18 to 1.26.19 [\#167](https://github.com/dermatologist/pyomop/pull/167) ([dependabot[bot]](https://github.com/apps/dependabot))
 - build\(deps\): bump jinja2 from 3.0.1 to 3.1.3 [\#161](https://github.com/dermatologist/pyomop/pull/161) ([dependabot[bot]](https://github.com/apps/dependabot))
-- Feature/llm llama index 1 [\#159](https://github.com/dermatologist/pyomop/pull/159) ([dermatologist](https://github.com/dermatologist))
+
+## [v6.3.1](https://github.com/dermatologist/pyomop/tree/v6.3.1) (2026-01-27)
+
+[Full Changelog](https://github.com/dermatologist/pyomop/compare/v6.3.0...v6.3.1)
 
 ## [v6.3.0](https://github.com/dermatologist/pyomop/tree/v6.3.0) (2025-12-26)
 
