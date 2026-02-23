@@ -311,6 +311,52 @@ export PYOMOP_SCHEMA=omop
 ```
 These environment variables will be checked before assigning default values for database connection in pyomop and MCP server tools.
 
+
+
+## 🗄️ Agent Assisted ETL - Work in progress
+
+Use `--migrate` to run the generic loader from the command line.  Provide
+source-database connection details with `--src-*` options; target-database
+details use the standard `--dbtype` / `--host` / … options.
+
+```bash
+# SQLite source → SQLite OMOP target
+pyomop-migrate --migrate \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping mapping.json
+
+# PostgreSQL source → PostgreSQL OMOP target
+pyomop-migrate --migrate \
+  --src-dbtype pgsql --src-host srchost --src-user reader --src-pw secret --src-name ehr \
+  --dbtype pgsql --host omophost --user writer --pw secret --name omop \
+  --mapping ehr_to_omop.json --batch-size 500
+```
+
+Source connection credentials can also be provided via environment variables
+(`SRC_DB_HOST`, `SRC_DB_PORT`, `SRC_DB_USER`, `SRC_DB_PASSWORD`, `SRC_DB_NAME`)
+to avoid exposing passwords in the shell history.
+
+### Schema extraction
+
+Use `--extract-schema` to generate a Markdown document describing the source
+database schema (tables, columns, types, PK/FK relationships).  This is
+especially useful for feeding to an AI agent to generate the mapping JSON.
+
+```bash
+pyomop-migrate --extract-schema \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --schema-output schema.md
+```
+
+The same `SRC_DB_*` environment variables are supported for credentials.
+
+#### Plan
+* Use the extracted schema to generate a mapping JSON using an appropriate agentic skill.
+
+See the [bundled example mapping](src/pyomop/mapping.generic.example.json) and
+the [full documentation](docs/pyomop_migrate.md) for all supported options.
+
 ## Contributing
 
 Pull requests are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,0 +1,153 @@
+{
+    "tables": [
+        {
+            "source_table": "patients",
+            "name": "person",
+            "columns": {
+                "person_id": "id",
+                "gender_concept_id": {
+                    "const": 0
+                },
+                "gender_source_value": "gender",
+                "birth_datetime": "date_of_birth",
+                "year_of_birth": {
+                    "const": 0
+                },
+                "race_concept_id": {
+                    "const": 0
+                },
+                "race_source_value": "race",
+                "ethnicity_concept_id": {
+                    "const": 0
+                },
+                "ethnicity_source_value": "ethnicity",
+                "person_source_value": "patient_key"
+            }
+        },
+        {
+            "source_table": "encounters",
+            "name": "visit_occurrence",
+            "columns": {
+                "person_id": "patient_id",
+                "visit_start_date": "start_date",
+                "visit_start_datetime": "start_date",
+                "visit_end_date": "end_date",
+                "visit_end_datetime": "end_date",
+                "visit_concept_id": {
+                    "const": 0
+                },
+                "visit_type_concept_id": {
+                    "const": 0
+                },
+                "visit_source_value": "encounter_type",
+                "visit_source_concept_id": {
+                    "const": 0
+                }
+            }
+        },
+        {
+            "source_table": "diagnoses",
+            "name": "condition_occurrence",
+            "columns": {
+                "person_id": "patient_id",
+                "condition_start_date": "diagnosis_date",
+                "condition_start_datetime": "diagnosis_date",
+                "condition_concept_id": {
+                    "const": 0
+                },
+                "condition_type_concept_id": {
+                    "const": 0
+                },
+                "condition_status_concept_id": {
+                    "const": 0
+                },
+                "condition_source_value": "icd_code"
+            }
+        },
+        {
+            "source_table": "lab_results",
+            "name": "measurement",
+            "columns": {
+                "person_id": "patient_id",
+                "measurement_date": "result_date",
+                "measurement_datetime": "result_date",
+                "measurement_concept_id": {
+                    "const": 0
+                },
+                "measurement_type_concept_id": {
+                    "const": 0
+                },
+                "measurement_source_value": "test_code",
+                "value_as_number": "numeric_result",
+                "unit_source_value": "unit",
+                "unit_concept_id": {
+                    "const": 0
+                }
+            }
+        },
+        {
+            "source_table": "medications",
+            "name": "drug_exposure",
+            "columns": {
+                "person_id": "patient_id",
+                "drug_exposure_start_date": "start_date",
+                "drug_exposure_start_datetime": "start_date",
+                "drug_exposure_end_date": "end_date",
+                "drug_exposure_end_datetime": "end_date",
+                "drug_concept_id": {
+                    "const": 0
+                },
+                "drug_type_concept_id": {
+                    "const": 0
+                },
+                "drug_source_value": "drug_code",
+                "sig": "instructions"
+            }
+        }
+    ],
+    "concept": [
+        {
+            "table": "condition_occurrence",
+            "mappings": [
+                {
+                    "source": "condition_source_value",
+                    "target": "condition_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "measurement",
+            "mappings": [
+                {
+                    "source": "measurement_source_value",
+                    "target": "measurement_concept_id"
+                },
+                {
+                    "source": "unit_source_value",
+                    "target": "unit_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "drug_exposure",
+            "mappings": [
+                {
+                    "source": "drug_source_value",
+                    "target": "drug_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "visit_occurrence",
+            "mappings": [
+                {
+                    "source": "visit_source_value",
+                    "target": "visit_concept_id"
+                }
+            ]
+        }
+    ],
+    "force_text_fields": [
+        "drug_source_value"
+    ]
+}
