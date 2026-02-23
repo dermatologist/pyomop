@@ -1,0 +1,1661 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OMOP CDM utils in Python">
+      
+      
+        <meta name="author" content="Bell Eapen">
+      
+      
+        <link rel="canonical" href="https://dermatologist.github.io/pyomop/pyomop_migrate/">
+      
+      
+        <link rel="prev" href="../modules/">
+      
+      
+        <link rel="next" href="../contributing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>pyomop-migrate - pyomop</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyomop-migrate" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="pyomop" class="md-header__button md-logo" aria-label="pyomop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyomop
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              pyomop-migrate
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dermatologist/pyomop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dermatologist/pyomop
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="pyomop" class="md-nav__button md-logo" aria-label="pyomop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyomop
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dermatologist/pyomop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dermatologist/pyomop
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyomop-migrate
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyomop-migrate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping-file-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping File Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mapping File Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-level-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-level keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-mapping-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table-mapping object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column-mapping-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Column mapping values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-load-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-load Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-usage-migrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-line Usage (--migrate)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-line Usage (--migrate)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables-for-source-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment variables for source connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target-database-options-omop-cdm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target database options (OMOP CDM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-database-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source database options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-extraction-extract-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Extraction (--extract-schema)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Extraction (--extract-schema)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Databases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#differences-from-cdmcsvloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Differences from CdmCsvLoader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-postgresql-source-sqlite-omop-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: PostgreSQL source → SQLite OMOP target
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapping-file-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping File Format
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mapping File Format">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#top-level-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Top-level keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#table-mapping-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table-mapping object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filter object
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#column-mapping-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Column mapping values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#post-load-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Post-load Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#command-line-usage-migrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-line Usage (--migrate)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-line Usage (--migrate)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#environment-variables-for-source-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment variables for source connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#required-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Required options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#target-database-options-omop-cdm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Target database options (OMOP CDM)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#source-database-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Source database options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schema-extraction-extract-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Extraction (--extract-schema)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema Extraction (--extract-schema)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cli-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CLI options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Databases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#differences-from-cdmcsvloader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Differences from CdmCsvLoader
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-postgresql-source-sqlite-omop-target" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: PostgreSQL source → SQLite OMOP target
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="pyomop-migrate">pyomop-migrate<a class="headerlink" href="#pyomop-migrate" title="Permanent link">&para;</a></h1>
+<p>The <code>CdmGenericLoader</code> lets you read data from <strong>any</strong> SQLAlchemy-compatible
+source database and write it into an OMOP CDM target database, guided by a
+JSON mapping file.</p>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source</td>
+<td>Any database accessible via an async SQLAlchemy engine (SQLite, PostgreSQL, MySQL, …)</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>Any OMOP CDM database initialised via <code>CdmEngineFactory</code></td>
+</tr>
+<tr>
+<td>Mapping</td>
+<td>JSON file describing which source tables/columns map to which OMOP tables/columns</td>
+</tr>
+<tr>
+<td>Post-processing</td>
+<td>Automatic <code>person_id</code> FK normalisation, birth-date backfill, gender concept mapping, concept-code lookups</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mapping-file-format">Mapping File Format<a class="headerlink" href="#mapping-file-format" title="Permanent link">&para;</a></h2>
+<p>The mapping file is a JSON document.  The bundled example
+<a href="https://github.com/dermatologist/pyomop/blob/develop/src/pyomop/mapping.generic.example.json"><code>src/pyomop/mapping.generic.example.json</code></a>
+demonstrates the full structure.</p>
+<pre><code class="language-json">{
+  &quot;tables&quot;: [
+    {
+      &quot;source_table&quot;: &quot;patients&quot;,
+      &quot;name&quot;: &quot;person&quot;,
+      &quot;filters&quot;: [
+        {&quot;column&quot;: &quot;active&quot;, &quot;equals&quot;: 1}
+      ],
+      &quot;columns&quot;: {
+        &quot;person_id&quot;:              &quot;id&quot;,
+        &quot;gender_concept_id&quot;:      {&quot;const&quot;: 0},
+        &quot;gender_source_value&quot;:    &quot;gender&quot;,
+        &quot;birth_datetime&quot;:         &quot;date_of_birth&quot;,
+        &quot;year_of_birth&quot;:          {&quot;const&quot;: 0},
+        &quot;race_concept_id&quot;:        {&quot;const&quot;: 0},
+        &quot;race_source_value&quot;:      &quot;race&quot;,
+        &quot;ethnicity_concept_id&quot;:   {&quot;const&quot;: 0},
+        &quot;ethnicity_source_value&quot;: &quot;ethnicity&quot;,
+        &quot;person_source_value&quot;:    &quot;patient_key&quot;
+      }
+    }
+  ],
+  &quot;concept&quot;: [
+    {
+      &quot;table&quot;: &quot;condition_occurrence&quot;,
+      &quot;mappings&quot;: [
+        {
+          &quot;source&quot;: &quot;condition_source_value&quot;,
+          &quot;target&quot;: &quot;condition_concept_id&quot;
+        }
+      ]
+    }
+  ],
+  &quot;force_text_fields&quot;: [&quot;drug_source_value&quot;]
+}
+</code></pre>
+<h3 id="top-level-keys">Top-level keys<a class="headerlink" href="#top-level-keys" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tables</code></td>
+<td>✅</td>
+<td>List of table-mapping objects (see below)</td>
+</tr>
+<tr>
+<td><code>concept</code></td>
+<td>☐</td>
+<td>Concept-code lookup definitions (same format as <code>mapping.default.json</code>)</td>
+</tr>
+<tr>
+<td><code>force_text_fields</code></td>
+<td>☐</td>
+<td>Column names that are always stored as plain text</td>
+</tr>
+</tbody>
+</table>
+<h3 id="table-mapping-object">Table-mapping object<a class="headerlink" href="#table-mapping-object" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>source_table</code></td>
+<td>✅</td>
+<td>Table name in the <strong>source</strong> database</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>✅</td>
+<td>Table name in the <strong>target</strong> OMOP CDM database</td>
+</tr>
+<tr>
+<td><code>filters</code></td>
+<td>☐</td>
+<td>List of row-level filter objects (see below)</td>
+</tr>
+<tr>
+<td><code>columns</code></td>
+<td>✅</td>
+<td><code>{target_col: source_col}</code> or <code>{target_col: {"const": value}}</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="filter-object">Filter object<a class="headerlink" href="#filter-object" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>column</code></td>
+<td>Source column name</td>
+</tr>
+<tr>
+<td><code>equals</code></td>
+<td>Row is included only when the column equals this value</td>
+</tr>
+<tr>
+<td><code>not_empty</code></td>
+<td>If <code>true</code>, row is included only when the column is non-null and non-empty</td>
+</tr>
+</tbody>
+</table>
+<h3 id="column-mapping-values">Column mapping values<a class="headerlink" href="#column-mapping-values" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"some_column"</code></td>
+<td>Copy the value from the named source column</td>
+</tr>
+<tr>
+<td><code>{"const": 0}</code></td>
+<td>Use a constant value (any JSON scalar)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="post-load-steps">Post-load Steps<a class="headerlink" href="#post-load-steps" title="Permanent link">&para;</a></h2>
+<p>After inserting all rows the loader automatically performs the same cleanup
+steps as <code>CdmCsvLoader</code>:</p>
+<ol>
+<li><strong><code>fix_person_id</code></strong> – Resolves any rows where <code>person_id</code> contains a string
+   source-value (e.g. UUID) and replaces it with the integer PK assigned to
+   that person.</li>
+<li><strong><code>backfill_person_birth_fields</code></strong> – Derives <code>year_of_birth</code>,
+   <code>month_of_birth</code>, <code>day_of_birth</code> from <code>birth_datetime</code> where those fields
+   are NULL or 0.</li>
+<li><strong><code>update_person_gender_concept_id</code></strong> – Maps <code>gender_source_value</code>
+   (<code>male</code>/<code>female</code>/other) to the standard OMOP concept IDs (8507/8532/0).</li>
+<li><strong><code>apply_concept_mappings</code></strong> – Looks up <code>concept.concept_id</code> for each
+   source-value code defined in the <code>"concept"</code> section of the mapping.</li>
+</ol>
+<h2 id="command-line-usage-migrate">Command-line Usage (<code>--migrate</code>)<a class="headerlink" href="#command-line-usage-migrate" title="Permanent link">&para;</a></h2>
+<p><code>CdmGenericLoader</code> is also available directly from the <code>pyomop</code> CLI via the
+<code>--migrate</code> flag.  Source-database connection details are provided with
+<code>--src-*</code> options; the target OMOP CDM database uses the standard <code>--dbtype</code>,
+<code>--host</code>, <code>--port</code>, <code>--user</code>, <code>--pw</code>, <code>--name</code>, and <code>--schema</code> options.</p>
+<h3 id="environment-variables-for-source-connection">Environment variables for source connection<a class="headerlink" href="#environment-variables-for-source-connection" title="Permanent link">&para;</a></h3>
+<p>As an alternative to CLI flags, all source-database connection parameters can
+be set as environment variables.  This is recommended for production use
+because credentials are never part of the shell history:</p>
+<table>
+<thead>
+<tr>
+<th>Environment variable</th>
+<th>Equivalent CLI option</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRC_DB_HOST</code></td>
+<td><code>--src-host</code></td>
+</tr>
+<tr>
+<td><code>SRC_DB_PORT</code></td>
+<td><code>--src-port</code></td>
+</tr>
+<tr>
+<td><code>SRC_DB_USER</code></td>
+<td><code>--src-user</code></td>
+</tr>
+<tr>
+<td><code>SRC_DB_PASSWORD</code></td>
+<td><code>--src-pw</code></td>
+</tr>
+<tr>
+<td><code>SRC_DB_NAME</code></td>
+<td><code>--src-name</code></td>
+</tr>
+</tbody>
+</table>
+<p>CLI flags take precedence over environment variables.</p>
+<pre><code class="language-bash">export SRC_DB_HOST=db.hospital.org
+export SRC_DB_USER=readonly
+export SRC_DB_PASSWORD=secret
+export SRC_DB_NAME=ehr_db
+
+pyomop-migrate --migrate \
+  --src-dbtype pgsql \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping ehr_to_omop.json
+</code></pre>
+<pre><code>pyomop-migrate --migrate [OPTIONS]
+</code></pre>
+<h3 id="required-options">Required options<a class="headerlink" href="#required-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mapping FILE</code> / <code>-m FILE</code></td>
+<td>Path to the JSON mapping file</td>
+</tr>
+</tbody>
+</table>
+<h3 id="target-database-options-omop-cdm">Target database options (OMOP CDM)<a class="headerlink" href="#target-database-options-omop-cdm" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--dbtype</code></td>
+<td><code>sqlite</code></td>
+<td>Target DB type: <code>sqlite</code>, <code>mysql</code>, or <code>pgsql</code></td>
+</tr>
+<tr>
+<td><code>--host</code></td>
+<td><code>localhost</code></td>
+<td>Target DB host</td>
+</tr>
+<tr>
+<td><code>--port</code></td>
+<td><code>5432</code></td>
+<td>Target DB port</td>
+</tr>
+<tr>
+<td><code>--user</code></td>
+<td><code>root</code></td>
+<td>Target DB user</td>
+</tr>
+<tr>
+<td><code>--pw</code></td>
+<td><code>pass</code></td>
+<td>Target DB password</td>
+</tr>
+<tr>
+<td><code>--name</code></td>
+<td><code>cdm.sqlite</code></td>
+<td>Target DB name or SQLite file path</td>
+</tr>
+<tr>
+<td><code>--schema</code></td>
+<td><em>(empty)</em></td>
+<td>Target DB schema (PostgreSQL)</td>
+</tr>
+<tr>
+<td><code>--version</code></td>
+<td><code>cdm54</code></td>
+<td>OMOP CDM version (<code>cdm54</code> or <code>cdm6</code>)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="source-database-options">Source database options<a class="headerlink" href="#source-database-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Env var</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--src-dbtype</code></td>
+<td>—</td>
+<td><code>sqlite</code></td>
+<td>Source DB type: <code>sqlite</code>, <code>mysql</code>, or <code>pgsql</code></td>
+</tr>
+<tr>
+<td><code>--src-host</code></td>
+<td><code>SRC_DB_HOST</code></td>
+<td><code>localhost</code></td>
+<td>Source DB host</td>
+</tr>
+<tr>
+<td><code>--src-port</code></td>
+<td><code>SRC_DB_PORT</code></td>
+<td><code>5432</code></td>
+<td>Source DB port</td>
+</tr>
+<tr>
+<td><code>--src-user</code></td>
+<td><code>SRC_DB_USER</code></td>
+<td><code>root</code></td>
+<td>Source DB user</td>
+</tr>
+<tr>
+<td><code>--src-pw</code></td>
+<td><code>SRC_DB_PASSWORD</code></td>
+<td><code>pass</code></td>
+<td>Source DB password</td>
+</tr>
+<tr>
+<td><code>--src-name</code></td>
+<td><code>SRC_DB_NAME</code></td>
+<td><code>source.sqlite</code></td>
+<td>Source DB name or SQLite file path</td>
+</tr>
+<tr>
+<td><code>--src-schema</code></td>
+<td>—</td>
+<td><em>(empty)</em></td>
+<td>Source DB schema (PostgreSQL)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tuning">Tuning<a class="headerlink" href="#tuning" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--batch-size</code></td>
+<td><code>1000</code></td>
+<td>Rows per INSERT batch</td>
+</tr>
+</tbody>
+</table>
+<h3 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">&para;</a></h3>
+<p><strong>SQLite → SQLite</strong></p>
+<pre><code class="language-bash">pyomop-migrate --migrate \
+  --src-dbtype sqlite --src-name /data/hospital_ehr.sqlite \
+  --dbtype sqlite --name /data/omop.sqlite \
+  --mapping /etc/pyomop/ehr_to_omop.json
+</code></pre>
+<p><strong>PostgreSQL source → PostgreSQL OMOP target</strong></p>
+<pre><code class="language-bash">pyomop-migrate --migrate \
+  --src-dbtype pgsql --src-host srchost --src-port 5432 \
+  --src-user readonly --src-pw secret --src-name ehr_db \
+  --dbtype pgsql --host omophost --port 5432 \
+  --user omop_writer --pw secret --name omop_db --schema cdm \
+  --mapping ehr_to_omop.json --batch-size 500
+</code></pre>
+<p><strong>MySQL source → SQLite OMOP target</strong></p>
+<pre><code class="language-bash">pyomop-migrate --migrate \
+  --src-dbtype mysql --src-host 192.168.1.10 --src-user reader --src-pw pass --src-name clinic \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping clinic_to_omop.json
+</code></pre>
+<h2 id="schema-extraction-extract-schema">Schema Extraction (<code>--extract-schema</code>)<a class="headerlink" href="#schema-extraction-extract-schema" title="Permanent link">&para;</a></h2>
+<p>Before writing a mapping file you need to understand the structure of your
+source database.  The <code>--extract-schema</code> option introspects the source database
+and writes a Markdown document containing:</p>
+<ul>
+<li>A summary table listing all tables with row counts and primary keys.</li>
+<li>Per-table column details: name, data type, nullable, default value, and
+  PK/FK annotations.</li>
+<li>Foreign key relationship sections.</li>
+</ul>
+<p>You can feed this Markdown directly to an AI assistant and ask it to generate
+the appropriate mapping JSON.</p>
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h3>
+<pre><code class="language-bash">pyomop-migrate --extract-schema \
+  --src-dbtype sqlite --src-name hospital.sqlite \
+  --schema-output hospital_schema.md
+</code></pre>
+<p>The same <code>SRC_DB_*</code> environment variables apply here too:</p>
+<pre><code class="language-bash">export SRC_DB_HOST=db.hospital.org
+export SRC_DB_USER=readonly
+export SRC_DB_PASSWORD=secret
+export SRC_DB_NAME=ehr_db
+
+pyomop-migrate --extract-schema \
+  --src-dbtype pgsql \
+  --schema-output ehr_schema.md
+</code></pre>
+<h3 id="cli-options">CLI options<a class="headerlink" href="#cli-options" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--src-dbtype</code></td>
+<td><code>sqlite</code></td>
+<td>Source DB type</td>
+</tr>
+<tr>
+<td><code>--src-host</code> / <code>SRC_DB_HOST</code></td>
+<td><code>localhost</code></td>
+<td>Source DB host</td>
+</tr>
+<tr>
+<td><code>--src-port</code> / <code>SRC_DB_PORT</code></td>
+<td><code>5432</code></td>
+<td>Source DB port</td>
+</tr>
+<tr>
+<td><code>--src-user</code> / <code>SRC_DB_USER</code></td>
+<td><code>root</code></td>
+<td>Source DB user</td>
+</tr>
+<tr>
+<td><code>--src-pw</code> / <code>SRC_DB_PASSWORD</code></td>
+<td><code>pass</code></td>
+<td>Source DB password</td>
+</tr>
+<tr>
+<td><code>--src-name</code> / <code>SRC_DB_NAME</code></td>
+<td><code>source.sqlite</code></td>
+<td>Source DB name</td>
+</tr>
+<tr>
+<td><code>--schema-output</code></td>
+<td><code>schema.md</code></td>
+<td>Output Markdown file path</td>
+</tr>
+</tbody>
+</table>
+<h2 id="supported-databases">Supported Databases<a class="headerlink" href="#supported-databases" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Async driver</th>
+<th>Example URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SQLite</td>
+<td><code>aiosqlite</code></td>
+<td><code>sqlite+aiosqlite:///path/to/db.sqlite</code></td>
+</tr>
+<tr>
+<td>PostgreSQL</td>
+<td><code>asyncpg</code></td>
+<td><code>postgresql+asyncpg://user:pass@host/db</code></td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td><code>aiomysql</code></td>
+<td><code>mysql+aiomysql://user:pass@host/db</code></td>
+</tr>
+</tbody>
+</table>
+<p>Both the source and target can independently use any of the above backends.</p>
+<h2 id="differences-from-cdmcsvloader">Differences from <code>CdmCsvLoader</code><a class="headerlink" href="#differences-from-cdmcsvloader" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th><code>CdmCsvLoader</code></th>
+<th><code>CdmGenericLoader</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source</td>
+<td>CSV file (via pandas)</td>
+<td>Any SQL database</td>
+</tr>
+<tr>
+<td>Filters</td>
+<td>Pandas boolean masks</td>
+<td>SQL WHERE clauses</td>
+</tr>
+<tr>
+<td>Source identification</td>
+<td><code>csv_key</code> field</td>
+<td><code>source_table</code> field per mapping entry</td>
+</tr>
+<tr>
+<td>Batching</td>
+<td>Per-table chunked INSERT</td>
+<td>Per-table chunked INSERT</td>
+</tr>
+<tr>
+<td>Post-processing steps</td>
+<td>✅ identical</td>
+<td>✅ identical</td>
+</tr>
+</tbody>
+</table>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Missing source tables are <strong>warned and skipped</strong> rather than raising an
+  exception, so a partial mapping can still load valid tables.</li>
+<li>Missing target tables produce a warning and are skipped.</li>
+<li>Individual value-coercion failures fall back to string representation.</li>
+<li>All errors are logged via the standard Python <code>logging</code> module (logger name
+  <code>pyomop.generic_loader</code>).</li>
+</ul>
+<h2 id="example-postgresql-source-sqlite-omop-target">Example: PostgreSQL source → SQLite OMOP target<a class="headerlink" href="#example-postgresql-source-sqlite-omop-target" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">import asyncio
+from pyomop import CdmEngineFactory
+from pyomop.cdm54 import Base
+from pyomop.migrate.pyomop_migrate import CdmGenericLoader, create_source_engine
+
+async def main():
+    source = create_source_engine(
+        &quot;postgresql+asyncpg://readonly_user:secret@db.hospital.org/ehr&quot;
+    )
+    target = CdmEngineFactory(db=&quot;sqlite&quot;, name=&quot;omop_ehr.sqlite&quot;)
+    _ = target.engine
+    await target.init_models(Base.metadata)
+
+    loader = CdmGenericLoader(source, target)
+    await loader.load(&quot;ehr_to_omop_mapping.json&quot;, batch_size=1000)
+
+asyncio.run(main())
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Maintained by <a href="https://github.com/dermatologist">dermatologist</a>.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/dermatologist/pyomop" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyomop" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/beapen" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://nuchange.ca" target="_blank" rel="noopener" title="nuchange.ca" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M277.8 8.6c-12.3-11.4-31.3-11.4-43.5 0l-224 208c-9.6 9-12.8 22.9-8 35.1S18.8 272 32 272h16v176c0 35.3 28.7 64 64 64h288c35.3 0 64-28.7 64-64V272h16c13.2 0 25-8.1 29.8-20.3s1.6-26.2-8-35.1zM240 320h32c26.5 0 48 21.5 48 48v96H192v-96c0-26.5 21.5-48 48-48"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

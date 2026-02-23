@@ -1,0 +1,1447 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OMOP CDM utils in Python">
+      
+      
+        <meta name="author" content="Bell Eapen">
+      
+      
+        <link rel="canonical" href="https://dermatologist.github.io/pyomop/">
+      
+      
+      
+        <link rel="next" href="modules/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>pyomop</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pyomop-omop-swiss-army-knife" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="pyomop" class="md-header__button md-logo" aria-label="pyomop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyomop
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="white" data-md-color-accent="deep-orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/dermatologist/pyomop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dermatologist/pyomop
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="pyomop" class="md-nav__button md-logo" aria-label="pyomop" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    pyomop
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/dermatologist/pyomop" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    dermatologist/pyomop
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#see-this-notebook-or-script-for-examples-mcp-server-is-recommended-for-advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ See this notebook or script for examples. 👇 MCP SERVER is recommended for advanced usage.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔧 Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fhir-to-omop-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔥 FHIR to OMOP mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔥 FHIR to OMOP mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-line
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP Server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage-with-mcp-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage with MCP Clients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#available-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available MCP Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Transport Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#available-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eunomia-import-and-cohort-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Eunomia import and cohort creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyhealth-and-plp-compatibility-for-machine-learning-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyHealth and PLP Compatibility (For Machine Learning pipelines)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Databases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables-for-database-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables for Database Connection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-assisted-etl-work-in-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗄️ Agent Assisted ETL - Work in progress
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗄️ Agent Assisted ETL - Work in progress">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema extraction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema extraction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributors
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="modules/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Modules
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="pyomop_migrate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    pyomop-migrate
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="changelog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#see-this-notebook-or-script-for-examples-mcp-server-is-recommended-for-advanced-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ See this notebook or script for examples. 👇 MCP SERVER is recommended for advanced usage.
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔧 Usage
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fhir-to-omop-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔥 FHIR to OMOP mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔥 FHIR to OMOP mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command-line
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MCP Server
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MCP Server">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#usage-with-mcp-clients" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Usage with MCP Clients
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#available-mcp-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available MCP Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP Transport Support
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#available-prompts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Available Prompts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eunomia-import-and-cohort-creation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Eunomia import and cohort creation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pyhealth-and-plp-compatibility-for-machine-learning-pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyHealth and PLP Compatibility (For Machine Learning pipelines)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Additional Tools
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#supported-databases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Databases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables-for-database-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Variables for Database Connection
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-assisted-etl-work-in-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗄️ Agent Assisted ETL - Work in progress
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗄️ Agent Assisted ETL - Work in progress">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema extraction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema extraction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contributors
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="pyomop-omop-swiss-army-knife">pyomop: OMOP Swiss Army Knife 🔧<a class="headerlink" href="#pyomop-omop-swiss-army-knife" title="Permanent link">&para;</a></h1>
+<p><a href="https://img.shields.io/github/v/release/dermatologist/pyomop"><img alt="Release" src="https://img.shields.io/github/v/release/dermatologist/pyomop" /></a>
+<a href="https://github.com/dermatologist/pyomop/actions/workflows/pytest.yml?query=branch%3Adevelop"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/dermatologist/pyomop/pytest.yml?branch=develop" /></a>
+<a href="https://codecov.io/gh/dermatologist/pyomop"><img alt="codecov" src="https://codecov.io/gh/dermatologist/pyomop/branch/develop/graph/badge.svg" /></a>
+<a href="https://img.shields.io/github/commit-activity/m/dermatologist/pyomop"><img alt="Commit activity" src="https://img.shields.io/github/commit-activity/m/dermatologist/pyomop" /></a>
+<a href="https://img.shields.io/github/license/dermatologist/pyomop"><img alt="License" src="https://img.shields.io/github/license/dermatologist/pyomop" /></a>
+<a href="https://pypi.org/project/pyomop"><img alt="Downloads" src="https://img.shields.io/pypi/dm/pyomop" /></a>
+<a href="https://dermatologist.github.io/pyomop/"><img alt="Documentation" src="https://badgen.net/badge/icon/documentation?icon=libraries&amp;label" /></a></p>
+<!-- gh-dependents-info-used-by-start -->
+<p><a href="https://github.com/dermatologist/pyomop/blob/develop/docs/github-dependents-info.md"><img alt="Generated by github-dependents-info" src="https://img.shields.io/static/v1?label=Used%20by&amp;message=3&amp;color=informational&amp;logo=slickpic" /></a><!-- gh-dependents-info-used-by-end --></p>
+<h2 id="overview">✨ Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p><strong>pyomop</strong> is your OMOP Swiss Army Knife 🔧 for working with <a href="https://www.ohdsi.org/">OHDSI</a> OMOP Common Data Model (CDM) v5.4 or v6 compliant databases using SQLAlchemy as the ORM. It supports converting query results to pandas DataFrames for machine learning pipelines and provides utilities for working with OMOP vocabularies. Table definitions are based on the <a href="https://github.com/thehyve/omop-cdm">omop-cdm</a> library. Pyomop is designed to be a lightweight, easy-to-use library for researchers and developers experimenting and testing with OMOP CDM databases. It can be used both as a commandline tool and as an imported library in your code.</p>
+<ul>
+<li>Supports SQLite, PostgreSQL, and MySQL. CDM and Vocab tables are created in the same schema. (See usage below for more details)</li>
+<li>LLM-based natural language queries via langchain. <a href="examples/llm_example.py">Usage</a>.</li>
+<li>🔥 FHIR to OMOP conversion utilities. (See usage below for more details)</li>
+<li>Execute <a href="https://github.com/OHDSI/QueryLibrary">QueryLibrary</a>. (See usage below for more details)</li>
+</ul>
+<p>Please ⭐️ If you find this project useful!</p>
+<h2 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h2>
+<p><strong>Stable release:</strong></p>
+<pre><code>pip install pyomop
+</code></pre>
+<p><strong>Development version:</strong></p>
+<pre><code>git clone https://github.com/dermatologist/pyomop.git
+cd pyomop
+pip install -e .
+</code></pre>
+<p><strong>LLM support:</strong></p>
+<pre><code>pip install pyomop[llm]
+</code></pre>
+<h4 id="see-this-notebook-or-script-for-examples-mcp-server-is-recommended-for-advanced-usage">✨ See <a href="examples/llm_example.ipynb">this notebook</a> or <a href="examples/llm_example.py">script</a> for examples. 👇 <a href="#mcp-server">MCP SERVER</a> is recommended for advanced usage.<a class="headerlink" href="#see-this-notebook-or-script-for-examples-mcp-server-is-recommended-for-advanced-usage" title="Permanent link">&para;</a></h4>
+<h2 id="docker">Docker<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A <a href="/docker-compose.yml">docker-compose</a> is provided to quickly set up an environment with postgrs, <a href="https://github.com/OHDSI/WebAPI">webapi</a>, <a href="https://github.com/OHDSI/atlas">atlas</a> and a <a href="/examples/webapi_source.sql">sql script</a> to create a source in webapi. The script can be run using the <code>psql</code> command line tool or via the webapi UI. Please refresh after running the script by sending a request to /WebAPI/source/refresh.</li>
+</ul>
+<h2 id="usage">🔧 Usage<a class="headerlink" href="#usage" title="Permanent link">&para;</a></h2>
+<pre><code class="language-python">import asyncio
+import datetime
+
+from sqlalchemy import select
+
+from pyomop import CdmEngineFactory, CdmVector, CdmVocabulary
+# cdm6 and cdm54 are supported
+from pyomop.cdm54 import Base, Cohort, Person, Vocabulary
+
+async def main():
+    cdm = CdmEngineFactory() # Creates SQLite database by default for fast testing
+    # cdm = CdmEngineFactory(db='pgsql', host='', port=5432,
+    #                       user='', pw='',
+    #                       name='', schema='')
+    # cdm = CdmEngineFactory(db='mysql', host='', port=3306,
+    #                       user='', pw='',
+    #                       name='')
+    engine = cdm.engine
+    # Comment the following line if using an existing database. Both cdm6 and cdm54 are supported, see the import statements above
+    await cdm.init_models(Base.metadata) # Initializes the database with the OMOP CDM tables
+    vocab = CdmVocabulary(cdm, version='cdm54') # or 'cdm6' for v6
+    # Uncomment the following line to create a new vocabulary from CSV files
+    # vocab.create_vocab('/path/to/csv/files')
+
+    async with cdm.session() as session:  # type: ignore
+        # Add Persons
+        async with session.begin():
+            session.add(
+                Person(
+                    person_id=100,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                )
+            )
+            session.add(
+                Person(
+                    person_id=101,
+                    gender_concept_id=8532,
+                    gender_source_concept_id=8512,
+                    year_of_birth=1980,
+                    month_of_birth=1,
+                    day_of_birth=1,
+                    birth_datetime=datetime.datetime(1980, 1, 1),
+                    race_concept_id=8552,
+                    race_source_concept_id=8552,
+                    ethnicity_concept_id=38003564,
+                    ethnicity_source_concept_id=38003564,
+                )
+            )
+
+        # Query the Person
+        stmt = select(Person).where(Person.person_id == 100)
+        result = await session.execute(stmt)
+        for row in result.scalars():
+            print(row)
+            assert row.person_id == 100
+
+        # Query the person pattern 2
+        person = await session.get(Person, 100)
+        print(person)
+        assert person is not None
+        assert person.person_id == 100
+
+    # Convert result to a pandas dataframe
+    vec = CdmVector()
+
+    # https://github.com/OHDSI/QueryLibrary/blob/master/inst/shinyApps/QueryLibrary/queries/person/PE02.md
+    result = await vec.query_library(cdm, resource='person', query_name='PE02')
+    df = vec.result_to_df(result)
+    print(&quot;DataFrame from result:&quot;)
+    print(df.head())
+
+    result = await vec.execute(cdm, query='SELECT * from person;')
+    print(&quot;Executing custom query:&quot;)
+    df = vec.result_to_df(result)
+    print(&quot;DataFrame from result:&quot;)
+    print(df.head())
+
+    # Close engine
+    await engine.dispose() # type: ignore
+
+# Run the main function
+asyncio.run(main())
+</code></pre>
+<h2 id="fhir-to-omop-mapping">🔥 FHIR to OMOP mapping<a class="headerlink" href="#fhir-to-omop-mapping" title="Permanent link">&para;</a></h2>
+<p>pyomop can load FHIR Bulk Export (NDJSON) files into an OMOP CDM database.</p>
+<ul>
+<li>Sample datasets: https://github.com/smart-on-fhir/sample-bulk-fhir-datasets</li>
+<li>Remove any non-FHIR files (for example, <code>log.ndjson</code>) from the input folder.</li>
+<li>Download OMOP vocabulary CSV files (for example from OHDSI Athena) and place them in a folder.</li>
+</ul>
+<p>Run:</p>
+<pre><code class="language-bash">pyomop --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
+</code></pre>
+<p>This will create an OMOP CDM in SQLite, load the vocabulary files, and import the FHIR data from the input folder and reconcile vocabulary, mapping source_value to concept_id. The mapping is defined in the <code>mapping.example.json</code> file. The default mapping is <a href="src/pyomop/mapping.default.json">here</a>. Mapping happens in 5 steps as implemented <a href="src/pyomop/loader.py">here</a>.</p>
+<ul>
+<li>Example using postgres (Docker)</li>
+</ul>
+<pre><code class="language-bash">pyomop --dbtype pgsql --host localhost --user postgres --pw mypass  --create --vocab ~/Downloads/omop-vocab/ --input ~/Downloads/fhir/
+</code></pre>
+<ul>
+<li>FHIR to data frame mapping is done with <a href="https://github.com/dermatologist/fhiry">FHIRy</a></li>
+<li>Most of the code for this functionality was written by an LLM agent. The prompts used are <a href="notes/prompt.md">here</a></li>
+</ul>
+<h3 id="command-line">Command-line<a class="headerlink" href="#command-line" title="Permanent link">&para;</a></h3>
+<pre><code class="language-text">  -c, --create                Create CDM tables (see --version).
+  -t, --dbtype TEXT           Database Type for creating CDM (sqlite, mysql or
+                              pgsql)
+  -h, --host TEXT             Database host
+  -p, --port TEXT             Database port
+  -u, --user TEXT             Database user
+  -w, --pw TEXT               Database password
+  -v, --version TEXT          CDM version (cdm54 (default) or cdm6)
+  -n, --name TEXT             Database name
+  -s, --schema TEXT           Database schema (for pgsql)
+  -i, --vocab TEXT            Folder with vocabulary files (csv) to import
+  -f, --input DIRECTORY       Input folder with FHIR bundles or ndjson files.
+  -e, --eunomia-dataset TEXT  Download and load Eunomia dataset (e.g.,
+                              'GiBleed', 'Synthea')
+  --eunomia-path TEXT         Path to store/find Eunomia datasets (uses
+                              EUNOMIA_DATA_FOLDER env var if not specified)
+  --connection-info           Display connection information for the database (For R package compatibility)
+  --mcp-server                Start MCP server for stdio interaction
+  --pyhealth-path TEXT        Path to export PyHealth compatible CSV files
+  --help                      Show this message and exit.
+</code></pre>
+<h2 id="mcp-server">MCP Server<a class="headerlink" href="#mcp-server" title="Permanent link">&para;</a></h2>
+<p>pyomop includes an MCP (Model Context Protocol) server that exposes tools for interacting with OMOP CDM databases. This allows MCP clients to create databases, load data, and execute SQL statements.</p>
+<p align="center">
+  <img src="https://github.com/dermatologist/pyomop/blob/develop/notes/pyomop-mcp.gif" />
+</p>
+
+<h4 id="usage-with-mcp-clients">Usage with MCP Clients<a class="headerlink" href="#usage-with-mcp-clients" title="Permanent link">&para;</a></h4>
+<p>The MCP server can be used with any MCP-compatible client such as Claude desktop. Example configuration for <a href="/.vscode/mcp.json">VSCODE</a> as below is already provided in the repository. So if you are viewing this in VSCODE, you can start server and enable tools directly in Copilot.</p>
+<pre><code class="language-json">{
+  &quot;servers&quot;: {
+      &quot;pyomop&quot;: {
+      &quot;command&quot;: &quot;uv&quot;,
+      &quot;args&quot;: [&quot;run&quot;, &quot;pyomop&quot;, &quot;--mcp-server&quot;]
+    }
+  }
+}
+</code></pre>
+<ul>
+<li><em>If the vocabulary is not installed locally or advanced vocabulary support is required from Athena, it is recommended to combine <a href="https://github.com/OHNLP/omop_mcp">omop_mcp</a> with PyOMOP.</em></li>
+</ul>
+<h4 id="available-mcp-tools">Available MCP Tools<a class="headerlink" href="#available-mcp-tools" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>create_cdm</strong>: Create an empty CDM database</li>
+<li><strong>create_eunomia</strong>: Add Eunomia sample dataset</li>
+<li><strong>get_table_columns</strong>: Get column names for a specific table</li>
+<li><strong>get_single_table_info</strong>: Get detailed table information, including foreign keys</li>
+<li><strong>get_usable_table_names</strong>: Get a list of all available table names</li>
+<li><strong>run_sql</strong>: Execute SQL statements with error handling</li>
+<li><strong>example_query</strong>: Get example queries for specific OMOP CDM tables from OHDSI QueryLibrary</li>
+<li>
+<p><strong>check_sql</strong>: Validate SQL query syntax before execution</p>
+</li>
+<li>
+<p>create_cdm and create_eunomia support only local sqlite databases to avoid inadvertent data loss in production databases.</p>
+</li>
+</ul>
+<h4 id="http-transport-support">HTTP Transport Support<a class="headerlink" href="#http-transport-support" title="Permanent link">&para;</a></h4>
+<p>The MCP server now supports both stdio (default) and HTTP transports:</p>
+<p><strong>Stdio transport (default):</strong></p>
+<pre><code class="language-bash">pyomop --mcp-server
+# or
+pyomop-mcp-server
+</code></pre>
+<p><strong>HTTP transport:</strong></p>
+<pre><code class="language-bash">pyomop-mcp-server-http
+# or with custom host/port
+pyomop-mcp-server-http --host 0.0.0.0 --port 8000
+# or via Python module
+python -m pyomop.mcp.server --http --host 0.0.0.0 --port 8000
+</code></pre>
+<p>To use HTTP transport, install additional dependencies:</p>
+<pre><code class="language-bash">pip install pyomop[http]
+# or for both LLM and HTTP features
+pip install pyomop[llm,http]
+</code></pre>
+<h4 id="available-prompts">Available Prompts<a class="headerlink" href="#available-prompts" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>query_execution_steps</strong>: Provides step-by-step guidance for executing database queries based on free text instructions</li>
+</ul>
+<h3 id="eunomia-import-and-cohort-creation">Eunomia import and cohort creation<a class="headerlink" href="#eunomia-import-and-cohort-creation" title="Permanent link">&para;</a></h3>
+<pre><code>pyomop -e Synthea27Nj -v 5.4 --connection-info
+pyomop -e GiBleed -v 5.3 --connection-info
+</code></pre>
+<h2 id="pyhealth-and-plp-compatibility-for-machine-learning-pipelines">PyHealth and PLP Compatibility (For Machine Learning pipelines)<a class="headerlink" href="#pyhealth-and-plp-compatibility-for-machine-learning-pipelines" title="Permanent link">&para;</a></h2>
+<p>pyomop supports exporting OMOP CDM data (to <code>--pyhealth-path</code>) in a format compatible with <a href="https://github.com/sunlabuiuc/PyHealth">PyHealth</a>, a machine learning library for healthcare data analysis (<a href="/examples/pyhealth.ipynb">See Notebook</a> and usage below). Additionally, you can export the connection information for use with the various R packages such as <a href="https://ohdsi.github.io/PatientLevelPrediction/">PatientLevelPrediction</a> using the <code>--connection-info</code> option.</p>
+<pre><code class="language-bash">pyomop -e GiBleed -v 5.3 --connection-info --pyhealth-path ~/pyhealth
+</code></pre>
+<h2 id="additional-tools">Additional Tools<a class="headerlink" href="#additional-tools" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Convert FHIR to pandas DataFrame:</strong> <a href="https://github.com/dermatologist/fhiry">fhiry</a></li>
+<li><strong>.NET and Golang OMOP CDM:</strong> <a href="https://github.com/dermatologist/omopcdm-dot-net">.NET</a>, <a href="https://github.com/E-Health/gocdm">Golang</a></li>
+</ul>
+<h2 id="supported-databases">Supported Databases<a class="headerlink" href="#supported-databases" title="Permanent link">&para;</a></h2>
+<ul>
+<li>PostgreSQL</li>
+<li>MySQL</li>
+<li>SQLite</li>
+</ul>
+<h2 id="environment-variables-for-database-connection">Environment Variables for Database Connection<a class="headerlink" href="#environment-variables-for-database-connection" title="Permanent link">&para;</a></h2>
+<p>You can configure database connection parameters using environment variables. These will be used as defaults by pyomop and the MCP server:</p>
+<ul>
+<li><code>PYOMOP_DB</code>: Database type (<code>sqlite</code>, <code>mysql</code>, <code>pgsql</code>)</li>
+<li><code>PYOMOP_HOST</code>: Database host</li>
+<li><code>PYOMOP_PORT</code>: Database port</li>
+<li><code>PYOMOP_USER</code>: Database user</li>
+<li><code>PYOMOP_PW</code>: Database password</li>
+<li><code>PYOMOP_SCHEMA</code>: Database schema (for PostgreSQL)</li>
+</ul>
+<p>Example usage:</p>
+<pre><code class="language-bash">export PYOMOP_DB=pgsql
+export PYOMOP_HOST=localhost
+export PYOMOP_PORT=5432
+export PYOMOP_USER=postgres
+export PYOMOP_PW=mypass
+export PYOMOP_SCHEMA=omop
+</code></pre>
+<p>These environment variables will be checked before assigning default values for database connection in pyomop and MCP server tools.</p>
+<h2 id="agent-assisted-etl-work-in-progress">🗄️ Agent Assisted ETL - Work in progress<a class="headerlink" href="#agent-assisted-etl-work-in-progress" title="Permanent link">&para;</a></h2>
+<p>Use <code>--migrate</code> to run the generic loader from the command line.  Provide
+source-database connection details with <code>--src-*</code> options; target-database
+details use the standard <code>--dbtype</code> / <code>--host</code> / … options.</p>
+<pre><code class="language-bash"># SQLite source → SQLite OMOP target
+pyomop-migrate --migrate \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --dbtype sqlite --name omop.sqlite \
+  --mapping mapping.json
+
+# PostgreSQL source → PostgreSQL OMOP target
+pyomop-migrate --migrate \
+  --src-dbtype pgsql --src-host srchost --src-user reader --src-pw secret --src-name ehr \
+  --dbtype pgsql --host omophost --user writer --pw secret --name omop \
+  --mapping ehr_to_omop.json --batch-size 500
+</code></pre>
+<p>Source connection credentials can also be provided via environment variables
+(<code>SRC_DB_HOST</code>, <code>SRC_DB_PORT</code>, <code>SRC_DB_USER</code>, <code>SRC_DB_PASSWORD</code>, <code>SRC_DB_NAME</code>)
+to avoid exposing passwords in the shell history.</p>
+<h3 id="schema-extraction">Schema extraction<a class="headerlink" href="#schema-extraction" title="Permanent link">&para;</a></h3>
+<p>Use <code>--extract-schema</code> to generate a Markdown document describing the source
+database schema (tables, columns, types, PK/FK relationships).  This is
+especially useful for feeding to an AI agent to generate the mapping JSON.</p>
+<pre><code class="language-bash">pyomop-migrate --extract-schema \
+  --src-dbtype sqlite --src-name source.sqlite \
+  --schema-output schema.md
+</code></pre>
+<p>The same <code>SRC_DB_*</code> environment variables are supported for credentials.</p>
+<h4 id="plan">Plan<a class="headerlink" href="#plan" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Use the extracted schema to generate a mapping JSON using an appropriate agentic skill.</li>
+</ul>
+<p>See the <a href="src/pyomop/mapping.generic.example.json">bundled example mapping</a> and
+the <a href="docs/pyomop_migrate.md">full documentation</a> for all supported options.</p>
+<h2 id="contributing">Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>Pull requests are welcome! See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+<h2 id="contributors">Contributors<a class="headerlink" href="#contributors" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="https://nuchange.ca">Bell Eapen</a> <a href="https://twitter.com/beapen"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/beapen?style=social" /></a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Maintained by <a href="https://github.com/dermatologist">dermatologist</a>.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/dermatologist/pyomop" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://pypi.org/project/pyomop" target="_blank" rel="noopener" title="pypi.org" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6M286.2 444.7a20.4 20.4 0 1 1 0-40.7 20.4 20.4 0 1 1 0 40.7M167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8.1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4m-6.6-183.4a20.4 20.4 0 1 1 0 40.8 20.4 20.4 0 1 1 0-40.8"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://www.linkedin.com/in/beapen" target="_blank" rel="noopener" title="www.linkedin.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://nuchange.ca" target="_blank" rel="noopener" title="nuchange.ca" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M277.8 8.6c-12.3-11.4-31.3-11.4-43.5 0l-224 208c-9.6 9-12.8 22.9-8 35.1S18.8 272 32 272h16v176c0 35.3 28.7 64 64 64h288c35.3 0 64-28.7 64-64V272h16c13.2 0 25-8.1 29.8-20.3s1.6-26.2-8-35.1zM240 320h32c26.5 0 48 21.5 48 48v96H192v-96c0-26.5 21.5-48 48-48"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": [], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
