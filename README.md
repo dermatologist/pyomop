@@ -313,8 +313,7 @@ These environment variables will be checked before assigning default values for 
 
 
 
-## 🗄️ Agent Assisted ETL - Work in progress
-
+## 🗄️ Agent Assisted ETL (beta)
 Use `--migrate` to run the generic loader from the command line.  Provide
 source-database connection details with `--src-*` options; target-database
 details use the standard `--dbtype` / `--host` / … options.
