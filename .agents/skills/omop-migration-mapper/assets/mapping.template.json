@@ -1,0 +1,120 @@
+{
+    "tables": [
+        {
+            "source_table": "source_patients",
+            "name": "person",
+            "filters": [
+                {
+                    "column": "is_active",
+                    "equals": 1
+                }
+            ],
+            "columns": {
+                "person_id": "patient_id",
+                "person_source_value": "mrn",
+                "gender_concept_id": 8532,
+                "gender_source_value": "gender",
+                "gender_source_concept_id": {
+                    "const": 0
+                },
+                "year_of_birth": "birth_year",
+                "month_of_birth": "birth_month",
+                "day_of_birth": "birth_day",
+                "birth_datetime": ""
+            }
+        },
+        {
+            "source_table": "source_diagnoses",
+            "name": "condition_occurrence",
+            "filters": [
+                {
+                    "column": "status",
+                    "not_empty": true
+                }
+            ],
+            "columns": {
+                "person_id": "patient_id",
+                "condition_concept_id": 0,
+                "condition_source_value": "icd_code",
+                "condition_source_concept_id": 0,
+                "condition_start_date": "onset_date",
+                "condition_start_datetime": "",
+                "condition_end_date": "resolution_date",
+                "condition_end_datetime": "",
+                "condition_type_concept_id": {
+                    "const": 32817
+                },
+                "condition_status_concept_id": 0,
+                "visit_occurrence_id": "visit_id"
+            }
+        },
+        {
+            "source_table": "source_medications",
+            "name": "drug_exposure",
+            "columns": {
+                "person_id": "patient_id",
+                "drug_concept_id": 0,
+                "drug_source_value": "rx_code",
+                "drug_source_concept_id": 0,
+                "drug_exposure_start_date": "prescription_date",
+                "drug_exposure_start_datetime": "",
+                "drug_exposure_end_date": "end_date",
+                "drug_exposure_end_datetime": "",
+                "drug_type_concept_id": {
+                    "const": 38000177
+                },
+                "quantity": "quantity",
+                "days_supply": "days_supply"
+            }
+        },
+        {
+            "source_table": "source_labs",
+            "name": "measurement",
+            "columns": {
+                "person_id": "patient_id",
+                "measurement_concept_id": 0,
+                "measurement_source_value": "lab_code",
+                "measurement_source_concept_id": 0,
+                "measurement_date": "test_date",
+                "measurement_datetime": "",
+                "measurement_type_concept_id": {
+                    "const": 5001
+                },
+                "value_as_number": "result_numeric",
+                "value_as_string": "result_text",
+                "unit_concept_id": 0,
+                "unit_source_value": "unit_name"
+            }
+        }
+    ],
+    "concept": [
+        {
+            "table": "condition_occurrence",
+            "mappings": [
+                {
+                    "source": "icd_code",
+                    "target": "condition_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "drug_exposure",
+            "mappings": [
+                {
+                    "source": "rx_code",
+                    "target": "drug_concept_id"
+                }
+            ]
+        },
+        {
+            "table": "measurement",
+            "mappings": [
+                {
+                    "source": "lab_code",
+                    "target": "measurement_concept_id"
+                }
+            ]
+        }
+    ],
+    "force_text_fields": []
+}
