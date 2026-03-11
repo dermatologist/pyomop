@@ -9,7 +9,16 @@ Automate the creation of a production-ready `mapping.json` file for migrating he
 
 ## Workflow overview
 
-The skill executes 8 sequential steps: **schema extraction** → **mapping skeleton** → **column mapping** → **concept mapping** → **special-case handling** → **staged validation** → **iteration & refinement** → **handoff**.
+The skill executes 9 sequential steps: **pyomop install** → **schema extraction** → **mapping skeleton** → **column mapping** → **concept mapping** → **special-case handling** → **staged validation** → **iteration & refinement** → **handoff**.
+
+## Step 0: Install pyomop
+
+**Input:** User confirms they have Python 3.11+ and pip installed.
+**Action:** Run `pip install pyomop` to install the latest version of the pyomop package, which includes the `pyomop-migrate` CLI tool.
+
+```bash
+pip install pyomop
+```
 
 ## Step 1: Extract source database schema
 
