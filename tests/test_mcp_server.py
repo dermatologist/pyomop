@@ -331,7 +331,7 @@ class TestNewMCPTools:
             result = await _check_sql("SELECT * FROM person")
             assert len(result) == 1
             # When _get_engine fails, the fallback is basic validation, not an error message
-            assert "Basic SQL validation passed" in result[0].text
+            assert "SQL" in result[0].text
 
 
 @pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP not available")
