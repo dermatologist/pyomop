@@ -80,6 +80,7 @@ pyomop-mcp-server-http = "pyomop.mcp.server:main_http_cli"
 [project.optional-dependencies]
 llm = [
     "langchain>=1.0",
+    "langgraph>=1.1.5",
     "langchain-community",
     "langchain-core",
     "langchain-huggingface",
