@@ -85,6 +85,7 @@ llm = [
     "langchain-huggingface",
     "langchain_google_genai",
     "langchain-openai",
+    "langgraph>=1.1.5",
     "dhti-elixir-base",
 ]
 http = [
