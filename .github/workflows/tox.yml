@@ -17,7 +17,7 @@ jobs:
         python-version: ['3.11']
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Set up the environment
       uses: ./.github/actions/setup-python-env
