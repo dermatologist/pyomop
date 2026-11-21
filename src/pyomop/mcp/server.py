@@ -31,11 +31,24 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy.ext.asyncio import AsyncEngine
 
 try:
-    import mcp.server.stdio
     import mcp.server.sse
+    import mcp.server.stdio
     import mcp.types as types
-    from mcp.server import NotificationOptions, Server
+    from mcp.server import Server, ServerRequestContext
     from mcp.server.models import InitializationOptions
+    from mcp.types import (
+        CallToolRequestParams,
+        CallToolResult,
+        GetPromptRequestParams,
+        GetPromptResult,
+        ListPromptsResult,
+        ListToolsResult,
+        PaginatedRequestParams,
+        Prompt,
+        PromptMessage,
+        TextContent,
+        Tool,
+    )
 except ImportError:
     raise ImportError("Install 'mcp' to use MCP server features: pip install mcp")
 
@@ -44,8 +57,473 @@ from ..engine_factory import CdmEngineFactory
 # Set up logging
 logger = logging.getLogger(__name__)
 
-# Initialize the MCP server
-server = Server("pyomop-mcp-server")
+
+# Define handler functions before creating the server
+async def handle_list_tools(
+    ctx: ServerRequestContext, params: PaginatedRequestParams | None
+) -> ListToolsResult:
+    """List available MCP tools for pyomop CDM interaction."""
+    return ListToolsResult(
+        tools=[
+            Tool(
+                name="create_cdm",
+                description="Create an empty CDM database",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "db_path": {
+                            "type": "string",
+                            "description": "Full path to the SQLite database file",
+                        },
+                        "version": {
+                            "type": "string",
+                            "enum": ["cdm54", "cdm6"],
+                            "default": "cdm54",
+                            "description": "CDM version to create",
+                        },
+                    },
+                    "required": [],
+                },
+            ),
+            Tool(
+                name="create_eunomia",
+                description="Create a CDM database with eunomia data pre-installed",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "db_path": {
+                            "type": "string",
+                            "description": "Full path to the SQLite database file",
+                        },
+                        "version": {
+                            "type": "string",
+                            "enum": ["5.3", "5.4"],
+                            "default": "5.4",
+                            "description": "CDM version to create",
+                        },
+                        "dataset": {
+                            "type": "string",
+                            "default": "Synthea27Nj",
+                            "description": "Eunomia dataset to load",
+                        },
+                    },
+                    "required": [],
+                },
+            ),
+            Tool(
+                name="get_engine",
+                description="Get database engine for interaction (returns engine URL/type summary)",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "db": {
+                            "type": "string",
+                            "default": "sqlite",
+                            "description": "Database type (sqlite, mysql, pgsql)",
+                        },
+                        "host": {
+                            "type": "string",
+                            "default": "localhost",
+                            "description": "Database host (ignored for sqlite)",
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 5432,
+                            "description": "Database port (ignored for sqlite)",
+                        },
+                        "user": {
+                            "type": "string",
+                            "default": "root",
+                            "description": "Database user (ignored for sqlite)",
+                        },
+                        "pw": {
+                            "type": "string",
+                            "default": "pass",
+                            "description": "Database password (ignored for sqlite)",
+                        },
+                        "db_path": {
+                            "type": "string",
+                            "default": "cdm.sqlite",
+                            "description": "Database path",
+                        },
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "description": "PostgreSQL schema to use for CDM",
+                        },
+                    },
+                    "required": [],
+                },
+            ),
+            Tool(
+                name="get_table_columns",
+                description="Get column names for a specific table",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "table_name": {
+                            "type": "string",
+                            "description": "Name of the table to get columns for",
+                        },
+                        "version": {
+                            "type": "string",
+                            "enum": ["cdm54", "cdm6"],
+                            "default": "cdm54",
+                            "description": "CDM version",
+                        },
+                        "db": {
+                            "type": "string",
+                            "default": "sqlite",
+                            "description": "Database type (sqlite, mysql, pgsql)",
+                        },
+                        "host": {
+                            "type": "string",
+                            "default": "localhost",
+                            "description": "Database host (ignored for sqlite)",
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 5432,
+                            "description": "Database port (ignored for sqlite)",
+                        },
+                        "user": {
+                            "type": "string",
+                            "default": "root",
+                            "description": "Database user (ignored for sqlite)",
+                        },
+                        "pw": {
+                            "type": "string",
+                            "default": "pass",
+                            "description": "Database password (ignored for sqlite)",
+                        },
+                        "db_path": {
+                            "type": "string",
+                            "default": "cdm.sqlite",
+                            "description": "Database path",
+                        },
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "description": "PostgreSQL schema to use for CDM",
+                        },
+                    },
+                    "required": ["table_name"],
+                },
+            ),
+            Tool(
+                name="get_single_table_info",
+                description="Get detailed information about a single table including columns and foreign keys",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "table_name": {
+                            "type": "string",
+                            "description": "Name of the table to get info for",
+                        },
+                        "version": {
+                            "type": "string",
+                            "enum": ["cdm54", "cdm6"],
+                            "default": "cdm54",
+                            "description": "CDM version",
+                        },
+                        "db": {
+                            "type": "string",
+                            "default": "sqlite",
+                            "description": "Database type (sqlite, mysql, pgsql)",
+                        },
+                        "host": {
+                            "type": "string",
+                            "default": "localhost",
+                            "description": "Database host (ignored for sqlite)",
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 5432,
+                            "description": "Database port (ignored for sqlite)",
+                        },
+                        "user": {
+                            "type": "string",
+                            "default": "root",
+                            "description": "Database user (ignored for sqlite)",
+                        },
+                        "pw": {
+                            "type": "string",
+                            "default": "pass",
+                            "description": "Database password (ignored for sqlite)",
+                        },
+                        "db_path": {
+                            "type": "string",
+                            "default": "cdm.sqlite",
+                            "description": "Database path",
+                        },
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "description": "PostgreSQL schema to use for CDM",
+                        },
+                    },
+                    "required": ["table_name"],
+                },
+            ),
+            Tool(
+                name="get_usable_table_names",
+                description="Get list of all usable table names in the CDM",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "db": {
+                            "type": "string",
+                            "default": "sqlite",
+                            "description": "Database type (sqlite, mysql, pgsql)",
+                        },
+                        "host": {
+                            "type": "string",
+                            "default": "localhost",
+                            "description": "Database host (ignored for sqlite)",
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 5432,
+                            "description": "Database port (ignored for sqlite)",
+                        },
+                        "user": {
+                            "type": "string",
+                            "default": "root",
+                            "description": "Database user (ignored for sqlite)",
+                        },
+                        "pw": {
+                            "type": "string",
+                            "default": "pass",
+                            "description": "Database password (ignored for sqlite)",
+                        },
+                        "db_path": {
+                            "type": "string",
+                            "default": "cdm.sqlite",
+                            "description": "Database path",
+                        },
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "description": "PostgreSQL schema to use for CDM",
+                        },
+                    },
+                    "required": [],
+                },
+            ),
+            Tool(
+                name="run_sql",
+                description="Execute a SQL statement on the CDM database",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "sql": {
+                            "type": "string",
+                            "description": "SQL statement to execute",
+                        },
+                        "fetch_results": {
+                            "type": "boolean",
+                            "default": True,
+                            "description": "Whether to fetch and return results for SELECT queries",
+                        },
+                        "db": {
+                            "type": "string",
+                            "default": "sqlite",
+                            "description": "Database type (sqlite, mysql, pgsql)",
+                        },
+                        "host": {
+                            "type": "string",
+                            "default": "localhost",
+                            "description": "Database host (ignored for sqlite)",
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 5432,
+                            "description": "Database port (ignored for sqlite)",
+                        },
+                        "user": {
+                            "type": "string",
+                            "default": "root",
+                            "description": "Database user (ignored for sqlite)",
+                        },
+                        "pw": {
+                            "type": "string",
+                            "default": "pass",
+                            "description": "Database password (ignored for sqlite)",
+                        },
+                        "db_path": {
+                            "type": "string",
+                            "default": "cdm.sqlite",
+                            "description": "Database path",
+                        },
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "description": "PostgreSQL schema to use for CDM",
+                        },
+                    },
+                    "required": ["sql"],
+                },
+            ),
+            Tool(
+                name="example_query",
+                description="Get example queries for a specific OMOP CDM table from OHDSI QueryLibrary. Useful for understanding query patterns.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "table_name": {
+                            "type": "string",
+                            "description": "Name of the OMOP CDM table",
+                            "enum": [
+                                "person",
+                                "condition_occurrence",
+                                "condition_era",
+                                "drug_exposure",
+                                "drug_era",
+                                "observation",
+                            ],
+                        },
+                    },
+                    "required": ["table_name"],
+                },
+            ),
+            Tool(
+                name="check_sql",
+                description="Validate and check SQL query syntax before execution. Returns a corrected version of the query if issues are found.",
+                input_schema={
+                    "type": "object",
+                    "properties": {
+                        "sql": {
+                            "type": "string",
+                            "description": "SQL query to validate",
+                        },
+                        "db": {
+                            "type": "string",
+                            "default": "sqlite",
+                            "description": "Database type (sqlite, mysql, pgsql)",
+                        },
+                        "host": {
+                            "type": "string",
+                            "default": "localhost",
+                            "description": "Database host (ignored for sqlite)",
+                        },
+                        "port": {
+                            "type": "integer",
+                            "default": 5432,
+                            "description": "Database port (ignored for sqlite)",
+                        },
+                        "user": {
+                            "type": "string",
+                            "default": "root",
+                            "description": "Database user (ignored for sqlite)",
+                        },
+                        "pw": {
+                            "type": "string",
+                            "default": "pass",
+                            "description": "Database password (ignored for sqlite)",
+                        },
+                        "db_path": {
+                            "type": "string",
+                            "default": "cdm.sqlite",
+                            "description": "Database path",
+                        },
+                        "schema": {
+                            "type": "string",
+                            "default": "",
+                            "description": "PostgreSQL schema to use for CDM",
+                        },
+                    },
+                    "required": ["sql"],
+                },
+            ),
+        ]
+    )
+
+
+async def handle_list_prompts(
+    ctx: ServerRequestContext, params: PaginatedRequestParams | None
+) -> ListPromptsResult:
+    """List available prompts."""
+    return ListPromptsResult(
+        prompts=[
+            Prompt(
+                name="query_execution_steps",
+                description="Steps to execute a database query based on free text instruction",
+            )
+        ]
+    )
+
+
+async def handle_get_prompt(
+    ctx: ServerRequestContext, params: GetPromptRequestParams
+) -> GetPromptResult:
+    """Get a specific prompt."""
+    if params.name == "query_execution_steps":
+        return GetPromptResult(
+            description="Database query execution steps",
+            messages=[
+                PromptMessage(
+                    role="assistant",
+                    content=TextContent(type="text", text=QUERY_EXECUTION_PROMPT),
+                )
+            ],
+        )
+    else:
+        raise ValueError(f"Unknown prompt: {params.name}")
+
+
+async def handle_call_tool(
+    ctx: ServerRequestContext, params: CallToolRequestParams
+) -> CallToolResult:
+    """Handle tool calls."""
+    arguments = params.arguments or {}
+
+    try:
+        if params.name == "create_cdm":
+            result = await _create_cdm(**arguments)
+        elif params.name == "create_eunomia":
+            result = await _create_eunomia(**arguments)
+        elif params.name == "get_engine":
+            engine = await _get_engine(**arguments)
+            # Return engine URL/type summary as TextContent
+            url = getattr(engine, "url", None)
+            url_str = str(url) if url else str(engine)
+            result = [TextContent(type="text", text=f"Engine: {url_str}")]
+        elif params.name == "get_table_columns":
+            result = await _get_table_columns(**arguments)
+        elif params.name == "get_single_table_info":
+            result = await _get_single_table_info(**arguments)
+        elif params.name == "get_usable_table_names":
+            result = await _get_usable_table_names(**arguments)
+        elif params.name == "run_sql":
+            result = await _run_sql(**arguments)
+        elif params.name == "example_query":
+            result = await _example_query(**arguments)
+        elif params.name == "check_sql":
+            result = await _check_sql(**arguments)
+        else:
+            raise ValueError(f"Unknown tool: {params.name}")
+
+        # Convert List[TextContent] to CallToolResult if needed
+        if isinstance(result, list):
+            return CallToolResult(content=result, is_error=False)
+        else:
+            return result
+    except Exception as e:
+        logger.error(f"Error in tool {params.name}: {e}")
+        return CallToolResult(
+            content=[TextContent(type="text", text=f"Error: {str(e)}")],
+            is_error=True,
+        )
+
+
+# Initialize the MCP server with handlers
+server = Server(
+    "pyomop-mcp-server",
+    on_list_tools=handle_list_tools,
+    on_list_prompts=handle_list_prompts,
+    on_get_prompt=handle_get_prompt,
+    on_call_tool=handle_call_tool,
+)
 
 # Static prompt for database query execution
 QUERY_EXECUTION_PROMPT = """
@@ -63,445 +541,7 @@ Always start with understanding the available tables and their structure before 
 """
 
 
-@server.list_tools()
-async def handle_list_tools() -> List[types.Tool]:
-    """List available MCP tools for pyomop CDM interaction."""
-    return [
-        types.Tool(
-            name="create_cdm",
-            description="Create an empty CDM database",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "db_path": {
-                        "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    },
-                    "version": {
-                        "type": "string",
-                        "enum": ["cdm54", "cdm6"],
-                        "default": "cdm54",
-                        "description": "CDM version to create",
-                    },
-                },
-                "required": [],
-            },
-        ),
-        types.Tool(
-            name="create_eunomia",
-            description="Create a CDM database with eunomia data pre-installed",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "db_path": {
-                        "type": "string",
-                        "description": "Full path to the SQLite database file",
-                    },
-                    "version": {
-                        "type": "string",
-                        "enum": ["5.3", "5.4"],
-                        "default": "5.4",
-                        "description": "CDM version to create",
-                    },
-                    "dataset": {
-                        "type": "string",
-                        "default": "Synthea27Nj",
-                        "description": "Eunomia dataset to load",
-                    },
-                },
-                "required": [],
-            },
-        ),
-        types.Tool(
-            name="get_engine",
-            description="Get database engine for interaction (returns engine URL/type summary)",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "db": {
-                        "type": "string",
-                        "default": "sqlite",
-                        "description": "Database type (sqlite, mysql, pgsql)",
-                    },
-                    "host": {
-                        "type": "string",
-                        "default": "localhost",
-                        "description": "Database host (ignored for sqlite)",
-                    },
-                    "port": {
-                        "type": "integer",
-                        "default": 5432,
-                        "description": "Database port (ignored for sqlite)",
-                    },
-                    "user": {
-                        "type": "string",
-                        "default": "root",
-                        "description": "Database user (ignored for sqlite)",
-                    },
-                    "pw": {
-                        "type": "string",
-                        "default": "pass",
-                        "description": "Database password (ignored for sqlite)",
-                    },
-                    "db_path": {
-                        "type": "string",
-                        "default": "cdm.sqlite",
-                        "description": "Database path",
-                    },
-                    "schema": {
-                        "type": "string",
-                        "default": "",
-                        "description": "PostgreSQL schema to use for CDM",
-                    },
-                },
-                "required": [],
-            },
-        ),
-        types.Tool(
-            name="get_table_columns",
-            description="Get column names for a specific table",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "table_name": {
-                        "type": "string",
-                        "description": "Name of the table to get columns for",
-                    },
-                    "version": {
-                        "type": "string",
-                        "enum": ["cdm54", "cdm6"],
-                        "default": "cdm54",
-                        "description": "CDM version",
-                    },
-                    "db": {
-                        "type": "string",
-                        "default": "sqlite",
-                        "description": "Database type (sqlite, mysql, pgsql)",
-                    },
-                    "host": {
-                        "type": "string",
-                        "default": "localhost",
-                        "description": "Database host (ignored for sqlite)",
-                    },
-                    "port": {
-                        "type": "integer",
-                        "default": 5432,
-                        "description": "Database port (ignored for sqlite)",
-                    },
-                    "user": {
-                        "type": "string",
-                        "default": "root",
-                        "description": "Database user (ignored for sqlite)",
-                    },
-                    "pw": {
-                        "type": "string",
-                        "default": "pass",
-                        "description": "Database password (ignored for sqlite)",
-                    },
-                    "db_path": {
-                        "type": "string",
-                        "default": "cdm.sqlite",
-                        "description": "Database path",
-                    },
-                    "schema": {
-                        "type": "string",
-                        "default": "",
-                        "description": "PostgreSQL schema to use for CDM",
-                    },
-                },
-                "required": ["table_name"],
-            },
-        ),
-        types.Tool(
-            name="get_single_table_info",
-            description="Get detailed information about a single table including columns and foreign keys",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "table_name": {
-                        "type": "string",
-                        "description": "Name of the table to get info for",
-                    },
-                    "version": {
-                        "type": "string",
-                        "enum": ["cdm54", "cdm6"],
-                        "default": "cdm54",
-                        "description": "CDM version",
-                    },
-                    "db": {
-                        "type": "string",
-                        "default": "sqlite",
-                        "description": "Database type (sqlite, mysql, pgsql)",
-                    },
-                    "host": {
-                        "type": "string",
-                        "default": "localhost",
-                        "description": "Database host (ignored for sqlite)",
-                    },
-                    "port": {
-                        "type": "integer",
-                        "default": 5432,
-                        "description": "Database port (ignored for sqlite)",
-                    },
-                    "user": {
-                        "type": "string",
-                        "default": "root",
-                        "description": "Database user (ignored for sqlite)",
-                    },
-                    "pw": {
-                        "type": "string",
-                        "default": "pass",
-                        "description": "Database password (ignored for sqlite)",
-                    },
-                    "db_path": {
-                        "type": "string",
-                        "default": "cdm.sqlite",
-                        "description": "Database path",
-                    },
-                    "schema": {
-                        "type": "string",
-                        "default": "",
-                        "description": "PostgreSQL schema to use for CDM",
-                    },
-                },
-                "required": ["table_name"],
-            },
-        ),
-        types.Tool(
-            name="get_usable_table_names",
-            description="Get list of all usable table names in the CDM",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "db": {
-                        "type": "string",
-                        "default": "sqlite",
-                        "description": "Database type (sqlite, mysql, pgsql)",
-                    },
-                    "host": {
-                        "type": "string",
-                        "default": "localhost",
-                        "description": "Database host (ignored for sqlite)",
-                    },
-                    "port": {
-                        "type": "integer",
-                        "default": 5432,
-                        "description": "Database port (ignored for sqlite)",
-                    },
-                    "user": {
-                        "type": "string",
-                        "default": "root",
-                        "description": "Database user (ignored for sqlite)",
-                    },
-                    "pw": {
-                        "type": "string",
-                        "default": "pass",
-                        "description": "Database password (ignored for sqlite)",
-                    },
-                    "db_path": {
-                        "type": "string",
-                        "default": "cdm.sqlite",
-                        "description": "Database path",
-                    },
-                    "schema": {
-                        "type": "string",
-                        "default": "",
-                        "description": "PostgreSQL schema to use for CDM",
-                    },
-                },
-                "required": [],
-            },
-        ),
-        types.Tool(
-            name="run_sql",
-            description="Execute a SQL statement on the CDM database",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "sql": {
-                        "type": "string",
-                        "description": "SQL statement to execute",
-                    },
-                    "fetch_results": {
-                        "type": "boolean",
-                        "default": True,
-                        "description": "Whether to fetch and return results for SELECT queries",
-                    },
-                    "db": {
-                        "type": "string",
-                        "default": "sqlite",
-                        "description": "Database type (sqlite, mysql, pgsql)",
-                    },
-                    "host": {
-                        "type": "string",
-                        "default": "localhost",
-                        "description": "Database host (ignored for sqlite)",
-                    },
-                    "port": {
-                        "type": "integer",
-                        "default": 5432,
-                        "description": "Database port (ignored for sqlite)",
-                    },
-                    "user": {
-                        "type": "string",
-                        "default": "root",
-                        "description": "Database user (ignored for sqlite)",
-                    },
-                    "pw": {
-                        "type": "string",
-                        "default": "pass",
-                        "description": "Database password (ignored for sqlite)",
-                    },
-                    "db_path": {
-                        "type": "string",
-                        "default": "cdm.sqlite",
-                        "description": "Database path",
-                    },
-                    "schema": {
-                        "type": "string",
-                        "default": "",
-                        "description": "PostgreSQL schema to use for CDM",
-                    },
-                },
-                "required": ["sql"],
-            },
-        ),
-        types.Tool(
-            name="example_query",
-            description="Get example queries for a specific OMOP CDM table from OHDSI QueryLibrary. Useful for understanding query patterns.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "table_name": {
-                        "type": "string",
-                        "description": "Name of the OMOP CDM table",
-                        "enum": ["person", "condition_occurrence", "condition_era", "drug_exposure", "drug_era", "observation"],
-                    },
-                },
-                "required": ["table_name"],
-            },
-        ),
-        types.Tool(
-            name="check_sql",
-            description="Validate and check SQL query syntax before execution. Returns a corrected version of the query if issues are found.",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "sql": {
-                        "type": "string",
-                        "description": "SQL query to validate",
-                    },
-                    "db": {
-                        "type": "string",
-                        "default": "sqlite",
-                        "description": "Database type (sqlite, mysql, pgsql)",
-                    },
-                    "host": {
-                        "type": "string",
-                        "default": "localhost",
-                        "description": "Database host (ignored for sqlite)",
-                    },
-                    "port": {
-                        "type": "integer",
-                        "default": 5432,
-                        "description": "Database port (ignored for sqlite)",
-                    },
-                    "user": {
-                        "type": "string",
-                        "default": "root",
-                        "description": "Database user (ignored for sqlite)",
-                    },
-                    "pw": {
-                        "type": "string",
-                        "default": "pass",
-                        "description": "Database password (ignored for sqlite)",
-                    },
-                    "db_path": {
-                        "type": "string",
-                        "default": "cdm.sqlite",
-                        "description": "Database path",
-                    },
-                    "schema": {
-                        "type": "string",
-                        "default": "",
-                        "description": "PostgreSQL schema to use for CDM",
-                    },
-                },
-                "required": ["sql"],
-            },
-        ),
-    ]
-
-
-@server.list_prompts()
-async def handle_list_prompts() -> List[types.Prompt]:
-    """List available prompts."""
-    return [
-        types.Prompt(
-            name="query_execution_steps",
-            description="Steps to execute a database query based on free text instruction",
-        )
-    ]
-
-
-@server.get_prompt()
-async def handle_get_prompt(
-    name: str, arguments: Optional[Dict[str, str]] = None
-) -> types.GetPromptResult:
-    """Get a specific prompt."""
-    if name == "query_execution_steps":
-        return types.GetPromptResult(
-            description="Database query execution steps",
-            messages=[
-                types.PromptMessage(
-                    role="assistant",
-                    content=types.TextContent(type="text", text=QUERY_EXECUTION_PROMPT),
-                )
-            ],
-        )
-    else:
-        raise ValueError(f"Unknown prompt: {name}")
-
-
-@server.call_tool()
-async def handle_call_tool(
-    name: str, arguments: Optional[Dict[str, Any]] = None
-) -> List[types.TextContent]:
-    """Handle tool calls."""
-    if arguments is None:
-        arguments = {}
-
-    try:
-        if name == "create_cdm":
-            return await _create_cdm(**arguments)
-        elif name == "create_eunomia":
-            return await _create_eunomia(**arguments)
-        elif name == "get_engine":
-            engine = await _get_engine(**arguments)
-            # Return engine URL/type summary as TextContent
-            url = getattr(engine, "url", None)
-            url_str = str(url) if url else str(engine)
-            return [types.TextContent(type="text", text=f"Engine: {url_str}")]
-        elif name == "get_table_columns":
-            return await _get_table_columns(**arguments)
-        elif name == "get_single_table_info":
-            return await _get_single_table_info(**arguments)
-        elif name == "get_usable_table_names":
-            return await _get_usable_table_names(**arguments)
-        elif name == "run_sql":
-            return await _run_sql(**arguments)
-        elif name == "example_query":
-            return await _example_query(**arguments)
-        elif name == "check_sql":
-            return await _check_sql(**arguments)
-        else:
-            raise ValueError(f"Unknown tool: {name}")
-    except Exception as e:
-        logger.error(f"Error in tool {name}: {e}")
-        return [types.TextContent(type="text", text=f"Error: {str(e)}")]
-
-
-async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextContent]:
+async def _create_cdm(db_path: str, version: str = "cdm54") -> List[TextContent]:
     """Create an empty CDM database."""
     try:
         # Ensure the directory exists
@@ -522,22 +562,18 @@ async def _create_cdm(db_path: str, version: str = "cdm54") -> List[types.TextCo
         await cdm.init_models(Base.metadata)
 
         return [
-            types.TextContent(
+            TextContent(
                 type="text",
                 text=f"Successfully created CDM {version} database at: {db_path}",
             )
         ]
     except Exception as e:
-        return [
-            types.TextContent(
-                type="text", text=f"Error creating CDM database: {str(e)}"
-            )
-        ]
+        return [TextContent(type="text", text=f"Error creating CDM database: {str(e)}")]
 
 
 async def _create_eunomia(
     db_path: str, version: str = "5.3", dataset: str = "GiBleed"
-) -> List[types.TextContent]:
+) -> List[TextContent]:
     """Create a CDM database with eunomia data."""
     try:
         # First create the CDM structure
@@ -563,14 +599,14 @@ async def _create_eunomia(
         )
         await eunomia.run_cohort_sql()
         return [
-            types.TextContent(
+            TextContent(
                 type="text",
                 text=f"Successfully created CDM {version} database with {dataset} data at: {db_path}",
             )
         ]
     except Exception as e:
         return [
-            types.TextContent(
+            TextContent(
                 type="text",
                 text=f"Error creating CDM database with eunomia data: {str(e)}",
             )
@@ -615,7 +651,7 @@ async def _get_table_columns(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
-) -> List[types.TextContent]:
+) -> List[TextContent]:
     """Get column names for a specific table."""
     import os
 
@@ -644,24 +680,20 @@ async def _get_table_columns(
             columns = cdm_db.get_table_columns(table_name)
 
             return [
-                types.TextContent(
+                TextContent(
                     type="text",
                     text=f"Columns for table '{table_name}': {', '.join(columns)}",
                 )
             ]
         except ImportError:
             return [
-                types.TextContent(
+                TextContent(
                     type="text",
                     text="LLM features not available. Install pyomop[llm] to use this tool.",
                 )
             ]
     except Exception as e:
-        return [
-            types.TextContent(
-                type="text", text=f"Error getting table columns: {str(e)}"
-            )
-        ]
+        return [TextContent(type="text", text=f"Error getting table columns: {str(e)}")]
 
 
 async def _get_single_table_info(
@@ -673,7 +705,7 @@ async def _get_single_table_info(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
-) -> List[types.TextContent]:
+) -> List[TextContent]:
     """Get detailed information about a single table."""
     import os
 
@@ -701,18 +733,16 @@ async def _get_single_table_info(
 
             table_info = cdm_db.get_single_table_info(table_name)
 
-            return [types.TextContent(type="text", text=table_info)]
+            return [TextContent(type="text", text=table_info)]
         except ImportError:
             return [
-                types.TextContent(
+                TextContent(
                     type="text",
                     text="LLM features not available. Install pyomop[llm] to use this tool.",
                 )
             ]
     except Exception as e:
-        return [
-            types.TextContent(type="text", text=f"Error getting table info: {str(e)}")
-        ]
+        return [TextContent(type="text", text=f"Error getting table info: {str(e)}")]
 
 
 async def _get_usable_table_names(
@@ -723,7 +753,7 @@ async def _get_usable_table_names(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
-) -> List[types.TextContent]:
+) -> List[TextContent]:
     """Get list of all usable table names."""
     import os
 
@@ -752,21 +782,19 @@ async def _get_usable_table_names(
             table_names = cdm_db.get_usable_table_names()
 
             return [
-                types.TextContent(
+                TextContent(
                     type="text", text=f"Available tables: {', '.join(table_names)}"
                 )
             ]
         except ImportError:
             return [
-                types.TextContent(
+                TextContent(
                     type="text",
                     text="LLM features not available. Install pyomop[llm] to use this tool.",
                 )
             ]
     except Exception as e:
-        return [
-            types.TextContent(type="text", text=f"Error getting table names: {str(e)}")
-        ]
+        return [TextContent(type="text", text=f"Error getting table names: {str(e)}")]
 
 
 async def _run_sql(
@@ -779,7 +807,7 @@ async def _run_sql(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
-) -> List[types.TextContent]:
+) -> List[TextContent]:
     """Execute a SQL statement using engine.begin() pattern."""
     import os
 
@@ -802,7 +830,7 @@ async def _run_sql(
         # Sanitize SQL (basic validation)
         sql = sql.strip()
         if not sql:
-            return [types.TextContent(type="text", text="Empty SQL statement provided")]
+            return [TextContent(type="text", text="Empty SQL statement provided")]
 
         from sqlalchemy import text
 
@@ -827,10 +855,10 @@ async def _run_sql(
                         result_text += f"Row {i+1}: {row_dict}\n"
                     if len(rows) > 10:
                         result_text += f"... and {len(rows) - 10} more rows"
-                    return [types.TextContent(type="text", text=result_text)]
+                    return [TextContent(type="text", text=result_text)]
                 else:
                     return [
-                        types.TextContent(
+                        TextContent(
                             type="text",
                             text="Query executed successfully. No rows returned.",
                         )
@@ -838,24 +866,24 @@ async def _run_sql(
             else:
                 # For non-SELECT queries or when not fetching results
                 return [
-                    types.TextContent(
+                    TextContent(
                         type="text",
                         text=f"SQL statement executed successfully: {sql[:100]}...",
                     )
                 ]
     except Exception as e:
-        return [types.TextContent(type="text", text=f"SQL execution error: {str(e)}")]
+        return [TextContent(type="text", text=f"SQL execution error: {str(e)}")]
 
 
-async def _example_query(table_name: str) -> List[types.TextContent]:
+async def _example_query(table_name: str) -> List[TextContent]:
     """
     Get example queries for a specific OMOP CDM table.
-    
+
     This function fetches example queries from the OHDSI QueryLibrary GitHub repository.
     It's a direct reuse of the example_query_tool logic from llm_query.py.
     """
     import requests
-    
+
     example = ""
     try:
         if table_name.lower() == "person":
@@ -905,25 +933,25 @@ async def _example_query(table_name: str) -> List[types.TextContent]:
     except Exception as e:
         logger.warning(f"Error fetching example queries for {table_name}: {e}")
         return [
-            types.TextContent(
+            TextContent(
                 type="text",
                 text=f"Error fetching example queries for {table_name}: {str(e)}",
             )
         ]
-    
+
     logger.info(f"Example query tool called for table: {table_name}")
     logger.info(f"Example returned: {example[:200] if example else '(empty)'}...")
-    
+
     # Strip whitespace to check if we really have content
     if not example.strip():
         return [
-            types.TextContent(
+            TextContent(
                 type="text",
                 text=f"No example queries found for table: {table_name}",
             )
         ]
-    
-    return [types.TextContent(type="text", text=example)]
+
+    return [TextContent(type="text", text=example)]
 
 
 async def _check_sql(
@@ -935,29 +963,30 @@ async def _check_sql(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
-) -> List[types.TextContent]:
+) -> List[TextContent]:
     """
     Validate SQL query syntax before execution.
-    
+
     This function uses the QuerySQLCheckerTool functionality from langchain
     to validate and potentially correct SQL queries.
     """
     import os
-    
+
     db = db or os.environ.get("PYOMOP_DB", "sqlite")
     host = host or os.environ.get("PYOMOP_HOST", "localhost")
     port = port if port is not None else int(os.environ.get("PYOMOP_PORT", "5432"))
     user = user or os.environ.get("PYOMOP_USER", "root")
     pw = pw or os.environ.get("PYOMOP_PW", "pass")
     schema = schema or os.environ.get("PYOMOP_SCHEMA", "")
-    
+
     try:
         # Check if LLM features are available
         try:
-            from ..llm_engine import CDMDatabase
             from langchain_community.tools.sql_database.tool import QuerySQLCheckerTool
             from langchain_core.language_models.fake import FakeListLLM
-            
+
+            from ..llm_engine import CDMDatabase
+
             engine = await _get_engine(
                 db=db,
                 host=host,
@@ -967,20 +996,20 @@ async def _check_sql(
                 db_path=db_path,
                 schema=schema,
             )
-            
+
             # Create a CDMDatabase instance
             cdm_db = CDMDatabase(engine, version="cdm54")  # type: ignore
-            
+
             # Use a simple LLM for query checking (doesn't need real LLM)
             # We'll create a basic checker that validates SQL syntax
             llm = FakeListLLM(responses=["The query looks valid."])
             checker = QuerySQLCheckerTool(db=cdm_db, llm=llm)
-            
+
             # Run the checker
             result = checker.run(sql)
-            
+
             return [
-                types.TextContent(
+                TextContent(
                     type="text",
                     text=f"SQL Check Result:\n{result}",
                 )
@@ -988,35 +1017,46 @@ async def _check_sql(
         except ImportError:
             # If LLM features aren't available, do basic validation
             sql_upper = sql.strip().upper()
-            
+
             # Basic SQL syntax validation
             issues = []
-            
+
             # Check for common SQL keywords
-            if not any(keyword in sql_upper for keyword in ['SELECT', 'INSERT', 'UPDATE', 'DELETE', 'CREATE', 'DROP']):
+            if not any(
+                keyword in sql_upper
+                for keyword in [
+                    "SELECT",
+                    "INSERT",
+                    "UPDATE",
+                    "DELETE",
+                    "CREATE",
+                    "DROP",
+                ]
+            ):
                 issues.append("Query doesn't contain a valid SQL statement keyword")
-            
+
             # Check for balanced parentheses
-            if sql.count('(') != sql.count(')'):
+            if sql.count("(") != sql.count(")"):
                 issues.append("Unbalanced parentheses in query")
-            
+
             # Check for balanced quotes
             if sql.count("'") % 2 != 0:
                 issues.append("Unbalanced single quotes in query")
-            
+
             if sql.count('"') % 2 != 0:
                 issues.append("Unbalanced double quotes in query")
-            
+
             if issues:
                 return [
-                    types.TextContent(
+                    TextContent(
                         type="text",
-                        text=f"SQL validation issues found:\n" + "\n".join(f"- {issue}" for issue in issues),
+                        text=f"SQL validation issues found:\n"
+                        + "\n".join(f"- {issue}" for issue in issues),
                     )
                 ]
             else:
                 return [
-                    types.TextContent(
+                    TextContent(
                         type="text",
                         text="Basic SQL validation passed. Query appears to be syntactically valid.",
                     )
@@ -1024,7 +1064,7 @@ async def _check_sql(
     except Exception as e:
         logger.error(f"Error checking SQL: {e}")
         return [
-            types.TextContent(
+            TextContent(
                 type="text",
                 text=f"Error checking SQL: {str(e)}",
             )
@@ -1054,7 +1094,7 @@ async def main():
 
 async def main_http(host: str = "0.0.0.0", port: int = 8000):
     """Main entry point for the MCP server with HTTP (SSE) transport.
-    
+
     Args:
         host: Host to bind the HTTP server to
         port: Port to bind the HTTP server to
@@ -1062,15 +1102,15 @@ async def main_http(host: str = "0.0.0.0", port: int = 8000):
     # Set up logging
     logging.basicConfig(level=logging.INFO)
     logger.info(f"Starting pyomop MCP server with HTTP transport on {host}:{port}")
-    
+
     try:
         from mcp.server.sse import SseServerTransport
         from starlette.applications import Starlette
         from starlette.routing import Route
-        
+
         # Create SSE endpoint handler
         sse = SseServerTransport("/messages")
-        
+
         async def handle_sse(request):
             async with sse.connect_sse(
                 request.scope, request.receive, request._send
@@ -1087,10 +1127,10 @@ async def main_http(host: str = "0.0.0.0", port: int = 8000):
                         ),
                     ),
                 )
-        
+
         async def handle_post(request):
             return await sse.handle_post_message(request)
-        
+
         # Create Starlette app
         app = Starlette(
             debug=True,
@@ -1099,13 +1139,14 @@ async def main_http(host: str = "0.0.0.0", port: int = 8000):
                 Route("/messages", endpoint=handle_post, methods=["POST"]),
             ],
         )
-        
+
         # Run the server
         import uvicorn
+
         config = uvicorn.Config(app, host=host, port=port, log_level="info")
         server_instance = uvicorn.Server(config)
         await server_instance.serve()
-        
+
     except ImportError as e:
         logger.error(
             f"HTTP transport requires additional dependencies: {e}\n"
@@ -1122,11 +1163,17 @@ def main_cli():
 def main_http_cli():
     """CLI entry point for the MCP server (HTTP transport)."""
     import argparse
-    
-    parser = argparse.ArgumentParser(description="PyOMOP MCP Server with HTTP transport")
-    parser.add_argument("--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)")
-    parser.add_argument("--port", type=int, default=8000, help="Port to bind to (default: 8000)")
-    
+
+    parser = argparse.ArgumentParser(
+        description="PyOMOP MCP Server with HTTP transport"
+    )
+    parser.add_argument(
+        "--host", default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)"
+    )
+    parser.add_argument(
+        "--port", type=int, default=8000, help="Port to bind to (default: 8000)"
+    )
+
     args = parser.parse_args()
     asyncio.run(main_http(host=args.host, port=args.port))
 

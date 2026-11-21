@@ -36,7 +36,10 @@ class TestMCPServer:
     @pytest.mark.asyncio
     async def test_list_tools(self):
         """Test that all required tools are listed."""
-        tools = await handle_list_tools()
+        from mcp.server import ServerRequestContext
+        from mcp.types import ListToolsResult
+
+        tools = await handle_list_tools(ctx=None, params=None)
 
         expected_tools = {
             "create_cdm",
@@ -50,21 +53,24 @@ class TestMCPServer:
             "check_sql",
         }
 
-        tool_names = {tool.name for tool in tools}
+        tool_names = {tool.name for tool in tools.tools}
         assert expected_tools.issubset(tool_names)
 
     @pytest.mark.asyncio
     async def test_list_prompts(self):
         """Test that the query execution prompt is available."""
-        prompts = await handle_list_prompts()
+        prompts = await handle_list_prompts(ctx=None, params=None)
 
-        assert len(prompts) == 1
-        assert prompts[0].name == "query_execution_steps"
+        assert len(prompts.prompts) == 1
+        assert prompts.prompts[0].name == "query_execution_steps"
 
     @pytest.mark.asyncio
     async def test_get_prompt(self):
         """Test getting the query execution prompt."""
-        prompt_result = await handle_get_prompt("query_execution_steps")
+        from mcp.types import GetPromptRequestParams
+
+        params = GetPromptRequestParams(name="query_execution_steps")
+        prompt_result = await handle_get_prompt(ctx=None, params=params)
 
         assert prompt_result.description == "Database query execution steps"
         assert len(prompt_result.messages) == 1
