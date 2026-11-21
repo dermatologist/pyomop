@@ -313,8 +313,7 @@ These environment variables will be checked before assigning default values for 
 
 
 
-## 🗄️ Agent Assisted ETL - Work in progress
-
+## 🗄️ Agent Assisted ETL (beta)
 Use `--migrate` to run the generic loader from the command line.  Provide
 source-database connection details with `--src-*` options; target-database
 details use the standard `--dbtype` / `--host` / … options.
@@ -351,8 +350,10 @@ pyomop-migrate --extract-schema \
 
 The same `SRC_DB_*` environment variables are supported for credentials.
 
-#### Plan
-* Use the extracted schema to generate a mapping JSON using an appropriate agentic skill.
+## Skill-based mapping generation
+* Install the agentic skill with `npx skills install dermatologist/pyomop`
+* Use the [skill](/.agents/skills/omop-migration-mapper/SKILL.md) to generate the mapping JSON based on the source schema.
+* The generated mapping can then be used with the `--mapping` option in the `--migrate` command above.
 
 See the [bundled example mapping](src/pyomop/mapping.generic.example.json) and
 the [full documentation](docs/pyomop_migrate.md) for all supported options.
