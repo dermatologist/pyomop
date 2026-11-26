@@ -24,6 +24,15 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+def _parse_vocab_date(values):
+    """Parse vocabulary dates written as YYYYMMDD, e.g. 20991231.
+
+    Athena CSVs store these dates as integers. ``pd.to_datetime`` reads an
+    integer as nanoseconds since 1970-01-01, so parse them as strings instead.
+    """
+    return pd.to_datetime(values.astype(str), errors="coerce")
+
+
 class CdmVocabulary(object):
     """Helpers for OMOP Vocabulary management and lookups.
 
@@ -203,10 +212,8 @@ class CdmVocabulary(object):
                 on_bad_lines="skip",
                 low_memory=False,
             )
-            df["valid_start_date"] = pd.to_datetime(
-                df["valid_start_date"], errors="coerce"
-            )
-            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
+            df["valid_start_date"] = _parse_vocab_date(df["valid_start_date"])
+            df["valid_end_date"] = _parse_vocab_date(df["valid_end_date"])
             await self.write_vocab(df, "concept", "replace")
             logger.info("CONCEPT.csv loaded and processed.")
 
@@ -240,10 +247,8 @@ class CdmVocabulary(object):
                 on_bad_lines="skip",
                 low_memory=False,
             )
-            df["valid_start_date"] = pd.to_datetime(
-                df["valid_start_date"], errors="coerce"
-            )
-            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
+            df["valid_start_date"] = _parse_vocab_date(df["valid_start_date"])
+            df["valid_end_date"] = _parse_vocab_date(df["valid_end_date"])
             await self.write_vocab(df, "concept_relationship", "replace")
             logger.info("CONCEPT_RELATIONSHIP.csv loaded and processed.")
 
@@ -264,10 +269,8 @@ class CdmVocabulary(object):
                 on_bad_lines="skip",
                 low_memory=False,
             )
-            df["valid_start_date"] = pd.to_datetime(
-                df["valid_start_date"], errors="coerce"
-            )
-            df["valid_end_date"] = pd.to_datetime(df["valid_end_date"], errors="coerce")
+            df["valid_start_date"] = _parse_vocab_date(df["valid_start_date"])
+            df["valid_end_date"] = _parse_vocab_date(df["valid_end_date"])
             await self.write_vocab(df, "drug_strength", "replace")
             logger.info("DRUG_STRENGTH.csv loaded and processed.")
 
