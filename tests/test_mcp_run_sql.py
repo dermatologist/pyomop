@@ -2,9 +2,16 @@
 
 import pytest
 
-from src.pyomop.mcp.server import _create_cdm, _run_sql
+# Skip tests if MCP is not available
+try:
+    from src.pyomop.mcp.server import _create_cdm, _run_sql
+
+    MCP_AVAILABLE = True
+except ImportError:
+    MCP_AVAILABLE = False
 
 
+@pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP not available")
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "sql",
@@ -29,6 +36,7 @@ async def test_run_sql_returns_rows(tmp_path, sql):
     assert "{'person_id': 1, 'year_of_birth': 1970}" in text
 
 
+@pytest.mark.skipif(not MCP_AVAILABLE, reason="MCP not available")
 @pytest.mark.asyncio
 async def test_run_sql_insert_reports_statement(tmp_path):
     db_path = str(tmp_path / "cdm.sqlite")
