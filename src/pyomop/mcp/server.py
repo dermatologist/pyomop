@@ -271,6 +271,12 @@ async def handle_list_tools(
                 input_schema={
                     "type": "object",
                     "properties": {
+                        "version": {
+                            "type": "string",
+                            "enum": ["cdm54", "cdm6"],
+                            "default": "cdm54",
+                            "description": "CDM version",
+                        },
                         "db": {
                             "type": "string",
                             "default": "sqlite",
@@ -651,6 +657,7 @@ async def _get_table_columns(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
+    version="cdm54",
 ) -> List[TextContent]:
     """Get column names for a specific table."""
     import os
@@ -705,6 +712,7 @@ async def _get_single_table_info(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
+    version="cdm54",
 ) -> List[TextContent]:
     """Get detailed information about a single table."""
     import os
@@ -753,6 +761,7 @@ async def _get_usable_table_names(
     pw=None,
     db_path="cdm.sqlite",
     schema=None,
+    version="cdm54",
 ) -> List[TextContent]:
     """Get list of all usable table names."""
     import os
@@ -837,7 +846,7 @@ async def _run_sql(
         async with engine.begin() as conn:
             result = await conn.execute(text(sql))
 
-            if fetch_results and sql.lower().strip().startswith("select"):
+            if fetch_results and result.returns_rows:
                 rows = result.fetchall()
                 if rows:
                     columns = list(result.keys()) if hasattr(result, "keys") else []
