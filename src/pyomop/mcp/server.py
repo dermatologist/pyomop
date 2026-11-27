@@ -271,6 +271,12 @@ async def handle_list_tools(
                 input_schema={
                     "type": "object",
                     "properties": {
+                        "version": {
+                            "type": "string",
+                            "enum": ["cdm54", "cdm6"],
+                            "default": "cdm54",
+                            "description": "CDM version",
+                        },
                         "db": {
                             "type": "string",
                             "default": "sqlite",
