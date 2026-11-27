@@ -840,7 +840,7 @@ async def _run_sql(
         async with engine.begin() as conn:
             result = await conn.execute(text(sql))
 
-            if fetch_results and sql.lower().strip().startswith("select"):
+            if fetch_results and result.returns_rows:
                 rows = result.fetchall()
                 if rows:
                     columns = list(result.keys()) if hasattr(result, "keys") else []
